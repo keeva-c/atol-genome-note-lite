@@ -36,8 +36,7 @@ Details about the assembled genome sequence, including key assembly and
 annotation metrics, are summarised in Table 1. A Hi-C contact map for
 the assembly is provided in Figure 2.
 
-Table 1: Genome assembly and annotation information for *{{ organism.scientific_name }}*, {{
-assembly.assembly_name }}.
+Table 1: Genome assembly and annotation information for {{ assembly.assembly_name }}, sequenced from *{{ organism.scientific_name }}*.
 
 **Genome assembly** 
 
