@@ -9,7 +9,7 @@ path_to_output = "results/genome_note.md"
 path_to_sample_metadata = "dev/sample_1.json"
 
 # read the template
-with open(path_to_template, "rt") as f:
+with open(path_to_template, "rt", encoding="utf-8") as f:
     template = Template(f.read())
 
 # read the sample metadata
@@ -19,5 +19,5 @@ with open(path_to_sample_metadata, "rt") as f:
 
 # render the template
 print(f"Writing output to {path_to_output}")
-with open(path_to_output, "wt") as f:
+with open(path_to_output, "wt", encoding="utf-8") as f:
     f.write(template.render(sample_metadata))
