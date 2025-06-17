@@ -82,11 +82,15 @@ Number of non-organelle chromosomes\
 **Assembly metrics\***
 
 Consensus quality (QV)\
- {{ assembly.qv }}\
+ Primary assembly: {{ assembly.primary_qv }}\
+ Alternate assembly: {{ assembly.alt_qv }}\
+ Combined: {{ assembly.combined_qv }}\
  *benchmark: 50*
 
 *k*-mer completeness\
- {{ assembly.kmer }}%\
+ Primary assembly: {{ assembly.primary_kmer }}%\
+ Alternate assembly: {{ assembly.alt_kmer }}%\
+ Combined: {{ assembly.combined_kmer }}%\
  *benchmark: 95%*
 
 BUSCO\
