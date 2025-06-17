@@ -9,7 +9,7 @@ Infrastructure Capability, {{ sample.bpa_initiative }}
 
 We have assembled and annotated a {{ assembly.assembly_level }} level genome
 sequence for the *{{ organism.scientific_name }}* ({{ organism.order_or_group }}: {{
-organism.family }})*.* The assembly is comprised of ({{ assembly.contig_count }} contigs
+organism.family }}). The assembly is comprised of ({{ assembly.contig_count }} contigs
 or {{ assembly.scaffold_count }} scaffolds or {{ assembly.chromosome_count }} chromosomes)
 and spans {{ assembly.genome_size }}Gb. It has a (scaffold N50 of {{ assembly.scaffold_n50
 }} or contig N50 of {{ assembly.contig_n50 }}) and a BUSCO completeness score of
@@ -26,7 +26,7 @@ organism.ncbi_taxid }}).
 ## **Background**
 
 The genome of the {{ organism.common_name }}, *{{ organism.scientific_name }}*, was
-sequenced as part of the {{ sample.bpa_initiative }} and has been assembled and
+sequenced as part of the {{ sample.bpa_initiative }} project and has been assembled and
 annotated in collaboration with the Australian Tree of Life
 infrastructure capability.
 
@@ -142,7 +142,7 @@ Average number of exons per transcript\
 1: Proposed standards and metrics for defining genome assembly quality"
 from Rhie *et al.* (2021).
 
-{{ assembly.contact_map_image }}
+![image]({{ assembly.contact_map_image }})
 
 Figure 1: Hi-C contact map of the genome assembly, visualised using HiGlass.
 Chromosomes are shown in order of size from left to right and top to bottom.
