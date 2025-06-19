@@ -1,0 +1,4 @@
+kmer_row_name,metadata_field
+out_scaffolds_final,primary_kmer
+purged.htigs.all,alt_kmer
+both,combined_kmer

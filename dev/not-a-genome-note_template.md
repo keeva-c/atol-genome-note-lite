@@ -3,7 +3,7 @@
 ## **Authors**
 
 {{ sample.project_lead }}, {{ sample.project_collaborators }}, Australian Tree of Life
-Infrastructure Capability, {{ sample.bpa_initiative }}
+Infrastructure Capability, {{ sample.bpa_initiative }} group
 
 ## **Abstract**
 
@@ -11,9 +11,9 @@ We have assembled and annotated a {{ assembly.assembly_level }} level genome
 sequence for the *{{ organism.scientific_name }}* ({{ organism.order_or_group }}: {{
 organism.family }}). The assembly is comprised of ({{ assembly.contig_count }} contigs
 or {{ assembly.scaffold_count }} scaffolds or {{ assembly.chromosome_count }} chromosomes)
-and spans {{ assembly.genome_size }}Gb. It has a (scaffold N50 of {{ assembly.scaffold_n50
+and spans {{ assembly.genome_length }} base pairs. It has a (scaffold N50 of {{ assembly.scaffold_n50
 }} or contig N50 of {{ assembly.contig_n50 }}) and a BUSCO completeness score of
-{{ assembly.busco_c }}. We identified {{ annotation.pcg }} protein-coding genes and {{ annotation.ncg
+{{ assembly.busco_c }}%. We identified {{ annotation.pcg }} protein-coding genes and {{ annotation.ncg
 }} non-coding genes in annotation.
 
 # **Introduction**
@@ -49,7 +49,7 @@ Assembly accession\
 Alternate haplotype assembly accession\
  {{ assembly.alt_hap_accession }}
 
-Span (Mb)\
+Span (base pairs)\
  {{ assembly.genome_length }} 
 
 Number of gaps\
@@ -61,19 +61,19 @@ Depth of coverage\
 Number of contigs\
  {{ assembly.contig_count }}
 
-Contig N50 length (Mb)\
+Contig N50 length (base pairs)\
  {{ assembly.contig_n50 }}
 
-Longest contig (Mb)\
+Longest contig (base pairs)\
  {{ assembly.longest_contig }}
 
 Number of scaffolds\
  {{ assembly.scaffold_count }}
 
-Scaffold N50 length (Mb)\
+Scaffold N50 length (base pairs)\
  {{ assembly.scaffold_n50 }}
 
-Longest scaffold (Mb)\
+Longest scaffold (base pairs)\
  {{ assembly.longest_scaffold }}
 
 Number of non-organelle chromosomes\

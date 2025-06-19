@@ -1,0 +1,10 @@
+summary_field_name,metadata_field
+"# contigs",contig_count
+"# scaffolds",scaffold_count
+"Total scaffold length",genome_length
+"Scaffold N50",scaffold_n50
+"Contig N50",contig_n50
+"# gaps",gap_count
+"Contig N50",contig_n50
+"Largest contig",longest_contig
+"Largest scaffold",longest_scaffold
