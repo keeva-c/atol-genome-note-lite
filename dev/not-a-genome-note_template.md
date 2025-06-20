@@ -471,7 +471,7 @@ Run accession\
 Read count\
  {{ runs.run_read_count }}
 
-Base count (Gb)\
+Base count\
  {{ runs.run_base_count}}
 
 Sequencing instrument\

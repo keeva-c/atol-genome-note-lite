@@ -1,0 +1,3 @@
+read_stat_field,metadata_field
+raw total sequences:,run_read_count
+bases mapped:,run_base_count
