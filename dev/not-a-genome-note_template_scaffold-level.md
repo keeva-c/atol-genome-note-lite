@@ -195,6 +195,8 @@ Preservation method\
 Preservation temperature\
  {{ sample.preservation_temperature }}
 
+{% include "hic_sample_data_for_genome_note.md" %}
+
 ## **Nucleic acid extraction**
 
 *For older data retrofitted to the AToL schema:*
@@ -216,6 +218,8 @@ Nucleic acid treatment\
 
 Extract concentration (ng/ul)\
  {{ sample.nucleic_acid_conc }}
+
+{% include "hic_extract_data_for_genome_note.md" %}
 
 ## **Sequencing**
 
@@ -259,6 +263,8 @@ Flowcell type\
 
 Base caller model\
  {{ experiment.base_caller_model }}
+
+{% include "hic_seq_data_for_genome_note.md" %}
 
 ## **Genome assembly**
 
@@ -450,7 +456,7 @@ Source:
  [https://github.com/madler/pigz](https://github.com/madler/pigz)
 
 Reference:
- -
+ NA
 
 Tool:
  PretextMap
@@ -459,7 +465,7 @@ Source:
  [https://github.com/sanger-tol/PretextMap](https://github.com/sanger-tol/PretextMap)
 
 Reference:
- -
+ NA
 
 Tool:
  PretextSnapshot
@@ -468,7 +474,7 @@ Source:
  [https://github.com/sanger-tol/PretextSnapshot](https://github.com/sanger-tol/PretextSnapshot)
 
 Reference:
- -
+ NA
 
 Tool:
  purge_dups
