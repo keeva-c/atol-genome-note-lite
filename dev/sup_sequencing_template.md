@@ -1,7 +1,3 @@
-## **Sequencing**
-
-Table 4: Methodological information about sequencing runs.
-
 Data type generated\
  Hi-C
 
