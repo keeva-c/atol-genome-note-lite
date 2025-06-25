@@ -71,9 +71,6 @@ Scaffold N50 length\
 Longest scaffold\
  {{ round_bases_up(assembly.longest_scaffold) }}
 
-Number of non-organelle chromosomes\
- {{ assembly.chromosome_count }}
-
 **Assembly metrics\***
 
 Consensus quality (QV)\
@@ -96,10 +93,7 @@ BUSCO reference set\
  {{ assembly.busco_ref }}
 
 Organelles\
- Mitochondrial genome: {{ assembly.mito_size }}\
- Plastid genome: {{ assembly.plastid_size }}\
- *or*\
- No organelles assembled\
+ {% if assembly.mito_size %}Mitochondrial genome: {{ assembly.mito_size }}\{% endif %}{% if assembly.plastid_size %}Plastid genome: {{ assembly.plastid_size }}\{% endif %}{% if not assembly.mito_size and not assembly.plastid_size %}No organelles assembled\{% endif %}
  *benchmark: complete single alleles*
 
 \* Assembly metric benchmarks are adapted from column VGP-2020 of "Table
@@ -108,7 +102,6 @@ from Rhie *et al.* (2021).
 
 {% if assembly.contact_map_image_path %}
 ![image]({{ assembly.contact_map_image_path }})
-
 Figure 1: Hi-C contact map of the genome assembly, visualised using HiGlass.
 Chromosomes are shown in order of size from left to right and top to bottom.
 {% endif %}
@@ -127,7 +120,7 @@ sequencing data.
 **Sample information**
 
 Data type generated\
- WGS
+ {{ experiment.library_strategy }}
 
 Scientific name\
  *{{ organism.scientific_name }}* 
@@ -152,20 +145,19 @@ Lifestage\
 
 **Collection information**  
 
-Data type generated\
- WGS
-
 Date\
  {{ sample.collection_date }}
 
 Location\
- {{ sample.region_and_locality }}, {{ sample.country_or_sea }}
+ Locality: {{ sample.region_and_locality }}\
+ Country/ocean: {{ sample.country_or_sea }}
 
 Traditional place name\
  {{ sample.indigenous_location }}
 
 Location coordinates\
- {{ sample.latitude }}, {{ sample.longitude }}
+ Latitude: {{ sample.latitude }}\
+ Longitude: {{ sample.longitude }}
 
 Collected by\
  {{ sample.collected_by }}
@@ -178,16 +170,10 @@ Collection permit\
 
 **Identification information**
 
-Data type generated\
- WGS
-
 Identified by\
  {{ sample.identified_by }}
 
 **Preservation information**
-
-Data type generated\
- WGS
 
 Preservation method\
  {{ sample.preservation_method }}
@@ -199,13 +185,11 @@ Preservation temperature\
 
 ## **Nucleic acid extraction**
 
-*For older data retrofitted to the AToL schema:*
-
 Table 3: Methodological information about nucleic acid material
 extracted for sequencing.
 
 Data type generated\
- WGS
+ {{ experiment.library_strategy }}
 
 Sample tissue\
  {{ sample.organism_part}}
@@ -226,7 +210,7 @@ Extract concentration (ng/ul)\
 Table 4: Methodological information about sequencing runs.
 
 Data type generated\
- WGS
+ {{ experiment.library_strategy }}
 
 Run accession\
  {{ runs.sra_run_accession }}
@@ -528,7 +512,7 @@ Australian BioCommons.
 
 ## **Acknowledgements**
 
-The pipelines used to assemble and publish this genome sequence have been adapted from the original digital infrastructure developed as part of the Darwin Tree of Life project (Darwin Tree of Life Project Consortium, 2022). This generation of this sequence report has leveraged assets from the Tree of Life Genome Note pipeline (Babirye *et al.*, 2025).
+The pipelines used to assemble and publish this genome sequence have been adapted from the original digital infrastructure developed as part of the Darwin Tree of Life project (Darwin Tree of Life Project Consortium, 2022). The generation of this sequence report has leveraged assets from the Tree of Life Genome Note pipeline (Babirye *et al.*, 2025).
 
 # **References**
 

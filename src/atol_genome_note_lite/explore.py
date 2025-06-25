@@ -32,7 +32,7 @@ path_to_sample_metadata = "dev/sample_1.json"
 path_to_sample_supplement_output = "dev/hic_sample_data_for_genome_note.md"
 path_to_extract_supplement_output = "dev/hic_extract_data_for_genome_note.md"
 path_to_seq_supplement_output = "dev/hic_seq_data_for_genome_note.md"
-path_to_genome_note_output = "results/genome_note_scaffold-level.md"
+path_to_genome_note_output = "results/genome_note_lite.md"
 
 # setting the environment for the genome note templates
 env = Environment(loader=FileSystemLoader("dev"),undefined=undefined_tokens)

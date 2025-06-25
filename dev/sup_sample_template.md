@@ -1,7 +1,7 @@
 **Sample information**
 
 Data type generated\
- Hi-C
+ {{ experiment.library_strategy }}
 
 Scientific name\
  *{{ organism.scientific_name }}* 
@@ -26,20 +26,19 @@ Lifestage\
 
 **Collection information**  
 
-Data type generated\
- Hi-C
-
 Date\
  {{ sample.collection_date }}
 
 Location\
- {{ sample.region_and_locality }}, {{ sample.country_or_sea }}
+ Locality: {{ sample.region_and_locality }}\
+ Country/ocean: {{ sample.country_or_sea }}
 
 Traditional place name\
  {{ sample.indigenous_location }}
 
 Location coordinates\
- {{ sample.latitude }}, {{ sample.longitude }}
+ Latitude: {{ sample.latitude }}\
+ Longitude: {{ sample.longitude }}
 
 Collected by\
  {{ sample.collected_by }}
@@ -52,16 +51,10 @@ Collection permit\
 
 **Identification information**
 
-Data type generated\
- Hi-C
-
 Identified by\
  {{ sample.identified_by }}
 
 **Preservation information**
-
-Data type generated\
- Hi-C
 
 Preservation method\
  {{ sample.preservation_method }}

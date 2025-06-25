@@ -1,5 +1,5 @@
 Data type generated\
- Hi-C
+ {{ experiment.library_strategy }}
 
 Run accession\
  {{ runs.sra_run_accession }}

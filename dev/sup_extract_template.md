@@ -1,5 +1,5 @@
 Data type generated\
- Hi-C
+ {{ experiment.library_strategy }}
 
 Sample tissue\
  {{ sample.organism_part}}
