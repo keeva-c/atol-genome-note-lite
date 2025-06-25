@@ -1,8 +1,8 @@
-# **A genome assembly for the {{ organism.common_name }}, *{{ organism.scientific_name }}* {{ organism.authority }}**
+# **A genome assembly for {{ "the " ~ organism.common_name ~ ", " if organism.common_name else "" }}*{{ organism.scientific_name }}*{{ " " ~ organism.authority if organism.authority else "" }}**
 
 ## **Authors**
 
-{{ sample.project_lead }}, {{ sample.project_collaborators }}, Australian Tree of Life
+{{ sample.project_lead ~ ", " if sample.project_lead else "" }}{{ sample.project_collaborators ~ ", " if sample.project_collaborators else "" }}Australian Tree of Life
 Infrastructure Capability, {{ sample.bpa_initiative }} group
 
 ## **Abstract**
@@ -10,30 +10,28 @@ Infrastructure Capability, {{ sample.bpa_initiative }} group
 We have assembled and annotated a scaffold-level genome
 sequence for the *{{ organism.scientific_name }}* ({{ organism.order_or_group }}: {{
 organism.family }}). The assembly is comprised of {{ assembly.scaffold_count }} scaffolds 
-and spans {{ assembly.genome_length }} base pairs. It has a scaffold N50 of {{ assembly.scaffold_n50
-}}, a contig N50 of {{ assembly.contig_n50 }} and a BUSCO completeness score of
+and spans {{ round_bases_up(assembly.genome_length) }}. It has a scaffold N50 of {{ round_bases_up(assembly.scaffold_n50) }}, a contig N50 of {{ round_bases_up(assembly.contig_n50) }} and a BUSCO completeness score of
 {{ assembly.busco_c }}%.
 
 # **Introduction**
 
 ## **Species taxonomy**
 
-{{ organism.tax_string }}; *{{ organism.scientific_name }}* {{ organism.authority }} (NCBI:txid{{
-organism.ncbi_taxid }}).
+{{ organism.tax_string|default("*higher taxon classification*",true) }}; *{{ organism.scientific_name }}*{{ " " ~ organism.authority if organism.authority else "" }} (NCBI:txid{{
+organism.ncbi_taxid|default("*ncbi taxon id*",true) }}).
 
 ## **Background**
 
-The genome of the {{ organism.common_name }}, *{{ organism.scientific_name }}*, was
+The genome of {{ "the " ~ organism.common_name ~ ", " if organism.common_name else "" }}*{{ organism.scientific_name }}*, was
 sequenced as part of the {{ sample.bpa_initiative }} project and has been assembled in collaboration with the Australian Tree of Life
-infrastructure capability.
+Infrastructure Capability.
 
 # **Genome sequence report**
 
 Details about the assembled genome sequence, including key assembly 
-metrics, are summarised in Table 1. A Hi-C contact map for
-the assembly is provided in Figure 1.
+metrics, are summarised in Table 1. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in Figure 1.{% endif %}
 
-Table 1: Genome assembly and annotation information for {{ assembly.assembly_name }}, sequenced from *{{ organism.scientific_name }}*.
+Table 1: Genome assembly and annotation information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ organism.scientific_name }}*.
 
 **Genome assembly** 
 
@@ -46,32 +44,32 @@ Assembly accession\
 Alternate haplotype assembly accession\
  {{ assembly.alt_hap_accession }}
 
-Span (base pairs)\
- {{ assembly.genome_length }} 
+Span\
+ {{ round_bases_up(assembly.genome_length) }} 
 
 Number of gaps\
- {{ assembly.gap_count }}
+ {{ make_pretty_number(assembly.gap_count) }}
 
 Depth of coverage\
- {{ assembly.coverage }}
+ {{ round_decimal(assembly.coverage) }}x
 
 Number of contigs\
- {{ assembly.contig_count }}
+ {{ make_pretty_number(assembly.contig_count) }}
 
-Contig N50 length (base pairs)\
- {{ assembly.contig_n50 }}
+Contig N50 length\
+ {{ round_bases_up(assembly.contig_n50) }}
 
-Longest contig (base pairs)\
- {{ assembly.longest_contig }}
+Longest contig\
+ {{ round_bases_up(assembly.longest_contig) }}
 
 Number of scaffolds\
- {{ assembly.scaffold_count }}
+ {{ make_pretty_number(assembly.scaffold_count) }}
 
-Scaffold N50 length (base pairs)\
- {{ assembly.scaffold_n50 }}
+Scaffold N50 length\
+ {{ round_bases_up(assembly.scaffold_n50) }}
 
-Longest scaffold (base pairs)\
- {{ assembly.longest_scaffold }}
+Longest scaffold\
+ {{ round_bases_up(assembly.longest_scaffold) }}
 
 Number of non-organelle chromosomes\
  {{ assembly.chromosome_count }}
@@ -98,8 +96,8 @@ BUSCO reference set\
  {{ assembly.busco_ref }}
 
 Organelles\
- Mitochondrial genome: {{ assembly.mito_size }}kb\
- Plastid genome: {{ assembly.plastid_size }}kb\
+ Mitochondrial genome: {{ assembly.mito_size }}\
+ Plastid genome: {{ assembly.plastid_size }}\
  *or*\
  No organelles assembled\
  *benchmark: complete single alleles*
@@ -108,10 +106,12 @@ Organelles\
 1: Proposed standards and metrics for defining genome assembly quality"
 from Rhie *et al.* (2021).
 
-![image]({{ assembly.contact_map_image }})
+{% if assembly.contact_map_image_path %}
+![image]({{ assembly.contact_map_image_path }})
 
 Figure 1: Hi-C contact map of the genome assembly, visualised using HiGlass.
 Chromosomes are shown in order of size from left to right and top to bottom.
+{% endif %}
 
 # **Methods**
 
@@ -232,10 +232,10 @@ Run accession\
  {{ runs.sra_run_accession }}
 
 Read count\
- {{ runs.run_read_count }}
+ {{ make_pretty_number(runs.run_read_count) }}
 
 Base count\
- {{ runs.run_base_count}}
+ {{ round_bases_up(runs.run_base_count) }}
 
 Sequencing instrument\
  {{ experiment.instrument_model }}

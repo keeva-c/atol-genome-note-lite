@@ -1,5 +1,3 @@
-## **Nucleic acid extraction**
-
 Data type generated\
  Hi-C
 

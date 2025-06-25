@@ -1,7 +1,3 @@
-## **Sequencing**
-
-Table 4: Methodological information about sequencing runs.
-
 Data type generated\
  Hi-C
 
@@ -11,8 +7,8 @@ Run accession\
 Read count\
  {{ runs.run_read_count }}
 
-Base count (Gb)\
- {{ runs.run_base_count}}
+Base count\
+ {{ runs.run_base_count }}
 
 Sequencing instrument\
  {{ experiment.instrument_model }}
