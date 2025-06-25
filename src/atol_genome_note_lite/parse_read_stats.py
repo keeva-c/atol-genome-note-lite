@@ -4,12 +4,13 @@ import csv
 import json
 
 path_to_field_mapping = "dev/read_stats_to_fields.csv"
-path_to_file = " "
+path_to_file = ""
 field_mapping_dict = {}
 SN_initial = "SN	"
 SN_line_list = []
 read_stat_dict = {}
 output_dict = {}
+path_to_output = "dev/run_stats_fields.json"
 
 #save genome note field names to a dictionary
 with open(path_to_field_mapping, "rt") as f:
@@ -32,4 +33,6 @@ with open(path_to_file, "rt") as f:
 for metadata_field,read_stat_field in field_mapping_dict.items():
     output_dict[metadata_field] = read_stat_dict[read_stat_field]
 
-print(json.dumps(output_dict))
+#write output to json file
+with open(path_to_output, "wt") as f:
+    json.dump(output_dict, f)

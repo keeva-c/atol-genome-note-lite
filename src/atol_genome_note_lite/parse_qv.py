@@ -4,10 +4,11 @@ import csv
 import json
 
 path_to_field_mapping = "dev/qv_to_fields.csv"
-path_to_file = " "
+path_to_file = "v"
 field_mapping_dict = {}
 qv_values_dict = {}
 output_dict = {}
+path_to_output = "dev/assembly_qv_fields.json"
 
 #save genome note field names to a dictionary
 with open(path_to_field_mapping, "rt") as f:
@@ -30,4 +31,6 @@ with open(path_to_file, "rt") as f:
 for metadata_field,qv_row_name in field_mapping_dict.items():
     output_dict[metadata_field] = qv_values_dict[qv_row_name]
 
-print(json.dumps(output_dict))
+#save output to json file
+with open(path_to_output, "wt") as f:
+    json.dump(output_dict, f)
