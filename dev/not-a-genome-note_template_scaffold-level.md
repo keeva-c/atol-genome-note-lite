@@ -7,9 +7,9 @@ Infrastructure Capability, {{ sample.bpa_initiative }} group
 
 ## **Abstract**
 
-We have assembled and annotated a scaffold-level genome
+We have assembled a scaffold-level genome
 sequence for the *{{ organism.scientific_name }}* ({{ organism.order_or_group }}: {{
-organism.family }}). The assembly is comprised of {{ assembly.scaffold_count }} scaffolds 
+organism.family }}). The assembly is comprised of {{ make_pretty_number(assembly.scaffold_count) }} scaffolds 
 and spans {{ round_bases_up(assembly.genome_length) }}. It has a scaffold N50 of {{ round_bases_up(assembly.scaffold_n50) }}, a contig N50 of {{ round_bases_up(assembly.contig_n50) }} and a BUSCO completeness score of
 {{ assembly.busco_c }}%.
 
@@ -31,7 +31,7 @@ Infrastructure Capability.
 Details about the assembled genome sequence, including key assembly 
 metrics, are summarised in Table 1. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in Figure 1.{% endif %}
 
-Table 1: Genome assembly and annotation information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ organism.scientific_name }}*.
+Table 1: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ organism.scientific_name }}*.
 
 **Genome assembly** 
 
@@ -489,8 +489,7 @@ Reference:
 
 ## **Data availability**
 
-Raw sequencing data, sample metadata, genome assembly sequences and
-annotation data are available from the European Nucleotide Archive under
+Raw sequencing data, sample metadata, and genome assembly sequences are available from the European Nucleotide Archive under
 the BioProject accession number {{ bioproject_accession }};
 [https://identifiers.org/ena.embl/](https://identifiers.org/ena.embl/){{
 bioproject_accession }}. Assembly and raw data accession identifiers are
@@ -506,7 +505,7 @@ The genome sequence is released openly for reuse.
 
 Samples were collected and sequence data generated as part of the
 Bioplatforms Australia-sponsored sequencing project {{ sample.bpa_initiative
-}}. The genome has been assembled, annotated, and published as part of
+}}. The genome has been assembled and published as part of
 the Australian Tree of Life Informatics Capacity, provided by the
 Australian BioCommons.
 
