@@ -12,6 +12,8 @@ class undefined_tokens(Undefined):
 def make_pretty_number(ugly_number):
     if float(ugly_number) > 1_000:
         return "{:,}".format(int(ugly_number))
+    else:
+        return ugly_number
 
 def round_decimal(decimal):
     return "{:.1f}".format(float(decimal))
