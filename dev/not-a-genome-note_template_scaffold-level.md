@@ -8,8 +8,8 @@ Infrastructure Capability, {{ sample.bpa_initiative }} group
 ## **Abstract**
 
 We have assembled a scaffold-level genome
-sequence for the *{{ organism.scientific_name }}* ({{ organism.order_or_group }}: {{
-organism.family }}). The assembly is comprised of {{ make_pretty_number(assembly.scaffold_count) }} scaffolds 
+sequence for *{{ organism.scientific_name }}* ({{ organism.order_or_group ~ ": " if organism.order_or_group else "" }}{{
+organism.family|default("",true)}}). The assembly is comprised of {{ make_pretty_number(assembly.scaffold_count) }} scaffolds 
 and spans {{ round_bases_up(assembly.genome_length) }}. It has a scaffold N50 of {{ round_bases_up(assembly.scaffold_n50) }}, a contig N50 of {{ round_bases_up(assembly.contig_n50) }} and a BUSCO completeness score of
 {{ assembly.busco_c }}%.
 
@@ -18,7 +18,7 @@ and spans {{ round_bases_up(assembly.genome_length) }}. It has a scaffold N50 of
 ## **Species taxonomy**
 
 {{ organism.tax_string|default("*higher taxon classification*",true) }}; *{{ organism.scientific_name }}*{{ " " ~ organism.authority if organism.authority else "" }} (NCBI:txid{{
-organism.ncbi_taxid|default("*ncbi taxon id*",true) }}).
+organism.taxon_id|default("*ncbi taxon id*",true) }}).
 
 ## **Background**
 
@@ -497,7 +497,7 @@ reported in Tables 1 and 4. Raw sequence data and sample metadata were
 originally submitted to the Bioplatforms Australia Data Portal
 ([https://data.bioplatforms.com/](https://data.bioplatforms.com/)),
 and are available under the following data package identifiers: {{
-bpa_package_id }}.
+experiment.bpa_package_id }}, {% include "hic_package_data_for_genome_note.md" %}.
 
 The genome sequence is released openly for reuse.
 

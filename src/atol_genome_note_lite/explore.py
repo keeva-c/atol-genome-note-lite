@@ -29,11 +29,12 @@ def round_bases_up(base_pairs):
         return base_pairs + " bp"
 
 # path_to_template = args.template
-path_to_supplement_metadata = "dev/sample_2.json"
-path_to_sample_metadata = "dev/sample_1.json"
+path_to_supplement_metadata = "dev/sample_hic.json"
+path_to_sample_metadata = "dev/sample_WGS.json"
 path_to_sample_supplement_output = "dev/hic_sample_data_for_genome_note.md"
 path_to_extract_supplement_output = "dev/hic_extract_data_for_genome_note.md"
 path_to_seq_supplement_output = "dev/hic_seq_data_for_genome_note.md"
+path_to_bpa_package_supplement_output = "dev/hic_package_data_for_genome_note.md"
 path_to_genome_note_output = "results/genome_note_lite.md"
 
 # setting the environment for the genome note templates
@@ -43,6 +44,7 @@ env = Environment(loader=FileSystemLoader("dev"),undefined=undefined_tokens)
 sup_samp_template = env.get_template("sup_sample_template.md")
 sup_ext_template = env.get_template("sup_extract_template.md")
 sup_seq_template = env.get_template("sup_sequencing_template.md")
+sup_package_template = env.get_template("sup_bpa_package_template.md")
 
 # read the supplementary sample metadata
 print(f"Reading supplementary sample metadata from {path_to_supplement_metadata}")
@@ -53,6 +55,7 @@ with open(path_to_supplement_metadata, "rt") as f:
 sup_sample_render = sup_samp_template.render(supplement_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
 sup_ext_render = sup_ext_template.render(supplement_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
 sup_seq_render = sup_seq_template.render(supplement_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
+sup_package_render = sup_package_template.render(supplement_metadata)
 
 print(f"Writing supplementary output to {path_to_sample_supplement_output}")
 with open(path_to_sample_supplement_output, "wt", encoding="utf-8") as f:
@@ -65,6 +68,10 @@ with open(path_to_extract_supplement_output, "wt", encoding="utf-8") as f:
 print(f"Writing supplementary output to {path_to_seq_supplement_output}")
 with open(path_to_seq_supplement_output, "wt", encoding="utf-8") as f:
     f.write(sup_seq_render)
+
+print(f"Writing supplementary output to {path_to_bpa_package_supplement_output}")
+with open(path_to_bpa_package_supplement_output, "wt", encoding="utf-8") as f:
+    f.write(sup_package_render)
 
 # read the core template
 template = env.get_template("not-a-genome-note_template_scaffold-level.md")
