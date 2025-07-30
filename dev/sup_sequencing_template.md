@@ -17,7 +17,7 @@ Sequencing chemistry\
  {{ experiment.sequencing_kit }}
 
 Sequencing facility\
- {{ sample.GAL }}
+ {{ experiment.GAL }}
 
 Library preparation method\
  {{ experiment.library_construction_protocol }}
