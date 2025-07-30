@@ -1,4 +1,4 @@
 qv_row_name,metadata_field
-out_scaffolds_final,primary_qv
-purged.htigs.all,alt_qv
-both,combined_qv
+0,primary_qv
+1,alt_qv
+2,combined_qv

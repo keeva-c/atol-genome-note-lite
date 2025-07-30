@@ -1,4 +1,4 @@
-kmer_row_name,metadata_field
-out_scaffolds_final,primary_kmer
-purged.htigs.all,alt_kmer
-both,combined_kmer
+kmer_row_index,metadata_field
+0,primary_kmer
+1,alt_kmer
+2,combined_kmer
