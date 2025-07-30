@@ -28,6 +28,9 @@ with open(path_to_file, "rt") as f:
 for metadata_field,busco_field_name in field_mapping_dict.items():
     output_dict[metadata_field] = busco_for_mapping[busco_field_name]
 
+#print json ouput
+print(json.dumps(output_dict))
+
 #save output to json file
 with open(path_to_output, "wt") as f:
     json.dump(output_dict, f)

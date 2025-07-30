@@ -4,7 +4,7 @@ import csv
 import json
 
 path_to_field_mapping = "dev/qv_to_fields.csv"
-path_to_file = "v"
+path_to_file = ""
 field_mapping_dict = {}
 qv_values_dict = {}
 output_dict = {}
@@ -28,8 +28,12 @@ with open(path_to_file, "rt") as f:
         qv_values_dict[key]=value
 
 #map values from qv dictionary to genome note field names
-for metadata_field,qv_row_name in field_mapping_dict.items():
-    output_dict[metadata_field] = qv_values_dict[qv_row_name]
+for metadata_field,qv_row_index in field_mapping_dict.items():
+    list_of_qv_values = list(qv_values_dict.values())
+    output_dict[metadata_field] = list_of_qv_values[int(qv_row_index)]
+
+#print json output
+print(json.dumps(output_dict))
 
 #save output to json file
 with open(path_to_output, "wt") as f:

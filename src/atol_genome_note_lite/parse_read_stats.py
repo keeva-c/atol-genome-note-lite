@@ -33,6 +33,9 @@ with open(path_to_file, "rt") as f:
 for metadata_field,read_stat_field in field_mapping_dict.items():
     output_dict[metadata_field] = read_stat_dict[read_stat_field]
 
+#print json output
+print(json.dumps(output_dict))
+
 #write output to json file
 with open(path_to_output, "wt") as f:
     json.dump(output_dict, f)
