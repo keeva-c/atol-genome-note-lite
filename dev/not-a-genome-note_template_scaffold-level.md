@@ -51,7 +51,7 @@ Number of gaps\
  {{ make_pretty_number(assembly.gap_count) }}
 
 Depth of coverage\
- {{ round_decimal(assembly.coverage) }}x
+ {% if assembly.coverage %}{{ round_decimal(assembly.coverage) }}x{% else %}*not provided*{% endif %}
 
 Number of contigs\
  {{ make_pretty_number(assembly.contig_count) }}
@@ -181,7 +181,7 @@ Preservation method\
 Preservation temperature\
  {{ sample.preservation_temperature }}
 
-{% include "hic_sample_data_for_genome_note.md" %}
+{% include "hic_sample_data_for_genome_note.md" ignore missing %}
 
 ## **Nucleic acid extraction**
 
@@ -203,7 +203,7 @@ Nucleic acid treatment\
 Extract concentration (ng/ul)\
  {{ sample.nucleic_acid_conc }}
 
-{% include "hic_extract_data_for_genome_note.md" %}
+{% include "hic_extract_data_for_genome_note.md" ignore missing %}
 
 ## **Sequencing**
 
@@ -216,10 +216,10 @@ Run accession\
  {{ runs.sra_run_accession }}
 
 Read count\
- {{ make_pretty_number(runs.run_read_count) }}
+ {% if runs.run_read_count %}{{ make_pretty_number(runs.run_read_count) }}{% else %}*not provided*{% endif %}
 
 Base count\
- {{ round_bases_up(runs.run_base_count) }}
+ {% if runs.run_base_count %}{{ round_bases_up(runs.run_base_count) }}{% else %}*not provided*{% endif %}
 
 Sequencing instrument\
  {{ experiment.instrument_model }}
@@ -248,7 +248,7 @@ Flowcell type\
 Base caller model\
  {{ experiment.base_caller_model }}
 
-{% include "hic_seq_data_for_genome_note.md" %}
+{% include "hic_seq_data_for_genome_note.md" ignore missing %}
 
 ## **Genome assembly**
 
@@ -497,7 +497,7 @@ reported in Tables 1 and 4. Raw sequence data and sample metadata were
 originally submitted to the Bioplatforms Australia Data Portal
 ([https://data.bioplatforms.com/](https://data.bioplatforms.com/)),
 and are available under the following data package identifiers: {{
-experiment.bpa_package_id }}, {% include "hic_package_data_for_genome_note.md" %}.
+experiment.bpa_package_id }}{% include "hic_package_data_for_genome_note.md" ignore missing %}.
 
 The genome sequence is released openly for reuse.
 
