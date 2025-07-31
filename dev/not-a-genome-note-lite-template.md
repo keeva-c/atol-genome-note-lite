@@ -178,7 +178,7 @@ Preservation method\
 Preservation temperature\
  {{ sample.preservation_temperature }}
 
-{% include "hic_sample_data_for_genome_note.md" ignore missing %}
+{% include "supplementary_sample_data_for_genome_note.md" ignore missing %}
 
 ## **Nucleic acid extraction**
 
@@ -200,7 +200,7 @@ Nucleic acid treatment\
 Extract concentration (ng/ul)\
  {{ sample.nucleic_acid_conc }}
 
-{% include "hic_extract_data_for_genome_note.md" ignore missing %}
+{% include "supplementary_extract_data_for_genome_note.md" ignore missing %}
 
 ## **Sequencing**
 
@@ -245,7 +245,7 @@ Flowcell type\
 Base caller model\
  {{ experiment.base_caller_model }}
 
-{% include "hic_seq_data_for_genome_note.md" ignore missing %}
+{% include "supplementary_seq_data_for_genome_note.md" ignore missing %}
 
 ## **Genome assembly**
 
@@ -494,7 +494,7 @@ reported in Tables 1 and 4. Raw sequence data and sample metadata were
 originally submitted to the Bioplatforms Australia Data Portal
 ([https://data.bioplatforms.com/](https://data.bioplatforms.com/)),
 and are available under the following data package identifiers: {{
-experiment.bpa_package_id }}{% include "hic_package_data_for_genome_note.md" ignore missing %}.
+experiment.bpa_package_id }}{% include "supplementary_package_data_for_genome_note.md" ignore missing %}.
 
 The genome sequence is released openly for reuse.
 
