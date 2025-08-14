@@ -2,14 +2,14 @@
 
 ## **Authors**
 
-{{ sample.project_lead ~ ", " if sample.project_lead else "" }}{{ sample.project_collaborators ~ ", " if sample.project_collaborators else "" }}Australian Tree of Life
-Infrastructure Capability, {{ sample.bpa_initiative }} group
+{{ experiment.data_owner ~ ", " if experiment.data_owner else "" }}{{ sample.project_collaborators ~ ", " if sample.project_collaborators else "" }}Australian Tree of Life
+Infrastructure Capability, {{ sample.bpa_initiative }} Consortium
 
 ## **Abstract**
 
 We have assembled a {% if assembly.scaffold_count==assembly.contig_count %}contig-level{% else %}scaffold-level{% endif %} genome
 sequence for *{{ organism.scientific_name }}* ({{ organism.order_or_group ~ ": " if organism.order_or_group else "" }}{{
-organism.family|default("",true)}}). The assembly is comprised of {% if assembly.scaffold_count!=assembly.contig_count %}{{ make_pretty_number(assembly.scaffold_count) }} scaffolds{% else %}{{ make_pretty_number(assembly.contig_count) }} contigs{% endif %} and spans {{ round_bases_up(assembly.genome_length) }}. It has a {% if assembly.scaffold_count!=assembly.contig_count %}scaffold N50 of {{ round_bases_up(assembly.scaffold_n50) }}, a {% endif %}contig N50 of {{ round_bases_up(assembly.contig_n50) }} and a BUSCO completeness score of {{ assembly.busco_c }}%.
+organism.family|default("",true)}}). The assembly comprises {% if assembly.scaffold_count!=assembly.contig_count %}{{ make_pretty_number(assembly.scaffold_count) }} scaffolds{% else %}{{ make_pretty_number(assembly.contig_count) }} contigs{% endif %} and spans {{ round_bases_up(assembly.genome_length) }}. It has a {% if assembly.scaffold_count!=assembly.contig_count %}scaffold N50 of {{ round_bases_up(assembly.scaffold_n50) }}, a {% endif %}contig N50 of {{ round_bases_up(assembly.contig_n50) }} and a BUSCO completeness score of {{ assembly.busco_c }}%.
 
 # **Introduction**
 
@@ -21,7 +21,7 @@ organism.taxon_id|default("*ncbi taxon id*",true) }}).
 ## **Background**
 
 The genome of {{ "the " ~ organism.common_name ~ ", " if organism.common_name else "" }}*{{ organism.scientific_name }}*, was
-sequenced as part of the {{ sample.bpa_initiative }} project and has been assembled in collaboration with the Australian Tree of Life
+sequenced as part of the {{ sample.bpa_initiative }} Consortium and has been assembled in collaboration with the Australian Tree of Life
 Infrastructure Capability.
 
 # **Genome sequence report**
@@ -498,17 +498,13 @@ experiment.bpa_package_id }}{% include "supplementary_package_data_for_genome_no
 
 The genome sequence is released openly for reuse.
 
-## **Grant information**
+## **Acknowledgements and funding information**
 
-Samples were collected and sequence data generated as part of the
-Bioplatforms Australia-sponsored sequencing project {{ sample.bpa_initiative
-}}. The genome has been assembled and published as part of
-the Australian Tree of Life Informatics Capacity, provided by the
-Australian BioCommons.
+{% if sample.bpa_initiative=='Threatened Species Initiative' %}We would like to acknowledge the contribution of the {{ sample.bpa_initiative }} Consortium in the generation of data used in this publication. The Initiative is supported by funding from Bioplatforms Australia, enabled by the Commonwealth Government National Collaborative Research Infrastructure Strategy (NCRIS) in partnership with the University of Sydney; the Australian Government Department of Climate Change, Energy, the Envrionment and Water; WA Department of Biodiversity, Conservation & Attractions; and Amazon Web Services.{% else %}We would like to acknowledge the contribution of the {{ sample.bpa_initiative }} Consortium in the generation of data used in this publication. The Initiative is supported by funding from Bioplatforms Australia, enabled by the Commonwealth Government National Collaborative Research Infrastructure Strategy (NCRIS).{% endif %}
 
-## **Acknowledgements**
+The genome has been assembled and published as part of the Australian Tree of Life Informatics Capacity, a platform provided by the Australian BioCommons.
 
-The pipelines used to assemble and publish this genome sequence have been adapted from the original digital infrastructure developed as part of the Darwin Tree of Life project (Darwin Tree of Life Project Consortium, 2022). The generation of this sequence report has leveraged assets from the Tree of Life Genome Note pipeline (Babirye *et al.*, 2025).
+Sample collection and preparation were supported by the individual project partners. The pipelines used to assemble and publish the genome sequence have been adapted from the original digital infrastructure developed as part of the Darwin Tree of Life project (Darwin Tree of Life Project Consortium, 2022). The generation of this sequence report has leveraged assets from the Tree of Life Genome Note pipeline (Babirye *et al.*, 2025).
 
 # **References**
 
