@@ -146,7 +146,8 @@ Date\
  {{ sample.collection_date }}
 
 Location\
- Locality: {{ sample.region_and_locality }}\
+ Locality: {{ sample.region_and_locality }}\{% if sample.region_and_locality!=sample.state_or_region %}
+ State/region: {{ sample.state_or_region }}\{% else %}{% endif %}
  Country/ocean: {{ sample.country_or_sea }}
 
 Traditional place name\
