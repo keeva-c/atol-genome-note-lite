@@ -126,10 +126,10 @@ TOLID\
  {{ organism.tolid }}
 
 Specimen identifier\
- {{ sample.specimen_voucher }}
+ {{ sample.specimen_id }}
 
-Institution\
- {{ sample.voucher_institution }}
+Specimen identifier defined by\
+ {{ sample.specimen_id_description }}
 
 Sex\
  {{ sample.sex }}
