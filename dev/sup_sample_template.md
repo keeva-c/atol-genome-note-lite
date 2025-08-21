@@ -1,16 +1,13 @@
 **Sample information**
 
-Data type generated\
- {{ experiment.library_strategy }}
+BioSample accession\
+ {{ sample.biosample_accession }}
 
 Scientific name\
  *{{ organism.scientific_name }}* 
 
 TOLID\
  {{ organism.tolid }}
-
-BioSample accession\
- {{ sample.biosample_accession }}
 
 Specimen identifier\
  {{ sample.specimen_voucher }}

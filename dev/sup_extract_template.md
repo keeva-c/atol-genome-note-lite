@@ -1,6 +1,12 @@
 Data type generated\
  {{ experiment.library_strategy }}
 
+BioSample accession\
+ {{ sample.biosample_accession }}
+
+Library identifier\
+ {{ experiment.bpa_library_id }}
+
 Sample tissue\
  {{ sample.organism_part}}
 

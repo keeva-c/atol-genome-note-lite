@@ -3,12 +3,12 @@ from jinja2 import Template, Environment, FileSystemLoader, Undefined
 
 print("Starting script")
 
-#setting the global default undefined value
+# setting the global default undefined value
 class undefined_tokens(Undefined):
     def __str__(self):
         return "*not provided*"
 
-#functions to make things in the template pretty
+# functions to make things in the template pretty
 def make_pretty_number(ugly_number):
     if float(ugly_number) > 1_000:
         return "{:,}".format(int(ugly_number))
@@ -32,9 +32,9 @@ def round_bases_up(base_pairs):
         return base_pairs + " bp"
 
 # path_to_template = args.template
-path_to_sample_metadata = "dev/sample_WGS.json"
-path_to_WGS_supplement_metadata = None
-path_to_hic_supplement_metadata = None
+path_to_sample_metadata = "dev/test_WGS_1.json"
+path_to_WGS_supplement_metadata = "dev/test_WGS_2.json"
+path_to_hic_supplement_metadata = "dev/test_hic.json"
 path_to_sample_supplement_output = "dev/supplementary_sample_data_for_genome_note.md"
 path_to_extract_supplement_output = "dev/supplementary_extract_data_for_genome_note.md"
 path_to_seq_supplement_output = "dev/supplementary_seq_data_for_genome_note.md"
@@ -44,11 +44,25 @@ path_to_genome_note_output = "results/genome_note_lite.md"
 # setting the environment for the genome note templates
 env = Environment(loader=FileSystemLoader("dev"),undefined=undefined_tokens)
 
-#check whether hi-c metadata are provided
+# check whether hi-c metadata are provided
 if path_to_hic_supplement_metadata is not None:
 
+    # find the sample IDs for WGS and Hi-C packages
+    with open(path_to_sample_metadata, "rt") as f:
+        sample_wgs_metadata = json.load(f)
+        sample_wgs_sample_metadata = sample_wgs_metadata['sample']
+        sample_wgs_name = sample_wgs_sample_metadata['bpa_sample_id']
+
+    with open(path_to_hic_supplement_metadata, "rt") as f:
+        sample_hic_metadata = json.load(f)
+        sample_hic_sample_metadata = sample_hic_metadata['sample']
+        sample_hic_name = sample_hic_sample_metadata['bpa_sample_id']
+
     # read the supplementary templates
-    sup_samp_template = env.get_template("sup_sample_template.md")
+    # only read supplementary sample templates if the WGS and Hi-C packages are derived from different samples
+    if sample_wgs_name != sample_hic_name:
+        sup_samp_template = env.get_template("sup_sample_template.md")
+
     sup_ext_template = env.get_template("sup_extract_template.md")
     sup_seq_template = env.get_template("sup_sequencing_template.md")
     sup_package_template = env.get_template("sup_bpa_package_template.md")
@@ -59,13 +73,17 @@ if path_to_hic_supplement_metadata is not None:
         supplement_metadata = json.load(f)
 
     # render the supplementary templates
-    sup_sample_render = sup_samp_template.render(supplement_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
+    # only render the supplementary sample templates if the WGS and Hi-C packages are derived from different samples
+    if sample_wgs_name != sample_hic_name:
+        sup_sample_render = sup_samp_template.render(supplement_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
+        print(f"Writing Hi-C supplementary output to {path_to_sample_supplement_output}")
+        with open(path_to_sample_supplement_output, "wt", encoding="utf-8") as f:
+            f.write(sup_sample_render)
+    
     sup_ext_render = sup_ext_template.render(supplement_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
     sup_seq_render = sup_seq_template.render(supplement_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
     sup_package_render = sup_package_template.render(supplement_metadata)
-    print(f"Writing Hi-C supplementary output to {path_to_sample_supplement_output}")
-    with open(path_to_sample_supplement_output, "wt", encoding="utf-8") as f:
-        f.write(sup_sample_render)
+
     print(f"Writing Hi-C supplementary output to {path_to_extract_supplement_output}")
     with open(path_to_extract_supplement_output, "wt", encoding="utf-8") as f:
         f.write(sup_ext_render)
@@ -79,24 +97,31 @@ if path_to_hic_supplement_metadata is not None:
 else:
     print("No Hi-C data provided; genome note lite script running with WGS data only")
 
-#check whether supplementary wgs metadata are provided
+# check whether supplementary wgs metadata are provided
 if path_to_WGS_supplement_metadata is not None:
 
-    #find the sample IDs for WGS and supplementary WGS packages
+    # find the sample and library IDs for WGS and supplementary WGS packages
     with open(path_to_sample_metadata, "rt") as f:
         sample_1_metadata = json.load(f)
         sample_1_sample_metadata = sample_1_metadata['sample']
-        sample_1_name = sample_1_sample_metadata['sample_name']
+        sample_1_name = sample_1_sample_metadata['bpa_sample_id']
+        sample_1_experiment_metadata = sample_1_metadata['experiment']
+        sample_1_library = sample_1_experiment_metadata['bpa_library_id']
 
     with open(path_to_WGS_supplement_metadata, "rt") as f:
         sample_2_metadata = json.load(f)
         sample_2_sample_metadata = sample_2_metadata['sample']
-        sample_2_name = sample_2_sample_metadata['sample_name']
+        sample_2_name = sample_2_sample_metadata['bpa_sample_id']
+        sample_2_experiment_metadata = sample_2_metadata['experiment']
+        sample_2_library = sample_2_experiment_metadata['bpa_library_id']
 
     # read the supplementary templates
-    # only read supplementary sample and extraction templates if the WGS packages are derived from different samples
+    # only read supplementary sample templates if the WGS packages are derived from different samples
     if sample_1_name != sample_2_name:
         sup_samp_template = env.get_template("sup_sample_template.md")
+
+    # only read supplementary extract templates if the WGS packages are derived from different libraries
+    if sample_1_library != sample_2_library:
         sup_ext_template = env.get_template("sup_extract_template.md")
     
     sup_seq_template = env.get_template("sup_sequencing_template.md")
@@ -108,7 +133,7 @@ if path_to_WGS_supplement_metadata is not None:
         WGS_supplement_metadata = json.load(f)
 
     # render the supplementary templates
-    # only render the supplementary sample and extraction templates if the WGS packages are derived from different samples
+    # only render the supplementary sample templates if the WGS packages are derived from different samples
     if sample_1_name != sample_2_name:
         sup_sample_render = sup_samp_template.render(WGS_supplement_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
         print(f"Writing WGS supplementary output to {path_to_sample_supplement_output}")
@@ -118,6 +143,8 @@ if path_to_WGS_supplement_metadata is not None:
         with open(path_to_sample_supplement_output, "wt", encoding="utf-8") as f:
             f.write(combined_sample_sup)
         
+    # only render the supplementary extraction templates if the WGS packages are derived from different libraries
+    if sample_1_library != sample_2_library:
         sup_ext_render = sup_ext_template.render(WGS_supplement_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
         print(f"Writing WGS supplementary output to {path_to_extract_supplement_output}")
         with open(path_to_extract_supplement_output, "rt", encoding="utf-8") as f:
@@ -157,3 +184,14 @@ with open(path_to_sample_metadata, "rt") as f:
 print(f"Combining and writing output to {path_to_genome_note_output}")
 with open(path_to_genome_note_output, "wt", encoding="utf-8") as f:
     f.write(template.render(sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal))
+
+#wipe supplementary markdown files
+print("Wiping supplementary helper files and ending script")
+with open(path_to_sample_supplement_output, "wt") as f:
+    f.close()
+with open(path_to_extract_supplement_output, "wt") as f:
+    f.close()
+with open(path_to_seq_supplement_output, "wt") as f:
+    f.close()
+with open(path_to_bpa_package_supplement_output, "wt") as f:
+    f.close()

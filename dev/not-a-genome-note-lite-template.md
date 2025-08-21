@@ -116,17 +116,14 @@ sequencing data.
 
 **Sample information**
 
-Data type generated\
- {{ experiment.library_strategy }}
+BioSample accession\
+ {{ sample.biosample_accession }}
 
 Scientific name\
  *{{ organism.scientific_name }}* 
 
 TOLID\
  {{ organism.tolid }}
-
-BioSample accession\
- {{ sample.biosample_accession }}
 
 Specimen identifier\
  {{ sample.specimen_voucher }}
@@ -189,6 +186,12 @@ extracted for sequencing.
 Data type generated\
  {{ experiment.library_strategy }}
 
+BioSample accession\
+ {{ sample.biosample_accession }}
+
+Library identifier\
+ {{ experiment.bpa_library_id }}
+
 Sample tissue\
  {{ sample.organism_part}}
 
@@ -209,6 +212,12 @@ Table 4: Methodological information about sequencing runs.
 
 Data type generated\
  {{ experiment.library_strategy }}
+
+BioSample accession\
+ {{ sample.biosample_accession }}
+
+Library identifier\
+ {{ experiment.bpa_library_id }}
 
 Run accession\
  {{ runs.sra_run_accession }}
