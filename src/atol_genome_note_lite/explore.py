@@ -3,6 +3,57 @@ from jinja2 import Template, Environment, FileSystemLoader, Undefined
 
 print("Starting script")
 
+# path_to_template = args.template
+path_to_sample_metadata = "dev/P_vitticeps/wgs_sample_manufactured.json"
+path_to_WGS_supplement_metadata = None
+path_to_hic_supplement_metadata = "dev/P_vitticeps/hic_sample.json"
+path_to_sample_supplement_output = "dev/supplementary_sample_data_for_genome_note.md"
+path_to_extract_supplement_output = "dev/supplementary_extract_data_for_genome_note.md"
+path_to_seq_supplement_output = "dev/supplementary_seq_data_for_genome_note.md"
+path_to_bpa_package_supplement_output = "dev/supplementary_package_data_for_genome_note.md"
+path_to_genome_note_output = "results/genome_note_lite.md"
+
+# updating metadata input to remove metadata containing empty strings
+def overwrite_empty_strings(metadata):
+    output_dict = {}
+    for dict_name, key_value in metadata.items():
+        updated_metadata = {}
+        for key, value in key_value.items():
+            if value == "" or value is None:
+                updated_metadata = updated_metadata
+            else:
+                updated_metadata[key] = value
+        output_dict[dict_name] = updated_metadata
+    return output_dict
+
+print("Preprocessing metadata input")
+
+with open(path_to_sample_metadata, 'r') as f:
+    unprocessed_sample_metadata = json.load(f)
+
+processed_sample_metadata = overwrite_empty_strings(unprocessed_sample_metadata)
+
+with open(path_to_sample_metadata, 'w') as f:
+    json.dump(processed_sample_metadata, f)
+
+if path_to_WGS_supplement_metadata is not None:
+    with open(path_to_WGS_supplement_metadata, 'r') as f:
+        unprocessed_wgs_sup_metadata = json.load(f)
+
+    processed_wgs_sup_metadata = overwrite_empty_strings(unprocessed_wgs_sup_metadata)
+
+    with open(path_to_WGS_supplement_metadata, 'w') as f:
+        json.dump(processed_wgs_sup_metadata, f)
+
+if path_to_hic_supplement_metadata is not None:
+    with open(path_to_hic_supplement_metadata, 'r') as f:
+        unprocessed_hic_sup_metadata = json.load(f)
+
+    processed_hic_sup_metadata = overwrite_empty_strings(unprocessed_hic_sup_metadata)
+
+    with open(path_to_hic_supplement_metadata, 'w') as f:
+        json.dump(processed_hic_sup_metadata, f)
+
 # setting the global default undefined value
 class undefined_tokens(Undefined):
     def __str__(self):
@@ -30,16 +81,6 @@ def round_bases_up(base_pairs):
         return "{:.2f} kb".format(int(base_pairs) / 1_000)
     else:
         return base_pairs + " bp"
-
-# path_to_template = args.template
-path_to_sample_metadata = "dev/test_WGS_1.json"
-path_to_WGS_supplement_metadata = "dev/test_WGS_2.json"
-path_to_hic_supplement_metadata = "dev/test_hic.json"
-path_to_sample_supplement_output = "dev/supplementary_sample_data_for_genome_note.md"
-path_to_extract_supplement_output = "dev/supplementary_extract_data_for_genome_note.md"
-path_to_seq_supplement_output = "dev/supplementary_seq_data_for_genome_note.md"
-path_to_bpa_package_supplement_output = "dev/supplementary_package_data_for_genome_note.md"
-path_to_genome_note_output = "results/genome_note_lite.md"
 
 # setting the environment for the genome note templates
 env = Environment(loader=FileSystemLoader("dev"),undefined=undefined_tokens)
