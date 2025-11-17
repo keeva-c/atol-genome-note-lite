@@ -4,9 +4,9 @@ from jinja2 import Template, Environment, FileSystemLoader, Undefined
 print("Starting script")
 
 # path_to_template = args.template
-path_to_sample_metadata = "dev/P_vitticeps/wgs_sample_manufactured.json"
-path_to_WGS_supplement_metadata = None
-path_to_hic_supplement_metadata = "dev/P_vitticeps/hic_sample.json"
+path_to_sample_metadata = "dev/sample_WGS.json"
+path_to_WGS_supplement_metadata = None #set to None if n/a
+path_to_hic_supplement_metadata = None #set to None if n/a
 path_to_sample_supplement_output = "dev/supplementary_sample_data_for_genome_note.md"
 path_to_extract_supplement_output = "dev/supplementary_extract_data_for_genome_note.md"
 path_to_seq_supplement_output = "dev/supplementary_seq_data_for_genome_note.md"
@@ -26,12 +26,43 @@ def overwrite_empty_strings(metadata):
         output_dict[dict_name] = updated_metadata
     return output_dict
 
+# add standardised bpa_initiative attribute based on bioplatforms_project_id metadata
+def map_bpa_initiative(metadata):
+    for dict_name, key_value in metadata.items():
+        if dict_name == 'sample':
+            if key_value['bioplatforms_project_id'] == 'bpa-ipm':
+                key_value['bpa_initiative'] = 'Integrated Pest Management Omics Initiative'
+            elif key_value['bioplatforms_project_id'] == 'threatened-species':
+                key_value['bpa_initiative'] = 'Threatened Species Initiative'
+            elif key_value['bioplatforms_project_id'] == 'aus-fish':
+                key_value['bpa_initiative'] = 'Australian Fish Genomics Initiative'
+            elif key_value['bioplatforms_project_id'] == 'plant-pathogen':
+                key_value['bpa_initiative'] = 'Plant Pathogen Omics Initiative'
+            elif key_value['bioplatforms_project_id'] == 'aus-avian':
+                key_value['bpa_initiative'] = 'Australian Avian Genomics Initiative'
+            elif key_value['bioplatforms_project_id'] == 'fungi':
+                key_value['bpa_initiative'] = 'Australian Functional Fungi Initiative'
+            elif key_value['bioplatforms_project_id'] == 'cipps':
+                key_value['bpa_initiative'] = 'ARC for Innovations in Peptide and Protein Science (CIPPS)'
+            elif key_value['bioplatforms_project_id'] == 'ausarg':
+                key_value['bpa_initiative'] = 'Australian Amphibian and Reptile Genomics Initiative'
+            elif key_value['bioplatforms_project_id'] == 'forest-resilience':
+                key_value['bpa_initiative'] = 'Genomics for Forest Resilience Initiative'
+            elif key_value['bioplatforms_project_id'] == 'grasslands':
+                key_value['bpa_initiative'] = 'Australian Grasslands Initiative'
+            elif key_value['bioplatforms_project_id'] == 'bpa-plants':
+                key_value['bpa_initiative'] = 'Genomics for Australian Plants'
+            else:
+                key_value['bpa_initiative'] = None
+    return metadata
+
 print("Preprocessing metadata input")
 
 with open(path_to_sample_metadata, 'r') as f:
     unprocessed_sample_metadata = json.load(f)
 
-processed_sample_metadata = overwrite_empty_strings(unprocessed_sample_metadata)
+sample_metadata_w_initiative = map_bpa_initiative(unprocessed_sample_metadata)
+processed_sample_metadata = overwrite_empty_strings(sample_metadata_w_initiative)
 
 with open(path_to_sample_metadata, 'w') as f:
     json.dump(processed_sample_metadata, f)
@@ -40,7 +71,8 @@ if path_to_WGS_supplement_metadata is not None:
     with open(path_to_WGS_supplement_metadata, 'r') as f:
         unprocessed_wgs_sup_metadata = json.load(f)
 
-    processed_wgs_sup_metadata = overwrite_empty_strings(unprocessed_wgs_sup_metadata)
+    wgs_sup_metadata_w_initiative = map_bpa_initiative(unprocessed_wgs_sup_metadata)
+    processed_wgs_sup_metadata = overwrite_empty_strings(wgs_sup_metadata_w_initiative)
 
     with open(path_to_WGS_supplement_metadata, 'w') as f:
         json.dump(processed_wgs_sup_metadata, f)
@@ -49,7 +81,8 @@ if path_to_hic_supplement_metadata is not None:
     with open(path_to_hic_supplement_metadata, 'r') as f:
         unprocessed_hic_sup_metadata = json.load(f)
 
-    processed_hic_sup_metadata = overwrite_empty_strings(unprocessed_hic_sup_metadata)
+    hic_sup_metadata_w_initiative = map_bpa_initiative(unprocessed_hic_sup_metadata)
+    processed_hic_sup_metadata = overwrite_empty_strings(hic_sup_metadata_w_initiative)
 
     with open(path_to_hic_supplement_metadata, 'w') as f:
         json.dump(processed_hic_sup_metadata, f)

@@ -3,7 +3,7 @@
 ## **Authors**
 
 {{ experiment.data_owner ~ ", " if experiment.data_owner else "" }}{{ sample.project_collaborators ~ ", " if sample.project_collaborators else "" }}Australian Tree of Life
-Infrastructure Capability, {{ sample.bpa_initiative }} Consortium
+Infrastructure Capability, {{ sample.bpa_initiative }}
 
 ## **Abstract**
 
@@ -21,7 +21,7 @@ organism.taxon_id|default("*ncbi taxon id*",true) }}).
 ## **Background**
 
 The genome of {{ "the " ~ organism.common_name ~ ", " if organism.common_name else "" }}*{{ organism.scientific_name }}*, was
-sequenced as part of the {{ sample.bpa_initiative }} Consortium and has been assembled in collaboration with the Australian Tree of Life
+sequenced as part of the {{ sample.bpa_initiative }} and has been assembled in collaboration with the Australian Tree of Life
 Infrastructure Capability.
 
 # **Genome sequence report**
@@ -123,7 +123,7 @@ Scientific name\
  *{{ organism.scientific_name }}* 
 
 TOLID\
- {{ organism.tolid }}
+ {{ sample.tolid }}
 
 Specimen identifier\
  {{ sample.specimen_id }}
@@ -510,7 +510,7 @@ The genome sequence is released openly for reuse.
 
 ## **Acknowledgements and funding information**
 
-{% if sample.bpa_initiative=='Threatened Species Initiative' %}We would like to acknowledge the contribution of the {{ sample.bpa_initiative }} Consortium in the generation of data used in this publication. The Initiative is supported by funding from Bioplatforms Australia, enabled by the Commonwealth Government National Collaborative Research Infrastructure Strategy (NCRIS) in partnership with the University of Sydney; the Australian Government Department of Climate Change, Energy, the Environment and Water; WA Department of Biodiversity, Conservation & Attractions; and Amazon Web Services.{% else %}We would like to acknowledge the contribution of the {{ sample.bpa_initiative }} Consortium in the generation of data used in this publication. The Initiative is supported by funding from Bioplatforms Australia, enabled by the Commonwealth Government National Collaborative Research Infrastructure Strategy (NCRIS).{% endif %}
+{% if sample.bpa_initiative=='Threatened Species Initiative' %}We would like to acknowledge the contribution of the {{ sample.bpa_initiative }} in the generation of data used in this publication. The Initiative is supported by funding from Bioplatforms Australia, enabled by the Commonwealth Government National Collaborative Research Infrastructure Strategy (NCRIS) in partnership with the University of Sydney; the Australian Government Department of Climate Change, Energy, the Environment and Water; WA Department of Biodiversity, Conservation & Attractions; and Amazon Web Services.{% else %}We would like to acknowledge the contribution of the {{ sample.bpa_initiative }} in the generation of data used in this publication. The Initiative is supported by funding from Bioplatforms Australia, enabled by the Commonwealth Government National Collaborative Research Infrastructure Strategy (NCRIS).{% endif %}
 
 The genome has been assembled and published as part of the Australian Tree of Life Informatics Capacity, a platform provided by the Australian BioCommons.
 

@@ -7,7 +7,7 @@ Scientific name\
  *{{ organism.scientific_name }}* 
 
 TOLID\
- {{ organism.tolid }}
+ {{ sample.tolid }}
 
 Specimen identifier\
  {{ sample.specimen_id }}
