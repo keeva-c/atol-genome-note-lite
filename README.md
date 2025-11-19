@@ -36,9 +36,7 @@ Assembly and annotation information are only taken from the file specified in `p
 
 ### Assembly metadata and metrics
 
-The parse scripts under `src/atol_genome_note_lite/` can be used to extract and format the relevant *Assembly* metadata and metrics from the output files generated from running the [sanger-tol/genomeassembly](https://pipelines.tol.sanger.ac.uk/genomeassembly) pipeline. The parse scripts have been combined in `combined_parser.py`. File paths to the relevant assembly outputs need to be set as variables inside the script. The expected file extensions are specified in the comments. The CSV assets needed to map the data from the assembly pipeline output files to the AToL schema JSON are in the `dev/` directory.
-
-Note that the current output of the `combined_parser.py` requires some manual cleaning up before inserting into the sample_metadata JSON.
+The parse scripts under `src/atol_genome_note_lite/` can be used to extract and format the relevant *Assembly* metadata and metrics from the output files generated from running the [sanger-tol/genomeassembly](https://pipelines.tol.sanger.ac.uk/genomeassembly) pipeline. The parse scripts have been combined in [`combined_parser.py`](https://github.com/keeva-c/atol-genome-note-lite/blob/main/src/atol_genome_note_lite/combined_parser.py). File paths to the relevant assembly outputs need to be set as variables inside the script. The expected file extensions are specified in the comments. The CSV assets needed to map the data from the assembly pipeline output files to the AToL schema JSON are in the `dev/` directory.
 
 ## Output
 
