@@ -7,42 +7,42 @@ import yaml
 #set variables
 
 path_to_busco_field_mapping = "dev/busco_to_fields.csv"
-path_to_busco_file = #input: busco.json file
+path_to_busco_file =  #input: busco.json file
 busco_field_mapping_dict = {}
 busco_results = {}
 busco_output_dict = {}
 path_to_busco_output = "dev/assembly_busco_fields.json"
 
 path_to_kmer_field_mapping = "dev/kmer_to_fields.csv"
-path_to_kmer_file = #input: .completeness.stats file
+path_to_kmer_file =  #input: .completeness.stats file
 kmer_field_mapping_dict = {}
 kmer_values_dict = {}
 kmer_output_dict = {}
 path_to_kmer_output = "dev/assembly_kmer_fields.json"
 
 path_to_qv_field_mapping = "dev/qv_to_fields.csv"
-path_to_qv_file = #input: .qv file
+path_to_qv_file =  #input: .qv file
 qv_field_mapping_dict = {}
 qv_values_dict = {}
 qv_output_dict = {}
 path_to_qv_output = "dev/assembly_qv_fields.json"
 
 path_to_summary_field_mapping = "dev/summary_to_fields.csv"
-path_to_summary_file = #input: .assembly_summary file
+path_to_summary_file =  #input: .assembly_summary file
 sep = ": "
 summary_values_dict = {}
 summary_output_dict = {}
 summary_field_mapping_dict = {}
 path_to_summary_output = "dev/assembly_summary_fields.json"
 
-path_to_tools_file = #input: genomeassembly_software_versions.yml file
+path_to_tools_file =  #input: genomeassembly_software_versions.yml file
 workflow_version = {}
 assembly_wf_ver_key = 'sanger-tol/genomeassembly'
 path_to_tools_output = "dev/assembly_version_fields.json"
 
-contact_map_file_path = #input: FullMap.png file (if not applicable, set variable to None)
+contact_map_file_path =  #input: FullMap.png file (if not applicable, set variable to None)
 
-print('assembly:')
+json_assembly_object = {}
 
 #parse busco
 
@@ -64,12 +64,8 @@ with open(path_to_busco_file, "rt") as f:
 for metadata_field,busco_field_name in busco_field_mapping_dict.items():
     busco_output_dict[metadata_field] = busco_for_mapping[busco_field_name]
 
-#print json ouput
-print(json.dumps(busco_output_dict))
-
-#save output to json file
-with open(path_to_busco_output, "wt") as f:
-    json.dump(busco_output_dict, f)
+#add busco stats to json assembly object
+json_assembly_object.update(busco_output_dict)
 
 #parse kmer completeness
 
@@ -95,12 +91,8 @@ for kmer_row_index,metadata_field in kmer_field_mapping_dict.items():
     list_of_kmer_values = list(kmer_values_dict.values())
     kmer_output_dict[metadata_field] = list_of_kmer_values[int(kmer_row_index)]
 
-#print json output
-print(json.dumps(kmer_output_dict))
-
-#save output to json file
-with open(path_to_kmer_output, "wt") as f:
-    json.dump(kmer_output_dict, f)
+#add kmer values to json assembly object
+json_assembly_object.update(kmer_output_dict)
 
 #parse qv scores
 
@@ -126,12 +118,8 @@ for metadata_field,qv_row_index in qv_field_mapping_dict.items():
     list_of_qv_values = list(qv_values_dict.values())
     qv_output_dict[metadata_field] = list_of_qv_values[int(qv_row_index)]
 
-#print json output
-print(json.dumps(qv_output_dict))
-
-#save output to json file
-with open(path_to_qv_output, "wt") as f:
-    json.dump(qv_output_dict, f)
+#add qv values to json assembly object
+json_assembly_object.update(qv_output_dict)
 
 #parse summary
 
@@ -153,12 +141,8 @@ with open(path_to_summary_file, "rt") as f:
 for metadata_field,summary_field_name in summary_field_mapping_dict.items():
     summary_output_dict[metadata_field] = summary_values_dict[summary_field_name]
 
-#print json output
-print(json.dumps(summary_output_dict))
-
-#write output to json file
-with open(path_to_summary_output, "wt") as f:
-    json.dump(summary_output_dict, f)
+#add assembly summary stats to json assembly object
+json_assembly_object.update(summary_output_dict)
 
 #parse tools
 
@@ -170,19 +154,14 @@ assembly_wf_ver = all_wf_versions[assembly_wf_ver_key] #extract value for assemb
 
 workflow_version['assembly_pipeline_ver'] = assembly_wf_ver #create dictionary mapping genome note field name to assembly workflow version
 
-#print json ouput
-print(json.dumps(workflow_version))
+#add workflow version to json assembly object
+json_assembly_object.update(workflow_version)
 
-#save output to json file
-with open(path_to_tools_output, "wt") as f:
-    json.dump(workflow_version, f)
+#map contact map path
+output_contact_map = {"contact_map_image_path": contact_map_file_path}
 
-#output contact map path
-print('{"contact_map_image_path":"',contact_map_file_path,'"}')
+#add contact map path to json assembly object
+json_assembly_object.update(output_contact_map)
 
-#print json output
-print(json.dumps(stats_output_dict))
-
-#write output to json file
-with open(path_to_stats_output, "wt") as f:
-    json.dump(stats_output_dict, f)
+#print json assembly object
+print('"assembly":', json.dumps(json_assembly_object))

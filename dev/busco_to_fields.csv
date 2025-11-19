@@ -1,4 +1,6 @@
 busco_field_name,metadata_field
 "one_line_summary",busco_string
 "Complete percentage",busco_c
+"Single copy percentage",busco_single
+"Multi copy percentage",busco_duplicated
 "name",busco_ref

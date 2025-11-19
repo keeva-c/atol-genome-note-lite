@@ -2,8 +2,7 @@
 
 ## **Authors**
 
-{{ experiment.data_owner ~ ", " if experiment.data_owner else "" }}{{ sample.project_collaborators ~ ", " if sample.project_collaborators else "" }}Australian Tree of Life
-Infrastructure Capability, {{ sample.bpa_initiative }}
+{{ experiment.data_owner ~ ", " if experiment.data_owner else "" }}{{ sample.project_collaborators ~ ", " if sample.project_collaborators else "" }}Australian Tree of Life Infrastructure Capability, {{ sample.bpa_initiative }}
 
 ## **Abstract**
 
@@ -11,488 +10,164 @@ We have assembled a {% if assembly.scaffold_count==assembly.contig_count %}conti
 sequence for *{{ organism.scientific_name }}* ({{ organism.order_or_group ~ ": " if organism.order_or_group else "" }}{{
 organism.family|default("",true)}}). The assembly comprises {% if assembly.scaffold_count!=assembly.contig_count %}{{ make_pretty_number(assembly.scaffold_count) }} scaffolds{% else %}{{ make_pretty_number(assembly.contig_count) }} contigs{% endif %} and spans {{ round_bases_up(assembly.genome_length) }}. It has a {% if assembly.scaffold_count!=assembly.contig_count %}scaffold N50 of {{ round_bases_up(assembly.scaffold_n50) }}, a {% endif %}contig N50 of {{ round_bases_up(assembly.contig_n50) }} and a BUSCO completeness score of {{ assembly.busco_c }}%.
 
-# **Introduction**
+## **Introduction**
 
-## **Species taxonomy**
+### **Species taxonomy**
 
-{{ organism.tax_string|default("*higher taxon classification*",true) }}; *{{ organism.scientific_name }}*{{ " " ~ organism.authority if organism.authority else "" }} (NCBI:txid{{
-organism.taxon_id|default("*ncbi taxon id*",true) }}).
+{{ organism.tax_string|default("*higher taxon classification*",true) }}; *{{ organism.scientific_name }}*{{ " " ~ organism.authority if organism.authority else "" }} (NCBI:txid{{ organism.taxon_id|default("*ncbi taxon id*",true) }}).
 
-## **Background**
+### **Background**
 
 The genome of {{ "the " ~ organism.common_name ~ ", " if organism.common_name else "" }}*{{ organism.scientific_name }}*, was
 sequenced as part of the {{ sample.bpa_initiative }} and has been assembled in collaboration with the Australian Tree of Life
 Infrastructure Capability.
 
-# **Genome sequence report**
+## **Genome sequence report**
 
-Details about the assembled genome sequence, including key assembly 
-metrics, are summarised in Table 1. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in Figure 1.{% endif %}
+Details about the assembled genome sequence, including key assembly metrics and target minimum standards set by the Earth Biogenome Project (EBP) (Earth BioGenome Project, 2024), are summarised in Table 1. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in Figure 1.{% endif %}
 
-Table 1: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ organism.scientific_name }}*.
+| **Assembly information** | | **EBP standard** |
+| --- | ---- | --- |
+| Assembly name | {{ assembly.assembly_name }} | |
+| Assembly accession | {{ assembly.assembly_accession }} | |
+| Alternate haplotype assembly accession | {{ assembly.alt_hap_accession }} | |
+| Span | {{ round_bases_up(assembly.genome_length) }} | |
+| Number of gaps | {{ make_pretty_number(assembly.gap_count) }} | |
+| Depth of coverage | {% if assembly.coverage %}{{ round_decimal(assembly.coverage) }}x{% else %}*not provided*{% endif %} | |
+| Number of contigs | {{ make_pretty_number(assembly.contig_count) }} | |
+| Contig N50 length | {{ round_bases_up(assembly.contig_n50) }} | > 1 Mb |
+| Longest contig | {{ round_bases_up(assembly.longest_contig) }} | {% if assembly.scaffold_count!=assembly.contig_count %}
+| Number of scaffolds | {{ make_pretty_number(assembly.scaffold_count) }} | |
+| Scaffold N50 length | {{ round_bases_up(assembly.scaffold_n50) }} | Chromosomal scale |
+| Longest scaffold | {{ round_bases_up(assembly.longest_scaffold) }} | {% endif %} | |
+| Consensus quality (QV) | Primary assembly: {{ assembly.primary_qv }} | > 40 |
+| | Alternate assembly: {{ assembly.alt_qv }} | |
+| | Combined: {{ assembly.combined_qv }} | |
+| *k*-mer completeness | Primary assembly: {{ assembly.primary_kmer }}% | > 90% |
+| | Alternate assembly: {{ assembly.alt_kmer }}% | |
+| | Combined: {{ assembly.combined_kmer }}% | |
+| Full BUSCO | {{ add_spaces(assembly.busco_string) }} |
+| Single copy BUSCO | {{ assembly.busco_single }}% | > 90% |
+| Duplicated BUSCO | {{ assembly.busco_duplicated }}% | < 5% |
+| BUSCO reference set | {{ assembly.busco_ref }} | |
+| Organelles | {% if assembly.mito_size %}Mitochondrial genome: {{ assembly.mito_size }}{% endif %}{% if assembly.plastid_size %} Plastid genome: {{ assembly.plastid_size }}{% endif %}{% if not assembly.mito_size and not assembly.plastid_size %}No organelles assembled{% endif %} | Complete single alleles |
+Table: Table 1: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ organism.scientific_name }}*.
 
-**Genome assembly** 
-
-Assembly name\
- {{ assembly.assembly_name }}
-
-Assembly accession\
- {{ assembly.assembly_accession }}
-
-Alternate haplotype assembly accession\
- {{ assembly.alt_hap_accession }}
-
-Span\
- {{ round_bases_up(assembly.genome_length) }} 
-
-Number of gaps\
- {{ make_pretty_number(assembly.gap_count) }}
-
-Depth of coverage\
- {% if assembly.coverage %}{{ round_decimal(assembly.coverage) }}x{% else %}*not provided*{% endif %}
-
-Number of contigs\
- {{ make_pretty_number(assembly.contig_count) }}
-
-Contig N50 length\
- {{ round_bases_up(assembly.contig_n50) }}
-
-Longest contig\
- {{ round_bases_up(assembly.longest_contig) }}
-{% if assembly.scaffold_count!=assembly.contig_count %}
-Number of scaffolds\
- {{ make_pretty_number(assembly.scaffold_count) }}
-
-Scaffold N50 length\
- {{ round_bases_up(assembly.scaffold_n50) }}
-
-Longest scaffold\
- {{ round_bases_up(assembly.longest_scaffold) }}
-{% endif %}
-**Assembly metrics\***
-
-Consensus quality (QV)\
- Primary assembly: {{ assembly.primary_qv }}\
- Alternate assembly: {{ assembly.alt_qv }}\
- Combined: {{ assembly.combined_qv }}\
- *benchmark: 50*
-
-*k*-mer completeness\
- Primary assembly: {{ assembly.primary_kmer }}%\
- Alternate assembly: {{ assembly.alt_kmer }}%\
- Combined: {{ assembly.combined_kmer }}%\
- *benchmark: 95%*
-
-BUSCO\
- {{ assembly.busco_string }}\
- *benchmark: C = 95%*
-
-BUSCO reference set\
- {{ assembly.busco_ref }}
-
-Organelles\
- {% if assembly.mito_size %}Mitochondrial genome: {{ assembly.mito_size }}\{% endif %}{% if assembly.plastid_size %}Plastid genome: {{ assembly.plastid_size }}\{% endif %}{% if not assembly.mito_size and not assembly.plastid_size %}No organelles assembled\{% endif %}
- *benchmark: complete single alleles*
-
-\* Assembly metric benchmarks are adapted from column VGP-2020 of "Table
-1: Proposed standards and metrics for defining genome assembly quality"
-from Rhie *et al.* (2021).
 {% if assembly.contact_map_image_path %}
-![image]({{ assembly.contact_map_image_path }})
-Figure 1: Hi-C contact map of the genome assembly, visualised using HiGlass.
-Chromosomes are shown in order of size from left to right and top to bottom.
+![Figure 1: Hi-C contact map of the genome assembly, visualised using HiGlass.
+Chromosomes are shown in order of size from left to right and top to bottom.]({{ assembly.contact_map_image_path }})
 {% endif %}
 
-# **Methods**
+## **Methods**
 
 Information relating to sample collection, nucleic acid extraction, and
 sequencing are provided in Tables 2, 3, and 4 respectively. An overview
 of the computational pipelines and workflows used in genome assembly are given in Table 5. Individual tools are listed in Table 6.
 
-## **Sample acquisition**
+### **Sample acquisition**
 
-Table 2: Sample information about the material used to generate
+| **Sample information** | |
+| --- | ----- |
+| **Sample: {{ sample.biosample_accession }}** | |
+| BioSample accession | {{ sample.biosample_accession }} |
+| Scientific name | *{{ organism.scientific_name }}* |
+| TOLID | {{ sample.tolid }} |
+| Specimen identifier | {{ sample.specimen_id }} |
+| Specimen identifier defined by | {{ sample.specimen_id_description }} |
+| Sex | {{ sample.sex }} |
+| Lifestage | {{ sample.lifestage }} |
+| Date | {{ sample.collection_date }}|
+| Locality | {{ sample.region_and_locality }}{% if sample.region_and_locality!=sample.state_or_region %} |
+| State/region | {{ sample.state_or_region }}{% else %}{% endif %} |
+| Country/ocean | {{ sample.country_or_sea }} |
+| Traditional place name | {{ sample.indigenous_location }} |
+| Latitude | {{ sample.latitude }} |
+|  Longitude | {{ sample.longitude }} |
+| Collected by | {{ sample.collected_by }} |
+| Collection method | {{ sample.collection_method }} |
+| Collection permit | {{ sample.collection_permit }} |
+| Identified by | {{ sample.identified_by }} |
+| Preservation method | {{ sample.preservation_method }} |
+| Preservation temperature | {{ sample.preservation_temperature }} | 
+{% include "supplementary_sample_data_for_genome_note.md" ignore missing %}
+Table: Table 2: Sample information about the material used to generate
 sequencing data.
 
-**Sample information**
+### **Nucleic acid extraction**
 
-BioSample accession\
- {{ sample.biosample_accession }}
-
-Scientific name\
- *{{ organism.scientific_name }}* 
-
-TOLID\
- {{ sample.tolid }}
-
-Specimen identifier\
- {{ sample.specimen_id }}
-
-Specimen identifier defined by\
- {{ sample.specimen_id_description }}
-
-Sex\
- {{ sample.sex }}
-
-Lifestage\
- {{ sample.lifestage }}
-
-**Collection information**  
-
-Date\
- {{ sample.collection_date }}
-
-Location\
- Locality: {{ sample.region_and_locality }}\{% if sample.region_and_locality!=sample.state_or_region %}
- State/region: {{ sample.state_or_region }}\{% else %}{% endif %}
- Country/ocean: {{ sample.country_or_sea }}
-
-Traditional place name\
- {{ sample.indigenous_location }}
-
-Location coordinates\
- Latitude: {{ sample.latitude }}\
- Longitude: {{ sample.longitude }}
-
-Collected by\
- {{ sample.collected_by }}
-
-Collection method\
- {{ sample.collection_method }}
-
-Collection permit\
- {{ sample.collection_permit }}
-
-**Identification information**
-
-Identified by\
- {{ sample.identified_by }}
-
-**Preservation information**
-
-Preservation method\
- {{ sample.preservation_method }}
-
-Preservation temperature\
- {{ sample.preservation_temperature }}
-
-{% include "supplementary_sample_data_for_genome_note.md" ignore missing %}
-
-## **Nucleic acid extraction**
-
-Table 3: Methodological information about nucleic acid material
+| **Extraction information** | |
+| --- | ----- |
+| **Library: {{ experiment.bpa_library_id }}** | |
+| Data type generated | {{ experiment.library_strategy }} |
+| BioSample accession | {{ sample.biosample_accession }} |
+| Sample tissue | {{ sample.organism_part}} |
+| Nucleic acid extraction method | {{ sample.extraction_method }} |
+| Nucleic acid treatment | {{ sample.nucleic_acid_treatment }} |
+| Extract concentration (ng/ul) | {{ sample.nucleic_acid_conc }} |
+{% include "supplementary_extract_data_for_genome_note.md" ignore missing %}.
+Table: Table 3: Methodological information about nucleic acid material
 extracted for sequencing.
 
-Data type generated\
- {{ experiment.library_strategy }}
+### **Sequencing**
 
-BioSample accession\
- {{ sample.biosample_accession }}
-
-Library identifier\
- {{ experiment.bpa_library_id }}
-
-Sample tissue\
- {{ sample.organism_part}}
-
-Nucleic acid extraction method\
- {{ sample.extraction_method }}
-
-Nucleic acid treatment\
-{{ sample.nucleic_acid_treatment }}
-
-Extract concentration (ng/ul)\
- {{ sample.nucleic_acid_conc }}
-
-{% include "supplementary_extract_data_for_genome_note.md" ignore missing %}
-
-## **Sequencing**
-
-Table 4: Methodological information about sequencing runs.
-
-Data type generated\
- {{ experiment.library_strategy }}
-
-BioSample accession\
- {{ sample.biosample_accession }}
-
-Library identifier\
- {{ experiment.bpa_library_id }}
-
-Run accession\
- {{ runs.sra_run_accession }}
-
-Read count\
- {% if runs.run_read_count %}{{ make_pretty_number(runs.run_read_count) }}{% else %}*not provided*{% endif %}
-
-Base count\
- {% if runs.run_base_count %}{{ round_bases_up(runs.run_base_count) }}{% else %}*not provided*{% endif %}
-
-Sequencing instrument\
- {{ experiment.instrument_model }}
-
-Sequencing chemistry\
- {{ experiment.sequencing_kit }}
-
-Sequencing facility\
- {{ experiment.GAL }}
-
-Library preparation method\
- {{ experiment.library_construction_protocol }}
-
-Library selection\
- {{ experiment.library_selection }}
-
-Library layout\
- {{ experiment.library_layout }}
-
-Library insert or fragment size\
- {{ experiment.insert_size }}
-
-Flowcell type\
- {{ experiment.flowcell_type }}
-
-Base caller model\
- {{ experiment.base_caller_model }}
-
+| **Sequencing information** | |
+| --- | ----- |
+| **Run: {{ runs.sra_run_accession }}** | |
+| Data type generated | {{ experiment.library_strategy }} |
+| BioSample accession | {{ sample.biosample_accession }} |
+| Library identifier | {{ experiment.bpa_library_id }} |
+| Run accession | {{ runs.sra_run_accession }} |
+| Read count | {% if runs.run_read_count %}{{ make_pretty_number(runs.run_read_count) }}{% else %}*not provided*{% endif %} |
+| Base count | {% if runs.run_base_count %}{{ round_bases_up(runs.run_base_count) }}{% else %}*not provided*{% endif %} |
+| Sequencing instrument | {{ experiment.instrument_model }} |
+| Sequencing chemistry | {{ experiment.sequencing_kit }} |
+| Sequencing facility | {{ experiment.GAL }} |
+| Library preparation method | {{ experiment.library_construction_protocol }} |
+| Library selection | {{ experiment.library_selection }} |
+| Library layout | {{ experiment.library_layout }} |
+| Library insert or fragment size | {{ experiment.insert_size }} |
+| Flowcell type | {{ experiment.flowcell_type }} |
+| Base caller model | {{ experiment.base_caller_model }} |
 {% include "supplementary_seq_data_for_genome_note.md" ignore missing %}
-
-## **Genome assembly**
-
-Table 5: Pipelines and workflows used in genome assembly.
-
-**Genome assembly**
-
-Pipeline:
- sanger-tol/genomeassembly
-
-Version:
- {{ assembly.assembly_pipeline_ver }}
-
-Source:
- [https://github.com/TomHarrop/atol_test_assembly](https://github.com/TomHarrop/atol_test_assembly)
-
-Adapted from:
- [https://github.com/sanger-tol/genomeassembly](https://github.com/sanger-tol/genomeassembly)
-
-
-Table 6: Resources and software tools used in assembly pipelines.
-
-Tool:
- BEDTools
-
-Source: 
- [https://github.com/arq5x/bedtools2](https://github.com/arq5x/bedtools2)
-
-Reference:
- Quinlan and Hall, 2010
-
-Tool:
- BUSCO
-
-Source:
- [https://gitlab.com/ezlab/busco](https://gitlab.com/ezlab/busco)
-
-Reference:
- Manni *et al.*, 2021
-
-Tool:
- bwa-mem2
-
-Source:
- [https://github.com/bwa-mem2/bwa-mem2](https://github.com/bwa-mem2/bwa-mem2)
-
-Reference:
- Vasimuddin *et al.*, 2019
-
-Tool:
- Cooler
-
-Source:
- [https://github.com/open2c/cooler](https://github.com/open2c/cooler)
-
-Reference:
- Abdennur and Mirny, 2020
-
-Tool:
- FastK
-
-Source:
- [https://github.com/thegenemyers/FASTK](https://github.com/thegenemyers/FASTK)
-
-Reference:
- NA
-
-Tool:
- gawk
-
-Source:
- [https://www.gnu.org/software/gawk/](https://www.gnu.org/software/gawk/)
-
-Reference:
- NA
-
-Tool:
- GeneScopeFK
-
-Source:
- [https://github.com/thegenemyers/GENESCOPE.FK](https://github.com/thegenemyers/GENESCOPE.FK)
-
-Reference:
- NA
-
-Tool:
- Gfastats
-
-Source:
- [https://github.com/vgl-hub/gfastats](https://github.com/vgl-hub/gfastats)
-
-Reference:
- Formenti *et al.*, 2022
-
-Tool:
- Hifiasm
-
-Source:
- [https://github.com/chhylp123/hifiasm](https://github.com/chhylp123/hifiasm)
-
-Reference:
- Cheng *et al.*. 2021
-
-Tool:
- Juicer
-
-Source:
- [https://github.com/aidenlab/juicer](https://github.com/aidenlab/juicer)
-
-Reference:
- Durand *et al.*, 2016
-
-Tool:
- JuicerTools
-
-Source:
- [https://github.com/aidenlab/JuicerTools](https://github.com/aidenlab/JuicerTools)
-
-Reference:
- Durand *et al.*, 2016 
-
-Tool:
- Merqury.FK
-
-Source:
- [https://github.com/thegenemyers/MERQURY.FK](https://github.com/thegenemyers/MERQURY.FK)
-
-Reference:
- Rhie *et al.*, 2020
-
-Tool:
- Minimap2
-
-Source:
- [https://github.com/RemiAllio/MitoFinder](https://github.com/RemiAllio/MitoFinder)
-
-Reference:
- Li, 2018
-
-Tool:
- MitoFinder
-
-Source:
- [https://github.com/RemiAllio/MitoFinder](https://github.com/RemiAllio/MitoFinder)
-
-Reference:
- Allio *et al.*, 2020
-
-Tool:
- MitoHiFi
-
-Source:
- [https://github.com/marcelauliano/MitoHiFi](https://github.com/marcelauliano/MitoHiFi)
-
-Reference:
- Uliano-Silva *et al.*, 2023
-
-Tool:
- Nextflow
-
-Source:
- [https://github.com/nextflow-io/nextflow](https://github.com/nextflow-io/nextflow)
-
-Reference:
- Di Tommaso *et al.*, 2017
-
-Tool:
- Nf-core
-
-Source:
- [https://nf-co.re/](https://nf-co.re/)
-
-Reference:
- Ewels *et al.*, 2020
-
-Tool:
- Oatk
-
-Source:
- [https://github.com/c-zhou/oatk](https://github.com/c-zhou/oatk)
-
-Reference:
- Zhou *et al.*, 2024
-
-Tool:
- pigz
-
-Source:
- [https://github.com/madler/pigz](https://github.com/madler/pigz)
-
-Reference:
- NA
-
-Tool:
- PretextMap
-
-Source:
- [https://github.com/sanger-tol/PretextMap](https://github.com/sanger-tol/PretextMap)
-
-Reference:
- NA
-
-Tool:
- PretextSnapshot
-
-Source:
- [https://github.com/sanger-tol/PretextSnapshot](https://github.com/sanger-tol/PretextSnapshot)
-
-Reference:
- NA
-
-Tool:
- purge_dups
-
-Source:
- [https://github.com/dfguan/purge_dups](https://github.com/dfguan/purge_dups)
-
-Reference:
- Guan *et al.*, 2020
-
-Tool:
- samtools
-
-Source:
- [https://github.com/samtools/samtools](https://github.com/samtools/samtools)
-
-Reference:
- Danecek *et al.*, 2021
-
-Tool:
- YaHS
-
-Source:
- [https://github.com/c-zhou/yahs](https://github.com/c-zhou/yahs)
-
-Reference:
- Zhou *et al.*, 2023
+Table: Table 4: Methodological information about sequencing runs.
+
+### **Genome assembly**
+
+|**Pipeline information** | |
+| - | -- |
+| Pipeline | sanger-tol/genomeassembly |
+| Version | {{ assembly.assembly_pipeline_ver }} |
+| Source | [https://github.com/TomHarrop/atol_test_assembly](https://github.com/TomHarrop/atol_test_assembly) |
+| Adapted from | [https://github.com/sanger-tol/genomeassembly](https://github.com/sanger-tol/genomeassembly) |
+Table: Table 5: Pipelines and workflows used in genome assembly.
+
+| **Tool** | **Source** | **Reference** |
+| -- | --- | --- |
+| BEDTools | [https://github.com/arq5x/bedtools2](https://github.com/arq5x/bedtools2) | Quinlan and Hall, 2010 |
+| BUSCO | [https://gitlab.com/ezlab/busco](https://gitlab.com/ezlab/busco) | Manni *et al.*, 2021 |
+| bwa-mem2 | [https://github.com/bwa-mem2/bwa-mem2](https://github.com/bwa-mem2/bwa-mem2) | Vasimuddin *et al.*, 2019 |
+| Cooler | [https://github.com/open2c/cooler](https://github.com/open2c/cooler) | Abdennur and Mirny, 2020 |
+| FastK | [https://github.com/thegenemyers/FASTK](https://github.com/thegenemyers/FASTK) | NA |
+| gawk | [https://www.gnu.org/software/gawk/](https://www.gnu.org/software/gawk/) | NA |
+| GeneScopeFK | [https://github.com/thegenemyers/GENESCOPE.FK](https://github.com/thegenemyers/GENESCOPE.FK) | NA |
+| Gfastats | [https://github.com/vgl-hub/gfastats](https://github.com/vgl-hub/gfastats) | Formenti *et al.*, 2022 |
+| Hifiasm | [https://github.com/chhylp123/hifiasm](https://github.com/chhylp123/hifiasm) | Cheng *et al.*. 2021 |
+| Juicer | [https://github.com/aidenlab/juicer](https://github.com/aidenlab/juicer) | Durand *et al.*, 2016 |
+| JuicerTools | [https://github.com/aidenlab/JuicerTools](https://github.com/aidenlab/JuicerTools) | Durand *et al.*, 2016 |
+| Merqury.FK | [https://github.com/thegenemyers/MERQURY.FK](https://github.com/thegenemyers/MERQURY.FK) | Rhie *et al.*, 2020 |
+| Minimap2 | [https://github.com/lh3/minimap2](https://github.com/lh3/minimap2) | Li, 2018 |
+| MitoFinder | [https://github.com/RemiAllio/MitoFinder](https://github.com/RemiAllio/MitoFinder) | Allio *et al.*, 2020 |
+| MitoHiFi | [https://github.com/marcelauliano/MitoHiFi](https://github.com/marcelauliano/MitoHiFi) | Uliano-Silva *et al.*, 2023 |
+| Nextflow | [https://github.com/nextflow-io/nextflow](https://github.com/nextflow-io/nextflow) | Di Tommaso *et al.*, 2017 |
+| Nf-core | [https://nf-co.re/](https://nf-co.re/) | Ewels *et al.*, 2020 |
+| Oatk | [https://github.com/c-zhou/oatk](https://github.com/c-zhou/oatk) | Zhou *et al.*, 2024 |
+| pigz | [https://github.com/madler/pigz](https://github.com/madler/pigz) | NA |
+| PretextMap | [https://github.com/sanger-tol/PretextMap](https://github.com/sanger-tol/PretextMap) | NA |
+| PretextSnapshot | [https://github.com/sanger-tol/PretextSnapshot](https://github.com/sanger-tol/PretextSnapshot) | NA |
+| purge_dups | [https://github.com/dfguan/purge_dups](https://github.com/dfguan/purge_dups) | Guan *et al.*, 2020 |
+| samtools | [https://github.com/samtools/samtools](https://github.com/samtools/samtools) | Danecek *et al.*, 2021 |
+| YaHS | [https://github.com/c-zhou/yahs](https://github.com/c-zhou/yahs) | Zhou *et al.*, 2023 |
+Table: Table 6: Resources and software tools used in assembly pipelines.
 
 ## **Data availability**
 
@@ -516,7 +191,7 @@ The genome has been assembled and published as part of the Australian Tree of Li
 
 Sample collection and preparation were supported by the individual project partners. The pipelines used to assemble and publish the genome sequence have been adapted from the original digital infrastructure developed as part of the Darwin Tree of Life project (Darwin Tree of Life Project Consortium, 2022). The generation of this sequence report has leveraged assets from the Tree of Life Genome Note pipeline (Babirye *et al.*, 2025).
 
-# **References**
+## **References**
 
 Abdennur, N. and Mirny, L. A. (2020) Cooler: Scalable storage for Hi-C
 data and other genomically labeled arrays, *Bioinformatics*, 36 (1), pp.
@@ -580,6 +255,8 @@ Diesh, C., Stevens, G. J., Xie, P., De Jesus Martinez, T., Hershberg, E.
 A., Leung, A., *et al.* (2023) JBrowse 2: a modular genome browser with
 views of synteny and structural variation, *Genome Biology*, 24 (1), pp.
 74. DOI:10.1186/s13059-023-02914-z.
+
+Earth BioGenome Project (2024) Report on Assembly Standards Version 6.0 - September 2024. Retrieved 19 November, 2025, from [https://www.earthbiogenome.org/report-on-assembly-standards](https://www.earthbiogenome.org/report-on-assembly-standards)
 
 Ewels, P. A., Peltzer, A., Fillinger, S., Patel, H., Alneberg, J., Wilm,
 A., Garcia, M. U., Di Tommaso, P. and Nahnsen, S. (2020) The nf-core

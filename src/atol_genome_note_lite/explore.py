@@ -1,10 +1,12 @@
+#!/usr/bin/env python3
+
 import json
 from jinja2 import Template, Environment, FileSystemLoader, Undefined
 
 print("Starting script")
 
 # path_to_template = args.template
-path_to_sample_metadata = "dev/sample_WGS.json"
+path_to_sample_metadata = "dev/wgs_sample.json"
 path_to_WGS_supplement_metadata = None #set to None if n/a
 path_to_hic_supplement_metadata = None #set to None if n/a
 path_to_sample_supplement_output = "dev/supplementary_sample_data_for_genome_note.md"
@@ -114,6 +116,16 @@ def round_bases_up(base_pairs):
         return "{:.2f} kb".format(int(base_pairs) / 1_000)
     else:
         return base_pairs + " bp"
+
+def add_spaces(long_string):
+    separator = " "
+    formatted_string = ""
+    for character in long_string:
+        if character != ",":
+            formatted_string = formatted_string + character
+        elif character == ",":
+            formatted_string = formatted_string + character + separator
+    return formatted_string
 
 # setting the environment for the genome note templates
 env = Environment(loader=FileSystemLoader("dev"),undefined=undefined_tokens)
@@ -257,7 +269,7 @@ with open(path_to_sample_metadata, "rt") as f:
 # render the core template, integrating the supplementary markdown files for hi-c and/or secondary wgs data
 print(f"Combining and writing output to {path_to_genome_note_output}")
 with open(path_to_genome_note_output, "wt", encoding="utf-8") as f:
-    f.write(template.render(sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal))
+    f.write(template.render(sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal,add_spaces=add_spaces))
 
 #wipe supplementary markdown files
 print("Wiping supplementary helper files and ending script")
