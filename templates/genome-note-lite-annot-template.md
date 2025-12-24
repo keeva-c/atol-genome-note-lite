@@ -109,7 +109,7 @@ of the computational pipelines used in genome assembly, annotation and quality a
 | Country/ocean | {{ sample.country_or_sea }} |
 | Traditional place name | {{ sample.indigenous_location }} |
 | Latitude | {{ sample.latitude }} |
-|  Longitude | {{ sample.longitude }} |
+| Longitude | {{ sample.longitude }} |
 | Collected by | {{ sample.collected_by }} |
 | Collection method | {{ sample.collection_method }} |
 | Collection permit | {{ sample.collection_permit }} |
