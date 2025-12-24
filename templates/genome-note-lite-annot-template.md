@@ -6,9 +6,9 @@
 
 ## **Abstract**
 
-We have assembled a {% if assembly.scaffold_count==assembly.contig_count %}contig-level{% else %}scaffold-level{% endif %} genome
+We have assembled and annotated a {% if assembly.scaffold_count==assembly.contig_count %}contig-level{% else %}scaffold-level{% endif %} genome
 sequence for *{{ organism.scientific_name }}* ({{ organism.order_or_group ~ ": " if organism.order_or_group else "" }}{{
-organism.family|default("",true)}}). The assembly comprises {% if assembly.scaffold_count!=assembly.contig_count %}{{ make_pretty_number(assembly.scaffold_count) }} scaffolds{% else %}{{ make_pretty_number(assembly.contig_count) }} contigs{% endif %} and spans {{ round_bases_up(assembly.genome_length) }}. It has a {% if assembly.scaffold_count!=assembly.contig_count %}scaffold N50 of {{ round_bases_up(assembly.scaffold_n50) }}, a {% endif %}contig N50 of {{ round_bases_up(assembly.contig_n50) }} and a BUSCO completeness score of {{ assembly.busco_c }}%.
+organism.family|default("",true)}}). The assembly comprises {% if assembly.scaffold_count!=assembly.contig_count %}{{ make_pretty_number(assembly.scaffold_count) }} scaffolds{% else %}{{ make_pretty_number(assembly.contig_count) }} contigs{% endif %} and spans {{ round_bases_up(assembly.genome_length) }}. It has a {% if assembly.scaffold_count!=assembly.contig_count %}scaffold N50 of {{ round_bases_up(assembly.scaffold_n50) }}, a {% endif %}contig N50 of {{ round_bases_up(assembly.contig_n50) }} and a BUSCO completeness score of {{ assembly.busco_c }}%. A total of {{ make_pretty_number(annotation.gene_count) }} genes were identified in annotation.
 
 ## **Introduction**
 
@@ -19,12 +19,12 @@ organism.family|default("",true)}}). The assembly comprises {% if assembly.scaff
 ### **Background**
 
 The genome of {{ "the " ~ organism.common_name ~ ", " if organism.common_name else "" }}*{{ organism.scientific_name }}*, was
-sequenced as part of the {{ sample.bpa_initiative }} and has been assembled in collaboration with the Australian Tree of Life
+sequenced as part of the {{ sample.bpa_initiative }} and has been assembled and annotated in collaboration with the Australian Tree of Life
 Infrastructure Capability.
 
 ## **Genome sequence report**
 
-Details about the assembled genome sequence, including key assembly metrics and target minimum standards set by the Earth Biogenome Project (EBP) (Earth BioGenome Project, 2024), are summarised in Table 1. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in Figure 1.{% endif %}
+Details about the assembled genome sequence, including key assembly metrics and target minimum standards set by the Earth Biogenome Project (EBP) (Earth BioGenome Project, 2024), are summarised in Table 1. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in Figure 1.{% endif %} Genome annotation results are provided in Table 2.
 
 | **Assembly information** | | **EBP standard** |
 | --- | ---- | --- |
@@ -46,11 +46,12 @@ Details about the assembled genome sequence, including key assembly metrics and 
 | *k*-mer completeness | Primary assembly: {{ assembly.primary_kmer }}% | > 90% |
 | | Alternate assembly: {{ assembly.alt_kmer }}% | |
 | | Combined: {{ assembly.combined_kmer }}% | |
-| Full BUSCO | {{ add_spaces(assembly.busco_string) }} |
-| Single copy BUSCO | {{ assembly.busco_single }}% | > 90% |
-| Duplicated BUSCO | {{ assembly.busco_duplicated }}% | < 5% |
-| BUSCO reference set | {{ assembly.busco_ref }} | |
 | Organelles | {% if assembly.mito_size %}Mitochondrial genome: {{ assembly.mito_size }}{% endif %}{% if assembly.plastid_size %} Plastid genome: {{ assembly.plastid_size }}{% endif %}{% if not assembly.mito_size and not assembly.plastid_size %}No organelles assembled{% endif %} | Complete single alleles |
+| **BUSCO assessment** | |
+| Full summary | {{ add_spaces(assembly.busco_string) }} |
+| Single copy BUSCOs | {{ assembly.busco_single }}% | > 90% |
+| Duplicated BUSCOs | {{ assembly.busco_duplicated }}% | < 5% |
+| Reference set | {{ assembly.busco_ref }} | |
 Table: Table 1: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ organism.scientific_name }}*.
 
 {% if assembly.contact_map_image_path %}
@@ -58,11 +59,37 @@ Table: Table 1: Genome assembly information for {{ assembly.assembly_name|defaul
 Chromosomes are shown in order of size from left to right and top to bottom.]({{ assembly.contact_map_image_path }})
 {% endif %}
 
+| **Annotation information** | |
+| -- | --- |
+| Annotation name | {{ annotation.annotation_name }} |
+| Number of genes | {{ make_pretty_number(annotation.gene_count) }} |
+| Number of CDSs | {{ make_pretty_number(annotation.cds_count )}} |
+| Number of gene transcripts | {{ make_pretty_number(annotation.transcript_count) }} |
+| Average transcript length | {{ round_decimal(annotation.mean_transcript_length) }} |
+| Average transcripts per gene | {{ round_decimal(annotation.mean_transcripts_per_gene) }} |
+| Average exons per transcript | {{ round_decimal(annotation.mean_exons_per_transcript) }} |
+| **BUSCO completeness** | |
+| Full summary | {{ add_spaces(annotation.annot_busco_summary) }} |
+| | *C: complete, S: single copy, D: duplicated, F: fragmented, M: missing* |
+| Reference set | {{ annotation.annot_busco_lineage }} |
+| **OMArk completeness** | |
+| Full summary | {{ add_spaces(annotation.omark_completeness_summary) }} |
+| | *S: single copy, D: duplicated [U: unexpected, E:expected], M: missing* |
+| Number of HOGs | {{ make_pretty_number(annotation.conserved_hogs) }} |
+| Reference lineage | {{ annotation.omark_lineage}} |
+| **OMArk consistency** | |
+| Number of proteins | {{ make_pretty_number(annotation.omark_protein_count) }}
+| Consistent lineage placements | {{ round_decimal(annotation.omark_percent_consistent) }}% |
+| Inconsistent lineage placements | {{ round_decimal(annotation.omark_percent_inconsistent) }}% |
+| Contaminants | {{ round_decimal(annotation.omark_percent_contaminant) }}% |
+| Unknown | {{ round_decimal(annotation.omark_percent_unknown) }}% |
+Table: Table 2: Genome annotation information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}.
+
 ## **Methods**
 
 Information relating to sample collection, nucleic acid extraction, and
-sequencing are provided in Tables 2, 3, and 4 respectively. An overview
-of the computational pipelines and workflows used in genome assembly are given in Table 5. Individual tools are listed in Table 6.
+sequencing are provided in Tables 3, 4, and 5 respectively. An overview
+of the computational pipelines used in genome assembly, annotation and quality assessment are given in Table 6. Individual tools are listed in Table 7.
 
 ### **Sample acquisition**
 
@@ -90,7 +117,7 @@ of the computational pipelines and workflows used in genome assembly are given i
 | Preservation method | {{ sample.preservation_method }} |
 | Preservation temperature | {{ sample.preservation_temperature }} | 
 {% include "supplementary_sample_data_for_genome_note.md" ignore missing %}
-Table: Table 2: Sample information about the material used to generate
+Table: Table 3: Sample information about the material used to generate
 sequencing data.
 
 ### **Nucleic acid extraction**
@@ -104,8 +131,8 @@ sequencing data.
 | Nucleic acid extraction method | {{ sample.extraction_method }} |
 | Nucleic acid treatment | {{ sample.nucleic_acid_treatment }} |
 | Extract concentration (ng/ul) | {{ sample.nucleic_acid_conc }} |
-{% include "supplementary_extract_data_for_genome_note.md" ignore missing %}.
-Table: Table 3: Methodological information about nucleic acid material
+{% include "supplementary_extract_data_for_genome_note.md" ignore missing %}
+Table: Table 4: Methodological information about nucleic acid material
 extracted for sequencing.
 
 ### **Sequencing**
@@ -129,17 +156,28 @@ extracted for sequencing.
 | Flowcell type | {{ experiment.flowcell_type }} |
 | Base caller model | {{ experiment.base_caller_model }} |
 {% include "supplementary_seq_data_for_genome_note.md" ignore missing %}
-Table: Table 4: Methodological information about sequencing runs.
+Table: Table 5: Methodological information about sequencing runs.
 
-### **Genome assembly**
+### **Genome assembly and annotation**
 
 |**Pipeline information** | |
 | - | -- |
-| Pipeline | sanger-tol/genomeassembly |
-| Version | {{ assembly.assembly_pipeline_ver }} |
-| Source | [https://github.com/TomHarrop/atol_test_assembly](https://github.com/TomHarrop/atol_test_assembly) |
-| Adapted from | [https://github.com/sanger-tol/genomeassembly](https://github.com/sanger-tol/genomeassembly) |
-Table: Table 5: Pipelines and workflows used in genome assembly.
+| **Genome assembly** | |
+| - Pipeline | sanger-tol/genomeassembly |
+| - Version | {{ assembly.assembly_pipeline_ver }} |
+| - Source | [https://github.com/TomHarrop/atol_test_assembly](https://github.com/TomHarrop/atol_test_assembly) |
+| - Adapted from | [https://github.com/sanger-tol/genomeassembly](https://github.com/sanger-tol/genomeassembly) |
+| **Genome annotation** | |
+| - Pipeline | {{ annotation.annotation_pipeline }} |
+| - Version | {{ annotation.annotation_pipeline_ver }} |
+| - Source | {{ annotation.annotation_pipeline_link }} |
+| - Adapted from | tbd |
+| **Annotation QC** | |
+| - Pipeline | {{ annotation.annot_qc_pipeline }} |
+| - Version | {{ annotation.annot_qc_pipeline_ver }} |
+| - Source | {{ annotation.annot_qc_pipeline_link }} |
+| - Adapted from | tbd |
+Table: Table 6: Pipelines used in genome assembly, annotation and quality assessment.
 
 | **Tool** | **Source** | **Reference** |
 | -- | --- | --- |
@@ -167,7 +205,7 @@ Table: Table 5: Pipelines and workflows used in genome assembly.
 | purge_dups | [https://github.com/dfguan/purge_dups](https://github.com/dfguan/purge_dups) | Guan *et al.*, 2020 |
 | samtools | [https://github.com/samtools/samtools](https://github.com/samtools/samtools) | Danecek *et al.*, 2021 |
 | YaHS | [https://github.com/c-zhou/yahs](https://github.com/c-zhou/yahs) | Zhou *et al.*, 2023 |
-Table: Table 6: Resources and software tools used in assembly pipelines.
+Table: Table 9: Resources and software tools used in assembly pipelines.
 
 ## **Data availability**
 
@@ -175,7 +213,7 @@ Raw sequencing data, sample metadata, and genome assembly sequences are availabl
 the BioProject accession number {{ bioproject_accession }};
 [https://identifiers.org/ena.embl/](https://identifiers.org/ena.embl/){{
 bioproject_accession }}. Assembly and raw data accession identifiers are
-reported in Tables 1 and 4. Raw sequence data and sample metadata were
+reported in Tables 1 and 5. The genome annotation file is available from *TBD*. Raw sequence data and sample metadata were
 originally submitted to the Bioplatforms Australia Data Portal
 ([https://data.bioplatforms.com/](https://data.bioplatforms.com/)),
 and are available under the following data package identifiers: {{
@@ -187,7 +225,7 @@ The genome sequence is released openly for reuse.
 
 {% if sample.bpa_initiative=='Threatened Species Initiative' %}We would like to acknowledge the contribution of the {{ sample.bpa_initiative }} in the generation of data used in this publication. The Initiative is supported by funding from Bioplatforms Australia, enabled by the Commonwealth Government National Collaborative Research Infrastructure Strategy (NCRIS) in partnership with the University of Sydney; the Australian Government Department of Climate Change, Energy, the Environment and Water; WA Department of Biodiversity, Conservation & Attractions; and Amazon Web Services.{% else %}We would like to acknowledge the contribution of the {{ sample.bpa_initiative }} in the generation of data used in this publication. The Initiative is supported by funding from Bioplatforms Australia, enabled by the Commonwealth Government National Collaborative Research Infrastructure Strategy (NCRIS).{% endif %}
 
-The genome has been assembled and published as part of the Australian Tree of Life Informatics Capacity, a platform provided by the Australian BioCommons.
+The genome has been assembled, annotated and published as part of the Australian Tree of Life Informatics Capacity, a platform provided by the Australian BioCommons.
 
 Sample collection and preparation were supported by the individual project partners. The pipelines used to assemble and publish the genome sequence have been adapted from the original digital infrastructure developed as part of the Darwin Tree of Life project (Darwin Tree of Life Project Consortium, 2022). The generation of this sequence report has leveraged assets from the Tree of Life Genome Note pipeline (Babirye *et al.*, 2025).
 
