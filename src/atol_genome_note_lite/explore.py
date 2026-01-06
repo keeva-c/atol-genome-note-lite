@@ -6,8 +6,6 @@ import os
 from jinja2 import Template, Environment, FileSystemLoader, Undefined
 from pathlib import Path
 
-print("Starting script")
-
 # set global variables
 path_to_sample_supplement_output = "templates/supplementary_sample_data_for_genome_note.md"
 path_to_extract_supplement_output = "templates/supplementary_extract_data_for_genome_note.md"
@@ -16,7 +14,8 @@ path_to_bpa_package_supplement_output = "templates/supplementary_package_data_fo
 
 # set input arguments
 argument_parser = argparse.ArgumentParser(
-    description="This tool generates a draft genome note lite markdown document based on sample, read, assembly, and annotation metadata."
+    description="This tool generates a draft genome note lite markdown document based on sample, read, assembly, and annotation metadata.",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 input_group = argument_parser.add_argument_group("Input")
 output_group = argument_parser.add_argument_group("Output")
@@ -34,8 +33,8 @@ input_group.add_argument(
 )
 output_group.add_argument(
     "--output",
-    type=Path,
     default=Path("results/genome_note_lite.md"),
+    type=Path,
     help="optional output file address."
 )
 argument_parser.add_argument(
@@ -49,6 +48,8 @@ argument_parser.add_argument(
     help="runs the genome note lite for an assembly only (no annotation)."
 )
 args = argument_parser.parse_args()
+
+print("Starting script")
 
 # TODO: check that arguments are valid paths
 
@@ -255,6 +256,11 @@ elif args.wo_annotation:
 else:
     print("Preparing genome note lite for assembly without annotation (by default)")
     template = env.get_template("not-a-genome-note-lite-template.md")
+
+# prepare output directory
+if str(args.output) == "results/genome_note_lite.md":
+    if not os.path.isdir("results"):
+        os.mkdir("results")
 
 # read the sample metadata
 print(f"Reading metadata from {processed_wgs_file_paths[0]}")
