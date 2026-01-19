@@ -2,9 +2,19 @@
 
 import argparse
 import json
+import logging
 import os
+import sys
 from jinja2 import Template, Environment, FileSystemLoader, Undefined
 from pathlib import Path
+
+# configure logger
+logging.basicConfig(
+    stream=sys.stderr,
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger()
 
 # set global variables
 path_to_sample_supplement_output = "templates/supplementary_sample_data_for_genome_note.md"
@@ -49,7 +59,7 @@ argument_parser.add_argument(
 )
 args = argument_parser.parse_args()
 
-print("Starting script")
+logger.info("Starting script")
 
 # TODO: check that arguments are valid paths
 
@@ -182,7 +192,7 @@ for idx, file in enumerate(all_input_files):
         sample_name = sample_metadata['sample']['bpa_sample_id']
         library_name = sample_metadata['experiment']['bpa_library_id']
         if idx == 1:
-            print(f"Reading metadata from", file, "and rendering helper files")
+            logger.info(f"Reading metadata from {file} and rendering helper files")
             # render the sample helper file
             if sample_name not in input_sample_ids:
                 sup_samp_template = env.get_template("sup_sample_template.md")
@@ -206,7 +216,7 @@ for idx, file in enumerate(all_input_files):
             with open(path_to_bpa_package_supplement_output, "wt", encoding="utf-8") as f:
                 f.write(sup_package_render)
         elif idx > 1:
-            print(f"Reading metadata from", file, "and rendering helper files")
+            logger.info(f"Reading metadata from {file} and rendering helper files")
             # render the sample helper file
             if sample_name not in input_sample_ids:
                 sup_samp_template = env.get_template("sup_sample_template.md")
@@ -248,13 +258,13 @@ for idx, file in enumerate(all_input_files):
 
 # initialise main template
 if args.w_annotation:
-    print("Preparing genome note lite for annotated assembly")
+    logger.info("Preparing genome note lite for annotated assembly")
     template = env.get_template("genome-note-lite-annot-template.md")
 elif args.wo_annotation:
-    print("Preparing genome note lite for assembly without annotation")
+    logger.info("Preparing genome note lite for assembly without annotation")
     template = env.get_template("not-a-genome-note-lite-template.md")
 else:
-    print("Preparing genome note lite for assembly without annotation (by default)")
+    logger.info("Preparing genome note lite for assembly without annotation (by default)")
     template = env.get_template("not-a-genome-note-lite-template.md")
 
 # prepare output directory
@@ -263,17 +273,17 @@ if str(args.output) == "results/genome_note_lite.md":
         os.mkdir("results")
 
 # read the sample metadata
-print(f"Reading metadata from {processed_wgs_file_paths[0]}")
+logger.info(f"Reading metadata from {processed_wgs_file_paths[0]}")
 with open(processed_wgs_file_paths[0], "rt") as f:
     assembly_sample_metadata = json.load(f)
 
 # render the core template, integrating the supplementary markdown files for hi-c and/or secondary wgs data
-print(f"Combining and writing output to {args.output}")
+logger.info(f"Combining and writing output to {args.output}")
 with open(args.output, "wt", encoding="utf-8") as f:
     f.write(template.render(assembly_sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal,add_spaces=add_spaces))
 
 # remove processed metadata and supplementary markdown files
-print("Removing processed metadata and supplementary helper files and ending script")
+logger.info("Removing processed metadata and supplementary helper files and ending script")
 for file in all_input_files:
     os.remove(file)
 
