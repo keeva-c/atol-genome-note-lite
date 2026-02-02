@@ -16,11 +16,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger()
 
+# setting the global default undefined value
+class undefined_tokens(Undefined):
+    def __str__(self):
+        return "*not provided*"
+
 # set global variables
 path_to_sample_supplement_output = "templates/supplementary_sample_data_for_genome_note.md"
 path_to_extract_supplement_output = "templates/supplementary_extract_data_for_genome_note.md"
 path_to_seq_supplement_output = "templates/supplementary_seq_data_for_genome_note.md"
 path_to_bpa_package_supplement_output = "templates/supplementary_package_data_for_genome_note.md"
+processed_wgs_file_paths = []
+processed_hic_file_paths = []
+input_sample_ids = []
+input_library_ids = []
+
+# setting the environment for the genome note templates
+env = Environment(loader=FileSystemLoader("templates"),undefined=undefined_tokens)
 
 # set input arguments
 argument_parser = argparse.ArgumentParser(
@@ -59,12 +71,10 @@ argument_parser.add_argument(
 )
 args = argument_parser.parse_args()
 
-logger.info("Starting script")
-
 # TODO: check that arguments are valid paths
 
-# updating metadata input to remove metadata containing empty strings
 def overwrite_empty_strings(metadata):
+    '''updating metadata input to remove metadata containing empty strings'''
     output_dict = {}
     for dict_name, key_value in metadata.items():
         updated_metadata = {}
@@ -76,8 +86,8 @@ def overwrite_empty_strings(metadata):
         output_dict[dict_name] = updated_metadata
     return output_dict
 
-# add standardised bpa_initiative attribute based on bioplatforms_project_id metadata
 def map_bpa_initiative(metadata):
+    '''add standardised bpa_initiative attribute based on bioplatforms_project_id metadata'''
     for dict_name, key_value in metadata.items():
         if dict_name == 'sample':
             if key_value['bioplatforms_project_id'] == 'bpa-ipm':
@@ -86,8 +96,6 @@ def map_bpa_initiative(metadata):
                 key_value['bpa_initiative'] = 'Threatened Species Initiative'
             elif key_value['bioplatforms_project_id'] == 'aus-fish':
                 key_value['bpa_initiative'] = 'Australian Fish Genomics Initiative'
-            elif key_value['bioplatforms_project_id'] == 'plant-pathogen':
-                key_value['bpa_initiative'] = 'Plant Pathogen Omics Initiative'
             elif key_value['bioplatforms_project_id'] == 'aus-avian':
                 key_value['bpa_initiative'] = 'Australian Avian Genomics Initiative'
             elif key_value['bioplatforms_project_id'] == 'fungi':
@@ -98,41 +106,24 @@ def map_bpa_initiative(metadata):
                 key_value['bpa_initiative'] = 'Australian Amphibian and Reptile Genomics Initiative'
             elif key_value['bioplatforms_project_id'] == 'forest-resilience':
                 key_value['bpa_initiative'] = 'Genomics for Forest Resilience Initiative'
-            elif key_value['bioplatforms_project_id'] == 'grasslands':
-                key_value['bpa_initiative'] = 'Australian Grasslands Initiative'
             elif key_value['bioplatforms_project_id'] == 'bpa-plants':
                 key_value['bpa_initiative'] = 'Genomics for Australian Plants'
             else:
                 key_value['bpa_initiative'] = None
     return metadata
 
-processed_wgs_file_paths = []
-processed_hic_file_paths = []
-
-# preprocessing metadata for input WGS metadata
-for input_file in args.wgs_metadata:
-    with open(input_file, 'r') as f:
-        unprocessed_sample_metadata = json.load(f)
-        sample_metadata_w_initiative = map_bpa_initiative(unprocessed_sample_metadata)
-        processed_sample_metadata = overwrite_empty_strings(sample_metadata_w_initiative)
-    processed_file = Path(input_file).stem + "-processed" + Path(input_file).suffix
-
-    with open((processed_file), 'w') as f:
-        json.dump(processed_sample_metadata, f)
-    processed_wgs_file_paths.append(processed_file)
-
-# preprocessing metadata for input Hi-C metadata if provided
-if args.hic_metadata is not None:
-    for input_file in args.hic_metadata:
-        with open(input_file, 'r') as f:
-            unprocessed_hic_sup_metadata = json.load(f)
-            hic_sup_metadata_w_initiative = map_bpa_initiative(unprocessed_hic_sup_metadata)
-            processed_hic_sup_metadata = overwrite_empty_strings(hic_sup_metadata_w_initiative)
-        processed_file = Path(input_file).stem + "-processed" + Path(input_file).suffix
-
-        with open((processed_file), 'w') as f:
-            json.dump(processed_hic_sup_metadata, f)
-        processed_hic_file_paths.append(processed_file)
+def preprocess_metadata(metadata_file, processed_files):
+    '''combining the above two metadata formatting functions together and saving output to a new file with '-processed' suffix'''
+    processed_file = Path(metadata_file).stem + "-processed" + Path(metadata_file).suffix
+    logger.info(f"Preprocessing {metadata_file} and saving ouput to interim {processed_file} file")
+    with open(metadata_file, 'r') as f:
+        unprocessed_file = json.load(f)
+        metadata_w_initiative = map_bpa_initiative(unprocessed_file)
+        processed_metadata = overwrite_empty_strings(metadata_w_initiative)
+    with open(processed_file, 'w') as f:
+        json.dump(processed_metadata, f)
+    processed_files.append(processed_file)
+    return processed_files
 
 # functions to make things in the template pretty
 def make_pretty_number(ugly_number):
@@ -167,22 +158,22 @@ def add_spaces(long_string):
             formatted_string = formatted_string + character + separator
     return formatted_string
 
-# setting the global default undefined value
-class undefined_tokens(Undefined):
-    def __str__(self):
-        return "*not provided*"
+logger.info("Starting script")
 
-# setting the environment for the genome note templates
-env = Environment(loader=FileSystemLoader("templates"),undefined=undefined_tokens)
+# preprocessing metadata for input WGS metadata
+for input_file in args.wgs_metadata:
+    preprocess_metadata(input_file, processed_wgs_file_paths) 
+
+# preprocessing metadata for input Hi-C 
+if args.hic_metadata is not None:
+    for input_file in args.hic_metadata:
+        preprocess_metadata(input_file, processed_hic_file_paths) 
 
 # initialise lists for cross-checking sample and library ids (to avoid duplicating metadata in the genome note lite)
 all_input_files = list(processed_wgs_file_paths)
 
 if args.hic_metadata is not None:
     all_input_files.extend(processed_hic_file_paths)
-
-input_sample_ids = []
-input_library_ids = []
 
 # read Hi-C and supplementary WGS input metadata and render supplementary helper files
 for idx, file in enumerate(all_input_files):
@@ -258,14 +249,14 @@ for idx, file in enumerate(all_input_files):
 
 # initialise main template
 if args.w_annotation:
-    logger.info("Preparing genome note lite for annotated assembly")
+    logger.info("Preparing genome note lite template for annotated assembly")
     template = env.get_template("genome-note-lite-annot-template.md")
 elif args.wo_annotation:
-    logger.info("Preparing genome note lite for assembly without annotation")
-    template = env.get_template("not-a-genome-note-lite-template.md")
+    logger.info("Preparing genome note lite template for assembly without annotation")
+    template = env.get_template("genome-note-lite-asm-only-template.md")
 else:
-    logger.info("Preparing genome note lite for assembly without annotation (by default)")
-    template = env.get_template("not-a-genome-note-lite-template.md")
+    logger.info("Preparing genome note lite template for assembly without annotation (by default)")
+    template = env.get_template("genome-note-lite-asm-only-template.md")
 
 # prepare output directory
 if str(args.output) == "results/genome_note_lite.md":
@@ -278,7 +269,7 @@ with open(processed_wgs_file_paths[0], "rt") as f:
     assembly_sample_metadata = json.load(f)
 
 # render the core template, integrating the supplementary markdown files for hi-c and/or secondary wgs data
-logger.info(f"Combining and writing output to {args.output}")
+logger.info(f"Rendering core template, including helper files and writing output to {args.output}")
 with open(args.output, "wt", encoding="utf-8") as f:
     f.write(template.render(assembly_sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal,add_spaces=add_spaces))
 
