@@ -163,7 +163,7 @@ def render_helper(helper_template, helper_metadata, helper_output, enum_idx):
     '''rendering the supplementary helper files, and appending the newly rendered markdown to the original markdown if multiple metadata files were provided in the original input arguments'''
     sup_template = env.get_template(helper_template)
     sup_render = sup_template.render(helper_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
-    if enum_idx == 1:
+    if enum_idx == 1 or not os.path.exists(helper_output):
         with open(helper_output, "wt", encoding="utf-8") as f:
             f.write(sup_render)
     elif enum_idx > 1:
