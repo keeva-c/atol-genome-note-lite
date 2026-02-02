@@ -158,6 +158,58 @@ def add_spaces(long_string):
             formatted_string = formatted_string + character + separator
     return formatted_string
 
+# functions to render helper files to append to core template
+def render_helper(helper_template, helper_metadata, helper_output, enum_idx):
+    '''rendering the supplementary helper files, and appending the newly rendered markdown to the original markdown if multiple metadata files were provided in the original input arguments'''
+    sup_template = env.get_template(helper_template)
+    sup_render = sup_template.render(helper_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
+    if enum_idx == 1:
+        with open(helper_output, "wt", encoding="utf-8") as f:
+            f.write(sup_render)
+    elif enum_idx > 1:
+        with open(helper_output, "rt", encoding="utf-8") as f:
+            original_helper_output = f.read()
+        if helper_template != "sup_bpa_package_template.md":
+            combined_helper_output = original_helper_output + '\n' + sup_render
+        elif helper_template == "sup_bpa_package_template.md":
+            combined_helper_output = original_helper_output + sup_render
+        with open(helper_output, "wt", encoding="utf-8") as f:
+            f.write(combined_helper_output)
+
+def render_if_not_duplicate(helper_file, helper_metadata, helper_sample, helper_library, enum_idx):
+    '''checking if the sample and library ids in the metadata file have previously been encountered, and passing the metadata to the render_helper function if the sample or library has not perviously been rendered into markdown'''
+    logger.info(f"Reading metadata from {helper_file} and rendering helper files")
+    # render the sample helper file
+    if helper_sample not in input_sample_ids:
+        render_helper(
+            helper_template="sup_sample_template.md",
+            helper_metadata=helper_metadata,
+            helper_output=path_to_sample_supplement_output,
+            enum_idx=enum_idx
+        )
+    # render the extraction helper file
+    if helper_library not in input_library_ids:
+        render_helper(
+            helper_template="sup_extract_template.md",
+            helper_metadata=helper_metadata,
+            helper_output=path_to_extract_supplement_output,
+            enum_idx=enum_idx
+        )
+    # render the sequencing helper file
+    render_helper(
+        helper_template="sup_sequencing_template.md",
+        helper_metadata=helper_metadata,
+        helper_output=path_to_seq_supplement_output,
+        enum_idx=enum_idx
+    )
+    # render the package helper file
+    render_helper(
+        helper_template="sup_bpa_package_template.md",
+        helper_metadata=helper_metadata,
+        helper_output=path_to_bpa_package_supplement_output,
+        enum_idx=enum_idx
+    )
+
 logger.info("Starting script")
 
 # preprocessing metadata for input WGS metadata
@@ -177,71 +229,15 @@ if args.hic_metadata is not None:
 
 # read Hi-C and supplementary WGS input metadata and render supplementary helper files
 for idx, file in enumerate(all_input_files):
-    # find the sample IDs and append to a list
+    # find the sample and library IDs and append to a list
     with open(file, "rt") as f:
-        sample_metadata = json.load(f)
-        sample_name = sample_metadata['sample']['bpa_sample_id']
-        library_name = sample_metadata['experiment']['bpa_library_id']
+        full_metadata = json.load(f)
+        sample_name = full_metadata['sample']['bpa_sample_id']
+        library_name = full_metadata['experiment']['bpa_library_id']
         if idx == 1:
-            logger.info(f"Reading metadata from {file} and rendering helper files")
-            # render the sample helper file
-            if sample_name not in input_sample_ids:
-                sup_samp_template = env.get_template("sup_sample_template.md")
-                sup_sample_render = sup_samp_template.render(sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
-                with open(path_to_sample_supplement_output, "wt", encoding="utf-8") as f:
-                    f.write(sup_sample_render)
-            # render the extraction helper file
-            if library_name not in input_library_ids:
-                sup_ext_template = env.get_template("sup_extract_template.md")
-                sup_ext_render = sup_ext_template.render(sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
-                with open(path_to_extract_supplement_output, "wt", encoding="utf-8") as f:
-                    f.write(sup_ext_render)
-            # render the sequencing helper file
-            sup_seq_template = env.get_template("sup_sequencing_template.md")
-            sup_seq_render = sup_seq_template.render(sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
-            with open(path_to_seq_supplement_output, "wt", encoding="utf-8") as f:
-                f.write(sup_seq_render)
-            # render the package helper file
-            sup_package_template = env.get_template("sup_bpa_package_template.md")
-            sup_package_render = sup_package_template.render(sample_metadata)
-            with open(path_to_bpa_package_supplement_output, "wt", encoding="utf-8") as f:
-                f.write(sup_package_render)
+            render_if_not_duplicate(file, full_metadata, sample_name, library_name, idx)
         elif idx > 1:
-            logger.info(f"Reading metadata from {file} and rendering helper files")
-            # render the sample helper file
-            if sample_name not in input_sample_ids:
-                sup_samp_template = env.get_template("sup_sample_template.md")
-                sup_sample_render = sup_samp_template.render(sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
-                with open(path_to_sample_supplement_output, "rt", encoding="utf-8") as f:
-                    sample_supplement_md = f.read()
-                combined_sample_sup = sample_supplement_md + '\n' + sup_sample_render
-                with open(path_to_sample_supplement_output, "wt", encoding="utf-8") as f:
-                    f.write(combined_sample_sup)
-            # render the extraction helper file
-            if library_name not in input_library_ids:
-                sup_ext_template = env.get_template("sup_extract_template.md")
-                sup_ext_render = sup_ext_template.render(sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
-                with open(path_to_extract_supplement_output, "rt", encoding="utf-8") as f:
-                    extract_supplement_md = f.read()
-                combined_extract_sup = extract_supplement_md + '\n' + sup_ext_render
-                with open(path_to_extract_supplement_output, "wt", encoding="utf-8") as f:
-                    f.write(combined_extract_sup)
-            # render the sequencing helper file
-            sup_seq_template = env.get_template("sup_sequencing_template.md")
-            sup_seq_render = sup_seq_template.render(sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
-            with open(path_to_seq_supplement_output, "rt", encoding="utf-8") as f:
-                sequence_supplement_md = f.read()
-            combined_sequence_sup = sequence_supplement_md + '\n' + sup_seq_render
-            with open(path_to_seq_supplement_output, "wt", encoding="utf-8") as f:
-                f.write(combined_sequence_sup)
-            # render the package helper file
-            sup_package_template = env.get_template("sup_bpa_package_template.md")
-            sup_package_render = sup_package_template.render(sample_metadata)
-            with open(path_to_bpa_package_supplement_output, "rt", encoding="utf-8") as f:
-                package_supplement_md = f.read()
-            combined_package_sup = package_supplement_md + sup_package_render
-            with open(path_to_bpa_package_supplement_output, "wt", encoding="utf-8") as f:
-                f.write(combined_package_sup)
+            render_if_not_duplicate(file, full_metadata, sample_name, library_name, idx)
         else:
             next(enumerate(all_input_files))
     input_sample_ids.append(sample_name)
@@ -269,7 +265,7 @@ with open(processed_wgs_file_paths[0], "rt") as f:
     assembly_sample_metadata = json.load(f)
 
 # render the core template, integrating the supplementary markdown files for hi-c and/or secondary wgs data
-logger.info(f"Rendering core template, including helper files and writing output to {args.output}")
+logger.info(f"Rendering core template, including helper files (if applicable) and writing output to {args.output}")
 with open(args.output, "wt", encoding="utf-8") as f:
     f.write(template.render(assembly_sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal,add_spaces=add_spaces))
 
