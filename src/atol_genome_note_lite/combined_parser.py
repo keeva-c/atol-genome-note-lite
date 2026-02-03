@@ -1,167 +1,165 @@
 #!/usr/bin/env python3
 
-import json
+import argparse
 import csv
+import json
+import logging
+import sys
 import yaml
+from pathlib import Path
 
-#set variables
+# configure logger
+logging.basicConfig(
+    stream=sys.stderr,
+    level=logging.DEBUG,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger()
 
-path_to_busco_field_mapping = "dev/busco_to_fields.csv"
-path_to_busco_file =  #input: busco.json file
-busco_field_mapping_dict = {}
-busco_results = {}
-busco_output_dict = {}
-path_to_busco_output = "dev/assembly_busco_fields.json"
+# add arguments
+argument_parser = argparse.ArgumentParser(
+    description="This tool parses files that are generated during the genome assembly pipeline and outputs them in a json format suitable for appending to an organism-sample-experiment-reads metadata json which can be used an input to the explore.py script",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+input_group = argument_parser.add_argument_group("Input")
+output_group = argument_parser.add_argument_group("Output")
+input_group.add_argument(
+    "--busco",
+    type=Path,
+    help="the JSON summary file generated during BUSCO analysis of the assembly - the file should end with busco.json"
+)
+input_group.add_argument(
+    "--kmer",
+    type=Path,
+    help="the kmer count file generated during merqury.FK analysis of the assembly - the file should end with .completeness.stats"
+)
+input_group.add_argument(
+    "--qv",
+    type=Path,
+    help="the QV scores summary file generated during merqury.FK analysis of the assembly - the file should end with .qv"
+)
+input_group.add_argument(
+    "--summary",
+    type=Path,
+    help="the summary text file generated when using the sanger_tol assembly pipeline - the file should end with .assembly_summary"
+)
+input_group.add_argument(
+    "--software",
+    type=Path,
+    help="the YAML file summarising the tools and versions used by the assembly pipeline - the file should end with genomeassembly_software_versions.yml"
+)
+input_group.add_argument(
+    "--map",
+    type=Path,
+    nargs='?',
+    help="the PreText Snapshot PNG file of the contact map generated during assembly scaffolding - the file should end with FullMap.png"
+)
+output_group.add_argument(
+    "--output",
+    type=Path,
+    default=Path("assembly_metrics.json"),
+    help="a JSON output file including all assembly stats and information for inclusion in the genome note lite"
+)
+args = argument_parser.parse_args()
 
-path_to_kmer_field_mapping = "dev/kmer_to_fields.csv"
-path_to_kmer_file =  #input: .completeness.stats file
-kmer_field_mapping_dict = {}
-kmer_values_dict = {}
-kmer_output_dict = {}
-path_to_kmer_output = "dev/assembly_kmer_fields.json"
+# TODO: allow mapper output json as input file and append assembly_metrics json object to the end of the other metadata json
 
-path_to_qv_field_mapping = "dev/qv_to_fields.csv"
-path_to_qv_file =  #input: .qv file
-qv_field_mapping_dict = {}
-qv_values_dict = {}
-qv_output_dict = {}
-path_to_qv_output = "dev/assembly_qv_fields.json"
-
-path_to_summary_field_mapping = "dev/summary_to_fields.csv"
-path_to_summary_file =  #input: .assembly_summary file
-sep = ": "
-summary_values_dict = {}
-summary_output_dict = {}
-summary_field_mapping_dict = {}
-path_to_summary_output = "dev/assembly_summary_fields.json"
-
-path_to_tools_file =  #input: genomeassembly_software_versions.yml file
-workflow_version = {}
-assembly_wf_ver_key = 'sanger-tol/genomeassembly'
-path_to_tools_output = "dev/assembly_version_fields.json"
-
-contact_map_file_path =  #input: FullMap.png file (if not applicable, set variable to None)
-
+# set global variables
 json_assembly_object = {}
+path_to_busco_field_mapping = "dev/busco_to_fields.csv"
+path_to_kmer_field_mapping = "dev/kmer_to_fields.csv"
+path_to_qv_field_mapping = "dev/qv_to_fields.csv"
+path_to_summary_field_mapping = "dev/summary_to_fields.csv"
 
-#parse busco
+def parse_mappings(mappings):
+    '''saving genome note field names to a dictionary'''
+    mapping_dict = {}
+    with open(mappings, "rt") as f:
+        csvreader = csv.reader(f)
+        next(csvreader) # take out the header
+        for line in csvreader:
+            mapping_dict[line[1]]=line[0]
+    return mapping_dict
 
-#save genome note field names to a dictionary
-with open(path_to_busco_field_mapping, "rt") as f:
-    csvreader = csv.reader(f)
-    next(csvreader) #take out the header
-    for line in csvreader:
-        busco_field_mapping_dict[line[1]]=line[0]
+def map_data(mapping_dict, input_data):
+    '''mapping values from a dictionary to genome note field names'''
+    mapped_output = {}
+    for mapped_field,original_field in mapping_dict.items():
+        mapped_output[mapped_field] = input_data[original_field]
+    return mapped_output
 
-#extract "results" and "lineage_dataset" objects from json file and merge into one dictionary
-with open(path_to_busco_file, "rt") as f:
+def parse_merqury(stats_file, column_for_parsing):
+    '''writing a dictionary of metrics for primary, alt and combined assemblies from a tsv input file'''
+    parsed_data_list = []
+    with open(stats_file, "rt") as f:
+        logger.info(f"Parsing Merqury.fk metrics from {stats_file}")
+        stats_table = csv.reader(f, delimiter='\t')
+        header_row = next(stats_table)
+        stats_position = header_row.index(column_for_parsing) # define the position of the stats to be parsed in each row
+        for row in stats_table:
+            parsed_data_list.append(row[stats_position])
+    return parsed_data_list
+
+def map_merqury(mapping_dict, input_list):
+    '''mapping values from a list parsed from merqury.fk output to genome note lite field names'''
+    mapped_output = {}
+    for mapped_field,row_index in mapping_dict.items():
+        mapped_output[mapped_field] = input_list[int(row_index)]
+    return mapped_output
+
+logger.info("Starting script")
+
+busco_mapping_dict = parse_mappings(path_to_busco_field_mapping)
+# extract "results" and "lineage_dataset" objects from json file and merge into one dictionary
+with open(args.busco, "rt") as f:
+    logger.info(f"Parsing BUSCO metrics from {args.busco}")
     busco_stats = json.load(f)
-    busco_results = busco_stats['results']
-    busco_lineage = busco_stats['lineage_dataset']
-    busco_for_mapping = busco_results | busco_lineage
+    busco_for_mapping = busco_stats['results'] | busco_stats['lineage_dataset']
+busco_metrics = map_data(busco_mapping_dict, busco_for_mapping)
 
-#map values from merged dictionary to genome note field names
-for metadata_field,busco_field_name in busco_field_mapping_dict.items():
-    busco_output_dict[metadata_field] = busco_for_mapping[busco_field_name]
+kmer_mapping_dict = parse_mappings(path_to_kmer_field_mapping)
+kmer_for_mapping = parse_merqury(args.kmer, "% Covered")
+kmer_metrics = map_merqury(kmer_mapping_dict, kmer_for_mapping)
 
-#add busco stats to json assembly object
-json_assembly_object.update(busco_output_dict)
+qv_mapping_dict = parse_mappings(path_to_qv_field_mapping)
+qv_for_mapping = parse_merqury(args.qv, "QV")
+qv_metrics = map_merqury(qv_mapping_dict, qv_for_mapping)
 
-#parse kmer completeness
-
-#save genome note field names to a dictionary
-with open(path_to_kmer_field_mapping, "rt") as f:
-    csvreader = csv.reader(f)
-    next(csvreader) #take out the header
-    for line in csvreader:
-        kmer_field_mapping_dict[line[0]]=line[1]
-
-#create a dictionary of kmer completeness values for primary, alt and combined assemblies
-with open(path_to_kmer_file, "rt") as f:
-    kmer_table = csv.reader(f, delimiter='\t')
-    header_row = next(kmer_table)
-    kmer_position = header_row.index("% Covered") #define the position of the kmer completeness values in each row
-    for row in kmer_table:
-        key = row[0]
-        value = row[kmer_position]
-        kmer_values_dict[key]=value
-
-#map values from kmer completeness dictionary to genome note field names
-for kmer_row_index,metadata_field in kmer_field_mapping_dict.items():
-    list_of_kmer_values = list(kmer_values_dict.values())
-    kmer_output_dict[metadata_field] = list_of_kmer_values[int(kmer_row_index)]
-
-#add kmer values to json assembly object
-json_assembly_object.update(kmer_output_dict)
-
-#parse qv scores
-
-#save genome note field names to a dictionary
-with open(path_to_qv_field_mapping, "rt") as f:
-    csvreader = csv.reader(f)
-    next(csvreader) #take out the header
-    for line in csvreader:
-        qv_field_mapping_dict[line[1]]=line[0]
-
-#create a dictionary of qv values for primary, alt and combined assemblies
-with open(path_to_qv_file, "rt") as f:
-    qv_table = csv.reader(f, delimiter='\t')
-    header_row = next(qv_table)
-    qv_position = header_row.index("QV") #define the position of the QV values in each row
-    for row in qv_table:
-        key = row[0]
-        value = row[qv_position]
-        qv_values_dict[key]=value
-
-#map values from qv dictionary to genome note field names
-for metadata_field,qv_row_index in qv_field_mapping_dict.items():
-    list_of_qv_values = list(qv_values_dict.values())
-    qv_output_dict[metadata_field] = list_of_qv_values[int(qv_row_index)]
-
-#add qv values to json assembly object
-json_assembly_object.update(qv_output_dict)
-
-#parse summary
-
-with open(path_to_summary_field_mapping, "rt") as f:
-    csvreader = csv.reader(f)
-    next(csvreader) #take out the header
-    for line in csvreader:
-        summary_field_mapping_dict[line[1]]=line[0]
-
-with open(path_to_summary_file, "rt") as f:
+summary_mapping_dict = parse_mappings(path_to_summary_field_mapping)
+# extract keys and values from summary text file and add to dictionary
+with open(args.summary, "rt") as f:
+    logger.info(f"Parsing summary information and metrics from {args.summary}")
+    summary_for_mapping = {}
     next(f) #take out the header
     for line in f:
-        splits = line.strip().split(sep)
+        splits = line.strip().split(": ")
         if len(splits) == 2:
             key = splits[0]
             value = splits[1]
-            summary_values_dict[key]=value
+            summary_for_mapping[key]=value
+summary_metrics = map_data(summary_mapping_dict, summary_for_mapping)
 
-for metadata_field,summary_field_name in summary_field_mapping_dict.items():
-    summary_output_dict[metadata_field] = summary_values_dict[summary_field_name]
-
-#add assembly summary stats to json assembly object
-json_assembly_object.update(summary_output_dict)
-
-#parse tools
-
-with open(path_to_tools_file, "rt") as f:
+# parse software tools and extract assembly pipeline version/hash
+with open(args.software, "rt") as f:
+    logger.info(f"Parsing software tools and versions from {args.software}")
     tool_versions = yaml.load(f, Loader=yaml.SafeLoader)
-    all_wf_versions = tool_versions['Workflow'] #extract all workflow-relevant versions in a dictionary
+    all_wf_versions = tool_versions['Workflow'] # extract all workflow-relevant versions in a dictionary
+workflow_version = {}
+workflow_version['assembly_pipeline_ver'] = all_wf_versions['sanger-tol/genomeassembly'] # create dictionary mapping genome note field name to assembly workflow version
 
-assembly_wf_ver = all_wf_versions[assembly_wf_ver_key] #extract value for assembly workflow version
+# combine parsed metrics into one dictionary
+for metrics in [busco_metrics, kmer_metrics, qv_metrics, summary_metrics, workflow_version]:
+    json_assembly_object.update(metrics)
 
-workflow_version['assembly_pipeline_ver'] = assembly_wf_ver #create dictionary mapping genome note field name to assembly workflow version
+# add contact map path to combined metrics dictionary
+if args.map is not None:
+    logger.info(f"Parsing contact map file name: {args.map}")
+    contact_map = {"contact_map_image_path": str(args.map)}
+    json_assembly_object.update(contact_map)
+else:
+    logger.warning("No contact map provided, output will not reference contact map")
 
-#add workflow version to json assembly object
-json_assembly_object.update(workflow_version)
-
-#map contact map path
-output_contact_map = {"contact_map_image_path": contact_map_file_path}
-
-#add contact map path to json assembly object
-json_assembly_object.update(output_contact_map)
-
-#print json assembly object
-print('"assembly":', json.dumps(json_assembly_object))
+# write combined metrics output to json 
+with open(args.output, "wt", encoding="utf-8") as f:
+    logger.info(f"Writing output to {args.output}")
+    json.dump({'assembly': json_assembly_object}, f)
