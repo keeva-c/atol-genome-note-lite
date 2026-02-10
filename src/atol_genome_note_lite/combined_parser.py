@@ -54,15 +54,25 @@ input_group.add_argument(
     nargs='?',
     help="the PreText Snapshot PNG file of the contact map generated during assembly scaffolding - the file should end with FullMap.png"
 )
+input_group.add_argument(
+    "--metadata",
+    type=Path,
+    nargs='?',
+    help="the sample metadata JSON to which the assembly stats and metrics will be appended onto - should already include metadata for organism, sample, experiment, and runs"
+)
 output_group.add_argument(
     "--output",
     type=Path,
     default=Path("assembly_metrics.json"),
     help="a JSON output file including all assembly stats and information for inclusion in the genome note lite"
 )
+output_group.add_argument(
+    "--json",
+    type=Path,
+    default=Path("full_metadata.json"),
+    help="the full JSON metadata object, including metadata for organism, sample, experiment, and runs, and assembly metrics (only generated if a metadata file is included as input)"
+)
 args = argument_parser.parse_args()
-
-# TODO: allow mapper output json as input file and append assembly_metrics json object to the end of the other metadata json
 
 # set global variables
 json_assembly_object = {}
@@ -163,3 +173,14 @@ else:
 with open(args.output, "wt", encoding="utf-8") as f:
     logger.info(f"Writing output to {args.output}")
     json.dump({'assembly': json_assembly_object}, f)
+
+# append combined assembly metrics to input metadata JSON file and write to new JSON file
+if args.metadata is not None:
+    with open(args.metadata, "rt", encoding="utf-8") as f:
+        metadata = json.load(f)
+    metadata.update({'assembly': json_assembly_object})
+    with open(args.json, "wt", encoding="utf-8") as f:
+        logger.info(f"Writing output to {args.json}")
+        json.dump(metadata,f)
+else:
+    logger.info("No input metadata file included, only assembly information will be generated as JSON")
