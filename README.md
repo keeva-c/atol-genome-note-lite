@@ -63,4 +63,36 @@ The Genome Note Lite generates a single markdown file. If no file path is specif
 
 ### Assembly metadata and metrics
 
-The parse scripts under `src/atol_genome_note_lite/` can be used to extract and format the relevant *Assembly* metadata and metrics from the output files generated from running the [`sanger-tol/genomeassembly`](https://pipelines.tol.sanger.ac.uk/genomeassembly) pipeline. The parse scripts have been combined in [`combined_parser.py`](https://github.com/keeva-c/atol-genome-note-lite/blob/main/src/atol_genome_note_lite/combined_parser.py). File paths to the relevant assembly outputs need to be set as variables inside the script. The expected file extensions are specified in the comments. The CSV assets needed to map the data from the assembly pipeline output files to the AToL JSON schema are in the `dev/` directory.
+The [`combined_parser.py`](https://github.com/keeva-c/atol-genome-note-lite/blob/main/src/atol_genome_note_lite/combined_parser.py) script can be used to parse ouput files genreated during the assembly and QC processes to extract and format the metrics and information required to generate the genome note lite. Assembly output files which can be parsed include:
+ - BUSCO summaries, 
+ - kmer stats,
+ - QV stats, 
+ - general assembly summaries, 
+ - software version logs, and
+ - contact maps.
+
+To use the `combined_parser.py` script:
+
+```
+usage: combined_parser.py [-h] [--busco BUSCO] [--kmer KMER] [--qv QV] [--summary SUMMARY] [--software SOFTWARE] [--map [MAP]] [--metadata [METADATA]] [--output OUTPUT] [--full_json FULL_JSON]
+
+This tool parses files that are generated during the genome assembly pipeline and outputs them in a json format suitable for appending to an organism-sample-experiment-reads metadata json which can be used an input to the explore.py script
+
+options:
+  -h, --help            show this help message and exit
+
+Input:
+  --busco BUSCO         the JSON summary file generated during BUSCO analysis of the assembly - the file should end with busco.json (default: None)
+  --kmer KMER           the kmer count file generated during merqury.FK analysis of the assembly - the file should end with .completeness.stats (default: None)
+  --qv QV               the QV scores summary file generated during merqury.FK analysis of the assembly - the file should end with .qv (default: None)
+  --summary SUMMARY     the summary text file generated when using the sanger_tol assembly pipeline - the file should end with .assembly_summary (default: None)
+  --software SOFTWARE   the YAML file summarising the tools and versions used by the assembly pipeline - the file should end with genomeassembly_software_versions.yml (default: None)
+  --map [MAP]           the PreText Snapshot PNG file of the contact map generated during assembly scaffolding - the file should end with FullMap.png (default: None)
+  --metadata [METADATA]
+                        the sample metadata JSON to which the assembly stats and metrics will be appended onto - should already include metadata for organism, sample, experiment, and runs (default: None)
+
+Output:
+  --output OUTPUT       a JSON output file including all assembly stats and information for inclusion in the genome note lite (default: results/assembly_metrics.json)
+  --full_json FULL_JSON
+                        the full JSON metadata object, including metadata for organism, sample, experiment, and runs, and assembly metrics (only generated if a metadata file is included as input) (default: results/full_metadata.json)
+  ```

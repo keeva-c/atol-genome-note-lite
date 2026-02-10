@@ -63,13 +63,13 @@ input_group.add_argument(
 output_group.add_argument(
     "--output",
     type=Path,
-    default=Path("assembly_metrics.json"),
+    default=Path("results/assembly_metrics.json"),
     help="a JSON output file including all assembly stats and information for inclusion in the genome note lite"
 )
 output_group.add_argument(
-    "--json",
+    "--full_json",
     type=Path,
-    default=Path("full_metadata.json"),
+    default=Path("results/full_metadata.json"),
     help="the full JSON metadata object, including metadata for organism, sample, experiment, and runs, and assembly metrics (only generated if a metadata file is included as input)"
 )
 args = argument_parser.parse_args()
@@ -179,8 +179,8 @@ if args.metadata is not None:
     with open(args.metadata, "rt", encoding="utf-8") as f:
         metadata = json.load(f)
     metadata.update({'assembly': json_assembly_object})
-    with open(args.json, "wt", encoding="utf-8") as f:
-        logger.info(f"Writing output to {args.json}")
+    with open(args.full_json, "wt", encoding="utf-8") as f:
+        logger.info(f"Writing output to {args.full_json}")
         json.dump(metadata,f)
 else:
     logger.info("No input metadata file included, only assembly information will be generated as JSON")
