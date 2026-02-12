@@ -119,6 +119,7 @@ extracted for sequencing.
 | Run accession | {{ runs.sra_run_accession }} |
 | Read count | {% if runs.run_read_count %}{{ make_pretty_number(runs.run_read_count) }}{% else %}*not provided*{% endif %} |
 | Base count | {% if runs.run_base_count %}{{ round_bases_up(runs.run_base_count) }}{% else %}*not provided*{% endif %} |
+| Sequencing platform | {{ experiment.platform }} |
 | Sequencing instrument | {{ experiment.instrument_model }} |
 | Sequencing chemistry | {{ experiment.sequencing_kit }} |
 | Sequencing facility | {{ experiment.GAL }} |
@@ -203,42 +204,12 @@ extraction of mitogenomic data in target enrichment phylogenomics,
 *Molecular Ecology Resources*, 20 (4), pp. 892--905.
 DOI:10.1111/1755-0998.13160.
 
-Altschul, S. F., Gish, W., Miller, W., Myers, E. W. and Lipman, D. J.
-(1990) Basic local alignment search tool, *Journal of Molecular
-Biology*, 215 (3), pp. 403--410. DOI:10.1016/S0022-2836(05)80360-2.
-
 Babirye, S. R., Chafin, T., Duong, C., Muffato, M., Qi, G., Sadasivan Baby, C., Surana, P., and Yates, B. (2025) sanger-tol/genomenote v2.1.1 (2.1.1). Zenodo. DOI:10.5281/zenodo.15052341.
-
-Bateman, A., Martin, M.-J., Orchard, S., Magrane, M., Ahmad, S., Alpi,
-E., *et al.* (2023) UniProt: the Universal Protein Knowledgebase in
-2023, *Nucleic Acids Research*, 51 (D1), pp. D523--D531.
-DOI:10.1093/nar/gkac1052.
-
-Buchfink, B., Reuter, K. and Drost, H.-G. (2021) Sensitive protein
-alignments at tree-of-life scale using DIAMOND, *Nature Methods*, 18
-(4), pp. 366--368. DOI:10.1038/s41592-021-01101-x.
-
-Challis, R., Kumar, S., Sotero-Caio, C., Brown, M. and Blaxter, M.
-(2023) Genomes on a Tree (GoaT): A versatile, scalable search engine for
-genomic and sequencing project metadata across the eukaryotic tree of
-life, *Wellcome Open Research*, 8, pp. 24.
-DOI:10.12688/wellcomeopenres.18658.1.
-
-Challis, R., Richards, E., Rajan, J., Cochrane, G. and Blaxter, M.
-(2020) BlobToolKit -- interactive quality assessment of genome
-assemblies, *G3: Genes, Genomes, Genetics*, 10 (4), pp. 1361--1374.
-DOI:10.1534/g3.119.400908.
 
 Cheng, H., Concepcion, G. T., Feng, X., Zhang, H. and Li, H. (2021)
 Haplotype-resolved *de novo* assembly using phased assembly graphs with
 hifiasm, *Nature Methods*, 18 (2), pp. 170--175.
 DOI:10.1038/s41592-020-01056-5.
-
-da Veiga Leprevost, F., Grüning, B. A., Alves Aflitos, S., Röst, H. L.,
-Uszkoreit, J., Barsnes, H., *et al.* (2017) BioContainers: an
-open-source and community-driven framework for software standardization,
-*Bioinformatics*, 33 (16), pp. 2580--2582.
-DOI:10.1093/bioinformatics/btx192.
 
 Danecek, P., Bonfield, J. K., Liddle, J., Marshall, J., Ohan, V.,
 Pollard, M. O., *et al.* (2021) Twelve years of SAMtools and BCFtools,
@@ -251,11 +222,6 @@ and Notredame, C. (2017) Nextflow enables reproducible computational
 workflows, *Nature Biotechnology*, 35 (4), pp. 316--319.
 DOI:10.1038/nbt.3820.
 
-Diesh, C., Stevens, G. J., Xie, P., De Jesus Martinez, T., Hershberg, E.
-A., Leung, A., *et al.* (2023) JBrowse 2: a modular genome browser with
-views of synteny and structural variation, *Genome Biology*, 24 (1), pp.
-74. DOI:10.1186/s13059-023-02914-z.
-
 Earth BioGenome Project (2024) Report on Assembly Standards Version 6.0 - September 2024. Retrieved 19 November, 2025, from [https://www.earthbiogenome.org/report-on-assembly-standards](https://www.earthbiogenome.org/report-on-assembly-standards)
 
 Ewels, P. A., Peltzer, A., Fillinger, S., Patel, H., Alneberg, J., Wilm,
@@ -263,40 +229,16 @@ A., Garcia, M. U., Di Tommaso, P. and Nahnsen, S. (2020) The nf-core
 framework for community-curated bioinformatics pipelines, *Nature
 Biotechnology*, 38 (3), pp. 276--278. DOI:10.1038/s41587-020-0439-x.
 
-Ewels, P., Magnusson, M., Lundin, S. and Käller, M. (2016) MultiQC:
-summarize analysis results for multiple tools and samples in a single
-report, *Bioinformatics*, 32 (19), pp. 3047--3048.
-DOI:10.1093/bioinformatics/btw354.
-
 Formenti, G., Abueg, L., Brajuka, A., Brajuka, N., Gallardo-Alba, C.,
 Giani, A., Fedrigo, O. and Jarvis, E. D. (2022) Gfastats: conversion,
 evaluation and manipulation of genome sequences using assembly graphs,
 *Bioinformatics*, 38 (17), pp. 4214--4216.
 DOI:10.1093/bioinformatics/btac460.
 
-Grüning, B., Dale, R., Sjödin, A., Chapman, B. A., Rowe, J.,
-Tomkins-Tinch, C. H., Valieris, R. and Köster, J. (2018) Bioconda:
-sustainable and comprehensive software distribution for the life
-sciences, *Nature Methods*, 15 (7), pp. 475--476.
-DOI:10.1038/s41592-018-0046-7.
-
 Guan, D., McCarthy, S. A., Wood, J., Howe, K., Wang, Y. and Durbin, R.
 (2020) Identifying and removing haplotypic duplication in primary genome
 assemblies., *Bioinformatics (Oxford, England)*, 36 (9), pp. 2896--2898.
 DOI:10.1093/bioinformatics/btaa025.
-
-Harry, E. (2022) PretextView (Paired REad TEXTure Viewer): A desktop
-application for viewing pretext contact maps. Available from:
-[https://github.com/wtsi-hpag/PretextView](https://github.com/wtsi-hpag/PretextView).
-
-Kerpedjiev, P., Abdennur, N., Lekschas, F., McCallum, C., Dinkla, K.,
-Strobelt, H., *et al.* (2018) HiGlass: web-based visual exploration and
-analysis of genome interaction maps, *Genome Biology*, 19 (1), pp. 125.
-DOI:10.1186/s13059-018-1486-1.
-
-Kurtzer, G. M., Sochat, V. and Bauer, M. W. (2017) Singularity:
-Scientific containers for mobility of compute, *PLOS ONE*, 12 (5), pp.
-e0177459. DOI:10.1371/journal.pone.0177459.
 
 Li, H. (2018) Minimap2: pairwise alignment for nucleotide sequences,
 *Bioinformatics*, 34 (18), pp. 3094--3100.
@@ -308,37 +250,13 @@ and deeper phylogenetic coverage for scoring of eukaryotic, prokaryotic,
 and viral genomes, *Molecular Biology and Evolution*, 38 (10), pp.
 4647--4654. DOI:10.1093/molbev/msab199.
 
-Merkel, D. (2014) Docker: lightweight Linux containers for consistent
-development and deployment, *Linux Journal*, 2014 (239), pp. 2. DOI:10.5555/2600239.2600241.
-
-Pointon, D.-L., Eagles, W., Sims, Y., Muffato, M. and Surana, P. (2023)
-sanger-tol/treeval v1.0.0 -- Ancient Atlantis.
-DOI:10.5281/zenodo.10047653.
-
 Quinlan, A. R. and Hall, I. M. (2010) BEDTools: a flexible suite of
 utilities for comparing genomic features, *Bioinformatics*, 26 (6), pp.
 841--842. DOI:10.1093/bioinformatics/btq033.
 
-Ranallo-Benavidez, T. R., Jaron, K. S., & Schatz, M. C. (2020) GenomeScope 2.0 and Smudgeplot for reference-free profiling of polyploid genomes. *Nature communications*, 11 (1), 1432. DOI:10.1038/s41467-020-14998-3.
-
-Rhie, A., McCarthy, S. A., Fedrigo, O., Damas, J., Formenti, G., Koren,
-S., *et al.* (2021) Towards complete and error-free genome assemblies of
-all vertebrate species, *Nature*, 592 (7856), pp. 737--746.
-DOI:10.1038/s41586-021-03451-0.
-
 Rhie, A., Walenz, B. P., Koren, S. and Phillippy, A. M. (2020) Merqury:
 Reference-free quality, completeness, and phasing assessment for genome
 assemblies, *Genome Biology*, 21 (1). DOI:10.1186/s13059-020-02134-9.
-
-Sayers, E. W., Cavanaugh, M., Clark, K., Pruitt, K. D., Sherry, S. T.,
-Yankie, L. and Karsch-Mizrachi, I. (2024) GenBank 2024 Update, *Nucleic
-Acids Research*, 52 (D1), pp. D134--D137. DOI:10.1093/nar/gkad903.
-
-Sims, Y., Butt, Z., Chafin, T., Challis, R., Kumar, S., Muffato, M., Qi, G., Ramos Díaz, A., Surana, P., and Yates, B. (2025) sanger-tol/blobtoolkit v0.8.0 – Sprigatito (0.8.0). Zenodo. DOI:10.5281/zenodo.15466127.
-
-Surana, P., Muffato, M. and Qi, G. (2023b) sanger-tol/readmapping:
-sanger-tol/readmapping v1.1.0 - Hebridean Black (1.1.0). Zenodo.
-DOI:10.5281/zenodo.7755669.
 
 Uliano-Silva, M., Ferreira, J. G. R. N., Krasheninnikova, K., Blaxter,
 M., Mieszkowska, N., Hall, N., *et al.* (2023) MitoHiFi: a python
