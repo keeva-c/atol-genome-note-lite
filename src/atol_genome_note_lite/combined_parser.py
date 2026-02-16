@@ -55,6 +55,12 @@ input_group.add_argument(
     help="the PreText Snapshot PNG file of the contact map generated during assembly scaffolding - the file should end with FullMap.png"
 )
 input_group.add_argument(
+    "--kmer_plot",
+    type=Path,
+    nargs='?',
+    help="the GenomeScope2.0 PNG file containing a linear frequency distribution graph of kmers - the file should end with linear_plot.png"
+)
+input_group.add_argument(
     "--mito",
     type=Path,
     nargs='?',
@@ -190,6 +196,14 @@ if args.map is not None:
     json_assembly_object.update(contact_map)
 else:
     logger.warning("No contact map provided, output will not reference contact map")
+
+# add GenomeScope2.0 kmer plot path to combined metrics dictionary
+if args.kmer_plot is not None:
+    logger.info(f"Parsing kmer frequency distribution graph file name: {args.kmer_plot}")
+    kmer_plot = {"genomescope_image_path": str(args.kmer_plot)}
+    json_assembly_object.update(kmer_plot)
+else:
+    logger.warning("No kmer frequency distribution graph provided, output will not reference kmer plot")
 
 # write combined metrics output to json 
 with open(args.output, "wt", encoding="utf-8") as f:

@@ -138,14 +138,17 @@ def sanitise_platform(metadata):
 def overwrite_empty_strings(metadata):
     '''updating metadata input to remove metadata containing empty strings'''
     output_dict = {}
-    for database_sect, metadata_dict in metadata.items():
-        updated_metadata = {}
-        for field, value in metadata_dict.items():
-            if value == "" or value is None:
-                continue
-            else:
-                updated_metadata[field] = value
-        output_dict[database_sect] = updated_metadata
+    for database_sect, metadata_fields in metadata.items():
+        if isinstance(metadata_fields, dict):
+            updated_metadata = {}
+            for field, value in metadata_fields.items():
+                if value == "" or value is None:
+                    continue
+                else:
+                    updated_metadata[field] = value
+            output_dict[database_sect] = updated_metadata
+        elif isinstance(metadata_fields, list):
+            output_dict[database_sect] = metadata_fields
     return output_dict
 
 # functions to make things in the template pretty

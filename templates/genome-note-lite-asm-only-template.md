@@ -18,7 +18,7 @@ organism.family|default("",true)}}). The assembly comprises {% if assembly.scaff
 
 ### **Background**
 
-The genome of {{ "the " ~ organism.common_name ~ ", " if organism.common_name else "" }}*{{ organism.scientific_name }}*, was
+The genome of {{ "the " ~ organism.common_name ~ ", " if organism.common_name else "" }}*{{ organism.scientific_name }}* was
 sequenced as part of the {{ sample.bpa_initiative }} and has been assembled in collaboration with the Australian Tree of Life
 Infrastructure Capability.
 
@@ -50,7 +50,7 @@ Details about the assembled genome sequence, including key assembly metrics and 
 | Single copy BUSCO | {{ assembly.busco_single }}% | > 90% |
 | Duplicated BUSCO | {{ assembly.busco_duplicated }}% | < 5% |
 | BUSCO reference set | {{ assembly.busco_ref }} | |
-| Organelles | {% if assembly.mito_size %}Mitochondrial genome: {{ assembly.mito_size }}{% endif %}{% if assembly.plastid_size %} Plastid genome: {{ assembly.plastid_size }}{% endif %}{% if not assembly.mito_size and not assembly.plastid_size %}No organelles assembled{% endif %} | Complete single alleles |
+| Organelles | {% if assembly.mito_size %}Mitochondrial genome: {{ make_pretty_number(assembly.mito_size) }} bp{% endif %}{% if assembly.plastid_size %} Plastid genome: {{ assembly.plastid_size }}{% endif %}{% if not assembly.mito_size and not assembly.plastid_size %}No organelles assembled{% endif %} | Complete single alleles |
 Table: Table 1: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ organism.scientific_name }}*.
 
 {% if assembly.contact_map_image_path %}
@@ -61,8 +61,8 @@ Chromosomes are shown in order of size from left to right and top to bottom.]({{
 ## **Methods**
 
 Information relating to sample collection, nucleic acid extraction, and
-sequencing are provided in Tables 2, 3, and 4 respectively. An overview
-of the computational pipelines and workflows used in genome assembly are given in Table 5. Individual tools are listed in Table 6.
+sequencing are provided in Tables 2, 3, and 4 respectively. {% if assembly.genomescope_image_path %}A frequency distribution graph of *k*-mers generated during sequencing is included in{% if assembly.contact_map_image_path %} Figure 2. {% else %} Figure 1. {% endif %}{% endif %}
+An overview of the computational pipelines and workflows used in genome assembly are given in Table 5. Individual tools are listed in Table 6.
 
 ### **Sample acquisition**
 
@@ -132,6 +132,14 @@ extracted for sequencing.
 {% include "supplementary_seq_data_for_genome_note.md" ignore missing %}
 Table: Table 4: Methodological information about sequencing runs.
 
+{% if assembly.genomescope_image_path %}
+{% if assembly.contact_map_image_path %}
+![Figure 2: GenomeScope2.0 profile of *k*-mers generated during sequencing. Estimates of genome size (len), proportion of the genome sequence which is not repeated (uniq), and heterozygosity (ab), are given above the *k*-mer frequency distribution plot.]({{ assembly.genomescope_image_path }})
+{% else %}
+![Figure 1: GenomeScope2.0 profile of *k*-mers generated during sequencing. Estimates of genome size (len), proportion of the genome sequence which is not repeated (uniq), and heterozygosity (ab), are given above the *k*-mer frequency distribution plot.]({{ assembly.genomescope_image_path }})
+{% endif %}
+{% endif %}
+
 ### **Genome assembly**
 
 |**Pipeline information** | |
@@ -151,6 +159,7 @@ Table: Table 5: Pipelines and workflows used in genome assembly.
 | FastK | [https://github.com/thegenemyers/FASTK](https://github.com/thegenemyers/FASTK) | NA |
 | gawk | [https://www.gnu.org/software/gawk/](https://www.gnu.org/software/gawk/) | NA |
 | GeneScopeFK | [https://github.com/thegenemyers/GENESCOPE.FK](https://github.com/thegenemyers/GENESCOPE.FK) | NA |
+| GenomeScope2.0 | [https://github.com/tbenavi1/genomescope2.0](https://github.com/tbenavi1/genomescope2.0) | Ranallo-Benavidez *et al.*, 2020 |
 | Gfastats | [https://github.com/vgl-hub/gfastats](https://github.com/vgl-hub/gfastats) | Formenti *et al.*, 2022 |
 | Hifiasm | [https://github.com/chhylp123/hifiasm](https://github.com/chhylp123/hifiasm) | Cheng *et al.*. 2021 |
 | Juicer | [https://github.com/aidenlab/juicer](https://github.com/aidenlab/juicer) | Durand *et al.*, 2016 |
@@ -253,6 +262,8 @@ and viral genomes, *Molecular Biology and Evolution*, 38 (10), pp.
 Quinlan, A. R. and Hall, I. M. (2010) BEDTools: a flexible suite of
 utilities for comparing genomic features, *Bioinformatics*, 26 (6), pp.
 841--842. DOI:10.1093/bioinformatics/btq033.
+
+Ranallo-Benavidez, T. R., Jaron, K. S., & Schatz, M. C. (2020) GenomeScope 2.0 and Smudgeplot for reference-free profiling of polyploid genomes. *Nature communications*, 11 (1), 1432. DOI:10.1038/s41467-020-14998-3.
 
 Rhie, A., Walenz, B. P., Koren, S. and Phillippy, A. M. (2020) Merqury:
 Reference-free quality, completeness, and phasing assessment for genome
