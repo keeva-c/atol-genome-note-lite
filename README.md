@@ -47,31 +47,18 @@ Output:
   --output OUTPUT       optional output file address. (default: results/genome_note_lite.md)
  ```
 
-## How it works
-
-The Genome Note Lite uses [Jinja](https://github.com/pallets/jinja) to populate a markdown template ([`templates/genome-note-lite-annot-template.md`](https://github.com/keeva-c/atol-genome-note-lite/blob/main/templates/genome-note-lite-annot-template.md) or [`templates/genome-note-lite-asm-only-template.md`](https://github.com/keeva-c/atol-genome-note-lite/blob/main/templates/genome-note-lite-asm-only-template.md)) with variables specified in JSON input files. The template document is loosely based on the [`sanger-tol/genomenote`](https://pipelines.tol.sanger.ac.uk/genomenote) template, but has been reduced and re-formatted to better suit the requirements of the AToL project and its metadata. It is populated with the sample, sequencing, and assembly metadata, and calculated assembly metrics that are provided as input variables in the form of key-value pairs. Unlike the `sanger-tol/genomenote` pipeline, the Genome Note Lite does not run any bioinformatic analyses.
-
-The input variables are preprocessed. This includes removing key-value pairs if the value is an empty string and adding an additional key-value pair with the full Bioplatforms Initiative name, if applicable. 
-
-The template is populated with the metadata values provided for the primary WGS data package. If additional WGS data and/or Hi-C data are specified, the Genome Note Lite will populate supplementary templates using these metadata. The supplementary information is then included in the relevant sections of the main Genome Note Lite template. The supplementary markdown files are only generated and included where necessary. If any data were generated from the same sample, the sample metadata will not be replicated. If the additional data were generated from the same library, the nucleic acid extraction metadata will not be replicated.
-
-During rendering, the template implements basic logic to determine certain wording choices. These largely depend on whether certain key-value pairs have been provided or whether the assembly is a contig- or scaffold-level assembly. Certain variables in the template have placeholder default values specified if the variable is not provided as input. If it is not specified in the template, the global default value for missing key-value pairs renders as "*not provided*". Additional formatting functions are also applied to standardise numerical representations.
-
-After the template has been rendered, the Genome Note Lite deletes intermediate files including processed metadata and supplementary rendered templates.
-
-The Genome Note Lite generates a single markdown file. If no file path is specified in the input arguments, the output will default to a file called `genome_note_lite.md` inside a `results/` directory. To convert the Genome Note to a `.docx` or `.pdf` format, you will need to use [Pandoc](https://pandoc.org/) or a similar conversion tool.
-
-### Assembly metadata and metrics
+## Assembly metadata and metrics
 
 The [`combined_parser.py`](https://github.com/keeva-c/atol-genome-note-lite/blob/main/src/atol_genome_note_lite/combined_parser.py) script can be used to parse ouput files genreated during the assembly and QC processes to extract and format the metrics and information required to generate the genome note lite. Assembly output files which can be parsed include:
  - BUSCO summaries, 
  - kmer stats,
  - QV stats, 
  - general assembly summaries, 
- - software version logs, and
- - contact maps.
+ - software version logs, 
+ - contact maps, and
+ - mitogenome stats.
 
-To use the `combined_parser.py` script:
+### Full usage:
 
 ```
 usage: combined_parser.py [-h] [--busco BUSCO] [--kmer KMER] [--qv QV] [--summary SUMMARY] [--software SOFTWARE] [--map [MAP]] [--kmer_plot [KMER_PLOT]] [--mito [MITO]] [--metadata [METADATA]] [--output OUTPUT] [--full_json FULL_JSON]
@@ -98,4 +85,18 @@ Output:
   --output OUTPUT       a JSON output file including all assembly stats and information for inclusion in the genome note lite (default: results/assembly_metrics.json)
   --full_json FULL_JSON
                         the full JSON metadata object, including metadata for organism, sample, experiment, and runs, and assembly metrics (only generated if a metadata file is included as input) (default: results/full_metadata.json)
-  ```
+```
+
+## How it works
+
+The Genome Note Lite uses [Jinja](https://github.com/pallets/jinja) to populate a markdown template ([`templates/genome-note-lite-annot-template.md`](https://github.com/keeva-c/atol-genome-note-lite/blob/main/templates/genome-note-lite-annot-template.md) or [`templates/genome-note-lite-asm-only-template.md`](https://github.com/keeva-c/atol-genome-note-lite/blob/main/templates/genome-note-lite-asm-only-template.md)) with variables specified in JSON input files. The template document is loosely based on the [`sanger-tol/genomenote`](https://pipelines.tol.sanger.ac.uk/genomenote) template, but has been reduced and re-formatted to better suit the requirements of the AToL project and its metadata. It is populated with the sample, sequencing, and assembly metadata, and calculated assembly metrics that are provided as input variables in the form of key-value pairs. Unlike the `sanger-tol/genomenote` pipeline, the Genome Note Lite does not run any bioinformatic analyses.
+
+The input variables are preprocessed. This includes removing key-value pairs if the value is an empty string and adding an additional key-value pair with the full Bioplatforms Initiative name, if applicable. 
+
+The template is populated with the metadata values provided for the primary WGS data package. If additional WGS data and/or Hi-C data are specified, the Genome Note Lite will populate supplementary templates using these metadata. The supplementary information is then included in the relevant sections of the main Genome Note Lite template. The supplementary markdown files are only generated and included where necessary. If any data were generated from the same sample, the sample metadata will not be replicated. If the additional data were generated from the same library, the nucleic acid extraction metadata will not be replicated.
+
+During rendering, the template implements basic logic to determine certain wording choices. These largely depend on whether certain key-value pairs have been provided or whether the assembly is a contig- or scaffold-level assembly. Certain variables in the template have placeholder default values specified if the variable is not provided as input. If it is not specified in the template, the global default value for missing key-value pairs renders as "*not provided*". Additional formatting functions are also applied to standardise numerical representations.
+
+After the template has been rendered, the Genome Note Lite deletes intermediate files including processed metadata and supplementary rendered templates.
+
+The Genome Note Lite generates a single markdown file. If no file path is specified in the input arguments, the output will default to a file called `genome_note_lite.md` inside a `results/` directory. To convert the Genome Note to a `.docx` or `.pdf` format, you will need to use [Pandoc](https://pandoc.org/) or a similar conversion tool.
