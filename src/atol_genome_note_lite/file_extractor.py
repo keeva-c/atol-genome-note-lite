@@ -57,12 +57,13 @@ patterns = {
     'genomescope_plot': f"kmer/k../long/{tolid}.long.k.._linear_plot\\.png"
 }
 
+# functions
 def find_file(file_type, pattern):
     logger.debug(f"Searching for {file_type}...")
     path_list = re.findall(pattern, file_names)
     if len(path_list) == 0:
         logger.warning(f"No file found for {file_type}.")
-        path_list.append(None)
+        path_list = None
     elif len(path_list) > 1:
         logger.warning(f"Multiple files found for {file_type}: {path_list}")
     else:
@@ -71,6 +72,7 @@ def find_file(file_type, pattern):
 #        path_list[0] = Path(path_list[0]) # convert string to Path
     return path_list
 
+# start script
 with open(args.file_dir, "r") as f:
     file_names = f.read()
 
