@@ -47,6 +47,24 @@ Output:
   --output OUTPUT       optional output file address. (default: results/genome_note_lite.md)
  ```
 
+## Extracting file paths
+
+The [`file_extractor.py`](x) script can be used to find the paths of the files used in the genome note lite given a text file listing the contents of the assembly pipeline output directory. Paths can be used in the `combined_parser.py` script to extract the relevant metrics or information.
+
+### Full usage:
+
+```
+usage: file_extractor.py [-h] [--file_dir FILE_DIR] [--tolid TOLID] [--output OUTPUT]
+
+This tool extracts file paths for files used in the genome note lite from a text file containing the directory contents generated in the genome assembly pipeline.
+
+options:
+  -h, --help           show this help message and exit
+  --file_dir FILE_DIR  a text file listing all file paths contained in the genome assembly pipeline ouptut directory (default: None)
+  --tolid TOLID        the ToLID for the specimen used to generate the genome assembly (default: None)
+  --output OUTPUT      a JSON file containing the list of extracted paths with their file types (default: results/found_files.json)
+```
+
 ## Assembly metadata and metrics
 
 The [`combined_parser.py`](https://github.com/keeva-c/atol-genome-note-lite/blob/main/src/atol_genome_note_lite/combined_parser.py) script can be used to parse ouput files genreated during the assembly and QC processes to extract and format the metrics and information required to generate the genome note lite. Assembly output files which can be parsed include:

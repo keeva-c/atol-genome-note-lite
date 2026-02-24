@@ -26,17 +26,17 @@ argument_parser = argparse.ArgumentParser(
 argument_parser.add_argument(
     "--file_dir",
     type=Path,
-    help="A text file listing all file paths contained in the genome assembly pipeline ouptut directory."
+    help="a text file listing all file paths contained in the genome assembly pipeline ouptut directory"
 )
 argument_parser.add_argument(
     "--tolid",
-    help="The ToLID for the specimen used to generate the genome assembly."
+    help="the ToLID for the specimen used to generate the genome assembly"
 )
 argument_parser.add_argument(
     "--output",
     type=Path,
     default=Path("results/found_files.json"),
-    help="A JSON file containing the list of extracted paths with their file types."
+    help="a JSON file containing the list of extracted paths with their file types"
 )
 args = argument_parser.parse_args()
 
