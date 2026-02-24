@@ -49,7 +49,7 @@ Output:
 
 ## Extracting file paths
 
-The [`file_extractor.py`](x) script can be used to find the paths of the files used in the genome note lite given a text file listing the contents of the assembly pipeline output directory. Extracted paths only include outputs generated for hap1. Paths can be used in the `combined_parser.py` script to extract the relevant metrics or information.
+The [`file_extractor.py`](https://github.com/keeva-c/atol-genome-note-lite/blob/main/src/atol_genome_note_lite/file_extractor.py) script can be used to find the paths of the files used in the genome note lite given a text file listing the contents of the assembly pipeline output directory. Extracted paths only include outputs generated for hap1. Paths can be used in the [`combined_parser.py`](https://github.com/keeva-c/atol-genome-note-lite/tree/main#assembly-metadata-and-metrics) script to extract the relevant metrics or information.
 
 > [!Note]
 > This script can only retrieve file paths from output directories where the hi-c phasing option was selected during genome assembly.
