@@ -89,7 +89,7 @@ Table: Table 2: Genome annotation information for {{ assembly.assembly_name|defa
 
 Information relating to sample collection, nucleic acid extraction, and
 sequencing are provided in Tables 3, 4, and 5 respectively. {% if assembly.genomescope_image_path %}A frequency distribution graph of *k*-mers generated during sequencing is included in{% if assembly.contact_map_image_path %} Figure 2. {% else %} Figure 1. {% endif %}{% endif %}
-An overview of the computational pipelines used in genome assembly, annotation and quality assessment are given in Table 6. Individual tools are listed in Table 7.
+An overview of the computational pipelines used in genome assembly, annotation, and quality assessment are given in Table 6. Individual tools are listed in Table 7.
 
 ### **Sample acquisition**
 
@@ -159,7 +159,7 @@ extracted for sequencing.
 {% include "supplementary_seq_data_for_genome_note.md" ignore missing %}
 Table: Table 5: Methodological information about sequencing runs.
 
-{% if assembly.assembly.genomescope_image_path %}
+{% if assembly.genomescope_image_path %}
 {% if assembly.contact_map_image_path %}
 ![Figure 2: GenomeScope2.0 profile of *k*-mers generated during sequencing. Estimates of genome size (len), proportion of the genome sequence which is not repeated (uniq), and heterozygosity (ab), are given above the *k*-mer frequency distribution plot.]({{ assembly.genomescope_image_path }})
 {% else %}
