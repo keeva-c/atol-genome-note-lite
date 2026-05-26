@@ -33,6 +33,11 @@ argument_parser.add_argument(
     help="the ToLID for the specimen used to generate the genome assembly"
 )
 argument_parser.add_argument(
+    "--hic",
+    action="store_true",
+    help="extracts files for assemblies generated with Hi-C data"
+)
+argument_parser.add_argument(
     "--output",
     type=Path,
     default=Path("results/found_files.json"),
@@ -46,7 +51,7 @@ args = argument_parser.parse_args()
 tolid = args.tolid
 file_paths = {}
 
-patterns = {
+hic_patterns = {
     'busco_stats': f"{tolid}\\.hifiasm-hic.*/scaffolding_hap1/yahs/asm_hap1_scaffolds_final.*short_summary.json",
     'kmer_stats': f"{tolid}\\.hifiasm-hic.*/scaffolding_hap1/yahs/asm_hap1_scaffolds_final\\.fa\\.ccs\\.merquryfk/{tolid}\\.ccs\\.completeness\\.stats",
     'qv_stats': f"{tolid}\\.hifiasm-hic.*/scaffolding_hap1/yahs/asm_hap1_scaffolds_final\\.fa\\.ccs\\.merquryfk/{tolid}\\.ccs\\.qv",
@@ -55,6 +60,16 @@ patterns = {
     'mitogenome_stats': f"{tolid}\\.hifiasm-hic.*/mito/contigs_stats\\.tsv",
     'software_versions': f"pipeline_info/genomeassembly_software_versions\\.yml",
     'genomescope_plot': f"kmer/k../long/{tolid}.long.k.._linear_plot\\.png"
+}
+
+no_hic_patterns = {
+    'busco_stats': f"{tolid}\\..+\\.purged/purging/busco\\..+/short_summary\\.specific\\..+\\.purged.fa.json",
+    'kmer_stats': f"{tolid}\\..+\\.purged/purging/merqury\\..*/asm\\..*\\.completeness\\.stats",
+    'qv_stats': f"{tolid}\\..+\\.purged/purging/merqury\\..*/asm\\..*\\.qv",
+    'summary_stats': f"{tolid}\\..+\\.purged/purging/asm\\.purged\\.fa\\.assembly_summary",
+    'mitogenome_stats': f"{tolid}\\..+\\.purged/mito/contigs_stats\\.tsv", # defaulting to mitohifi results generated in `contigs` mode
+    'software_versions': f"pipeline_info/genomeassembly_software_versions\\.yml",
+    'genomescope_plot': f"kmer/k../long/{tolid}.long.k.._linear_plot\\.png" # currently missing in the results directory
 }
 
 # functions
@@ -73,8 +88,13 @@ def find_file(file_type, pattern):
     return path_list
 
 # start script
-with open(args.file_dir, "r") as f:
+with open(args.file_dir, "r", encoding="utf-8") as f:
     file_names = f.read()
+
+if args.hic:
+    patterns = hic_patterns
+else:
+    patterns = no_hic_patterns
 
 for file_type, pattern in patterns.items():
     path = find_file(file_type, pattern)
@@ -83,3 +103,9 @@ for file_type, pattern in patterns.items():
 with open(args.output, "wt", encoding="utf-8") as f:
     logger.info(f"Writing file paths for {args.tolid} to {args.output}")
     json.dump(file_paths, f)
+
+print(f"rclone copy command for {args.tolid}:")
+
+for file_path in file_paths.values():
+    if file_path:
+        print(f"--include {file_path} `")
