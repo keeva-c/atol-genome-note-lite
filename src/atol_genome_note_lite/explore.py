@@ -80,14 +80,15 @@ args = argument_parser.parse_args()
 
 # functions to preprocess metadata
 def preprocess_metadata(metadata_file, processed_files):
-    '''combining the above two metadata formatting functions together and saving output to a new file with '-processed' suffix'''
+    '''combining the below two metadata formatting functions together and saving output to a new file with '-processed' suffix'''
     processed_file = Path(metadata_file).stem + "-processed" + Path(metadata_file).suffix
     logger.info(f"Preprocessing {metadata_file} and saving ouput to interim {processed_file} file")
     with open(metadata_file, 'r') as f:
         unprocessed_file = json.load(f)
         metadata_w_initiative = map_bpa_initiative(unprocessed_file)
         metadata_w_platform = sanitise_platform(metadata_w_initiative)
-        processed_metadata = overwrite_empty_strings(metadata_w_platform)
+        metadata_w_asm_lvl = append_assembly_level(metadata_w_platform)
+        processed_metadata = overwrite_empty_strings(metadata_w_asm_lvl)
     with open(processed_file, 'w') as f:
         json.dump(processed_metadata, f)
     processed_files.append(processed_file)
@@ -134,6 +135,17 @@ def sanitise_platform(metadata):
         cleaned_platform = verbatim_platform
     metadata['experiment']['platform'] = cleaned_platform
     return(metadata)
+
+# TODO: handle curation outputs/stats and deduce whether assembly_level is chromosome
+
+def append_assembly_level(metadata):
+    '''setting assembly level based on whether hic data were supplied'''
+    if args.hic_metadata:
+        assembly_level = "scaffold"
+    else:
+        assembly_level = "contig"
+    metadata['assembly']['assembly_level'] = assembly_level
+    logger.debug(f"setting assembly level to {assembly_level}")
 
 def overwrite_empty_strings(metadata):
     '''updating metadata input to remove metadata containing empty strings'''
