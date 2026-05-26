@@ -115,6 +115,8 @@ def map_bpa_initiative(metadata):
         full_initiative = 'Genomics for Forest Resilience Initiative'
     elif initiative_acronym == 'bpa-plants':
         full_initiative = 'Genomics for Australian Plants'
+    elif initiative_acronym == 'aus-venom':
+        full_initiative = 'Australian Venom Innovation and Discovery Initiative'
     else:
         logger.warning(f"Bioplatforms initiative ({initiative_acronym}) not recognised.")
         full_initiative = None
