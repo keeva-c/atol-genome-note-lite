@@ -50,11 +50,11 @@ Details about the assembled genome sequence, including key assembly metrics and 
 | Single copy BUSCOs | {{ assembly.busco_single }}% | > 90% |
 | Duplicated BUSCOs | {{ assembly.busco_duplicated }}% | < 5% |
 | Reference set | {{ assembly.busco_ref }} | |
-Table: Table 1: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ organism.scientific_name }}*.
+Table: Table 1: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ taxonomy_info.ncbi_scientific_name }}*.
 
 {% if assembly.contact_map_image_path %}
 ![Figure 1: Hi-C contact map of the genome assembly, visualised using HiGlass.
-Chromosomes are shown in order of size from left to right and top to bottom.]({{ assembly.contact_map_image_path }})
+{% if assembly.assembly_level=='chromosome %}Chromosomes {% else %}Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.contact_map_image_path }})
 {% endif %}
 
 | **Annotation information** | |
@@ -85,9 +85,7 @@ Table: Table 2: Genome annotation information for {{ assembly.assembly_name|defa
 
 ## **Methods**
 
-Information relating to sample collection, nucleic acid extraction, and
-sequencing are provided in Tables 3, 4, and 5 respectively. {% if assembly.genomescope_image_path %}A frequency distribution graph of *k*-mers generated during sequencing is included in{% if assembly.contact_map_image_path %} Figure 2. {% else %} Figure 1. {% endif %}{% endif %}
-An overview of the computational pipelines used in genome assembly, annotation, and quality assessment are given in Table 6. Individual tools are listed in Table 7.
+Information relating to sample collection, nucleic acid extraction and library preparation, and sequencing are provided in Tables 3, 4, and 5 respectively. {% if assembly.genomescope_image_path %}A frequency distribution graph of *k*-mers generated during sequencing is included in{% if assembly.contact_map_image_path %} Figure 2. {% else %} Figure 1. {% endif %}{% endif %}An overview of the computational pipelines used in genome assembly, annotation, and quality assessment are given in Table 6. Individual tools are listed in Table 7.
 
 ### **Sample acquisition**
 
@@ -95,13 +93,13 @@ An overview of the computational pipelines used in genome assembly, annotation, 
 | --- | ----- |
 | **Sample: {{ sample.biosample_accession }}** | |
 | BioSample accession | {{ sample.biosample_accession }} |
-| Scientific name | *{{ organism.scientific_name }}* |
+| Scientific name | *{{ taxonomy_info.ncbi_scientific_name }}* |
 | TOLID | {{ sample.tolid }} |
 | Specimen identifier | {{ sample.specimen_id }} |
 | Specimen identifier defined by | {{ sample.specimen_id_description }} |
 | Sex | {{ sample.sex }} |
 | Lifestage | {{ sample.lifestage }} |
-| Date | {{ sample.collection_date }}|
+| Date | {{ sample.collection_date }} |
 | Locality | {{ sample.region_and_locality }}{% if sample.region_and_locality!=sample.state_or_region %} |
 | State/region | {{ sample.state_or_region }}{% else %}{% endif %} |
 | Country/ocean | {{ sample.country_or_sea }} |
@@ -114,24 +112,27 @@ An overview of the computational pipelines used in genome assembly, annotation, 
 | Identified by | {{ sample.identified_by }} |
 | Preservation method | {{ sample.preservation_method }} |
 | Preservation temperature | {{ sample.preservation_temperature }} | 
+| Sample tissue | {{ sample.organism_part}} |
 {% include "supplementary_sample_data_for_genome_note.md" ignore missing %}
 Table: Table 3: Sample information about the material used to generate
 sequencing data.
 
-### **Nucleic acid extraction**
+### **Nucleic acid extraction and library preparation**
 
-| **Extraction information** | |
+| **Extraction and library information** | |
 | --- | ----- |
 | **Library: {{ experiment.bpa_library_id }}** | |
 | Data type generated | {{ experiment.library_strategy }} |
 | BioSample accession | {{ sample.biosample_accession }} |
-| Sample tissue | {{ sample.organism_part}} |
 | Nucleic acid extraction method | {{ sample.extraction_method }} |
 | Nucleic acid treatment | {{ sample.nucleic_acid_treatment }} |
 | Extract concentration (ng/ul) | {{ sample.nucleic_acid_conc }} |
+| Library preparation method | {{ experiment.library_construction_protocol }} |
+| Library selection | {{ experiment.library_selection }} |
+| Library insert or fragment size | {{ experiment.insert_size }} |
 {% include "supplementary_extract_data_for_genome_note.md" ignore missing %}
 Table: Table 4: Methodological information about nucleic acid material
-extracted for sequencing.
+extracted for sequencing and library preparation.
 
 ### **Sequencing**
 
@@ -148,10 +149,7 @@ extracted for sequencing.
 | Sequencing instrument | {{ experiment.instrument_model }} |
 | Sequencing chemistry | {{ experiment.sequencing_kit }} |
 | Sequencing facility | {{ experiment.GAL }} |
-| Library preparation method | {{ experiment.library_construction_protocol }} |
-| Library selection | {{ experiment.library_selection }} |
 | Library layout | {{ experiment.library_layout }} |
-| Library insert or fragment size | {{ experiment.insert_size }} |
 | Flowcell type | {{ experiment.flowcell_type }} |
 | Base caller model | {{ experiment.base_caller_model }} |
 {% include "supplementary_seq_data_for_genome_note.md" ignore missing %}

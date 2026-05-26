@@ -19,3 +19,4 @@
 | Identified by | {{ sample.identified_by }} |
 | Preservation method | {{ sample.preservation_method }} |
 | Preservation temperature | {{ sample.preservation_temperature }} |
+| Sample tissue | {{ sample.organism_part}} |
