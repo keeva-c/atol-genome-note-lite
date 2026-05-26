@@ -87,14 +87,15 @@ def find_file(file_type, pattern):
 #        path_list[0] = Path(path_list[0]) # convert string to Path
     return path_list
 
-# start script
-with open(args.file_dir, "r", encoding="utf-8") as f:
-    file_names = f.read()
-
+# configurations
 if args.hic:
     patterns = hic_patterns
 else:
     patterns = no_hic_patterns
+
+# start script
+with open(args.file_dir, "r", encoding="utf-8") as f:
+    file_names = f.read()
 
 for file_type, pattern in patterns.items():
     path = find_file(file_type, pattern)
