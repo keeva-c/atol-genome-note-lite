@@ -150,8 +150,8 @@ extracted for sequencing and library preparation.
 | Sequencing chemistry | {{ experiment.sequencing_kit }} |
 | Sequencing facility | {{ experiment.GAL }} |
 | Library layout | {{ experiment.library_layout }} |
-| Flowcell type | {{ experiment.flowcell_type }} |
-| Base caller model | {{ experiment.base_caller_model }} |
+| Flowcell type | {{ experiment.flowcell_type }} | {% if experiment.platform=='OXFORD_NANOPORE'}
+| Base caller model | {{ experiment.base_caller_model }} | {% endif %}
 {% include "supplementary_seq_data_for_genome_note.md" ignore missing %}
 Table: Table 5: Methodological information about sequencing runs.
 
@@ -167,21 +167,37 @@ Table: Table 5: Methodological information about sequencing runs.
 
 |**Pipeline information** | |
 | - | -- |
+| **Reads QC** | | {% if experiment.platform=='PACBIO_SMRT' %}
+| - Pipeline | atol-qc-raw-pacbio |
+| - Version | *tbd* |
+| - Source | [https://github.com/amytims/atol-qc-raw-pacbio](https://github.com/amytims/atol-qc-raw-pacbio) | {% elif experiment.platform=='OXFORD_NANOPORE' %}
+| - Pipeline | atol-qc-raw-ont |
+| - Version | *tbd* |
+| - Source | [https://github.com/TomHarrop/atol-qc-raw-ont](https://github.com/TomHarrop/atol-qc-raw-ont) | {% endif %}
+{% if assembly.assembly_level=!'contig' %}
+| - Pipeline | atol-qc-raw-shortread |
+| - Version | *tbd* |
+| - Source | [https://github.com/TomHarrop/atol-qc-raw-shortread](https://github.com/TomHarrop/atol-qc-raw-shortread) | {% endif %}
 | **Genome assembly** | |
 | - Pipeline | sanger-tol/genomeassembly |
 | - Version | {{ assembly.assembly_pipeline_ver }} |
-| - Source | [https://github.com/TomHarrop/atol_test_assembly](https://github.com/TomHarrop/atol_test_assembly) |
-| - Adapted from | [https://github.com/sanger-tol/genomeassembly](https://github.com/sanger-tol/genomeassembly) |
+| - Source | [https://github.com/sanger-tol/genomeassembly](https://github.com/sanger-tol/genomeassembly) |
+| **Assembly decontamination** | |
+| - Pipeline | sanger-tol/ascc |
+| - Version | {{ assembly.ascc_pipeline_ver }} |
+| - Source | [https://github.com/sanger-tol/ascc](https://github.com/sanger-tol/ascc) | {% if assembly.assembly_level!='contig' %}
+| **Assembly visualisation** | |
+| - Pipeline | sanger-tol/treeval | |
+| - Version | {{ assembly.treeval_pipeline_ver }} |
+| - Source | [https://github.com/sanger-tol/treeval](https://github.com/sanger-tol/treeval) | {% endif %}
 | **Genome annotation** | |
 | - Pipeline | {{ annotation.annotation_pipeline }} |
 | - Version | {{ annotation.annotation_pipeline_ver }} |
 | - Source | {{ annotation.annotation_pipeline_link }} |
-| - Adapted from | tbd |
 | **Annotation QC** | |
 | - Pipeline | {{ annotation.annot_qc_pipeline }} |
 | - Version | {{ annotation.annot_qc_pipeline_ver }} |
 | - Source | {{ annotation.annot_qc_pipeline_link }} |
-| - Adapted from | tbd |
 Table: Table 6: Pipelines used in genome assembly, annotation and quality assessment.
 
 | **Tool** | **Source** | **Reference** |
@@ -211,9 +227,9 @@ Table: Table 6: Pipelines used in genome assembly, annotation and quality assess
 | purge_dups | [https://github.com/dfguan/purge_dups](https://github.com/dfguan/purge_dups) | Guan *et al.*, 2020 |
 | samtools | [https://github.com/samtools/samtools](https://github.com/samtools/samtools) | Danecek *et al.*, 2021 |
 | YaHS | [https://github.com/c-zhou/yahs](https://github.com/c-zhou/yahs) | Zhou *et al.*, 2023 |
-Table: Table 9: Resources and software tools used in assembly pipelines.
+Table: Table 9: Resources and software tools used in bioinformatics pipelines.
 
-## **Data availability**
+## **Data and code availability**
 
 Raw sequencing data, sample metadata, and genome assembly sequences are available from the European Nucleotide Archive under
 the BioProject accession number {{ bioproject_accession }};
@@ -226,6 +242,8 @@ and are available under the following data package identifiers: {{
 experiment.bpa_package_id }}{% include "supplementary_package_data_for_genome_note.md" ignore missing %}.
 
 The genome sequence is released openly for reuse.
+
+ A code repository containing the workflows and configuration files used to generate the assembly is available from GitHub at [https://github.com/AToL-Bioinformatics/{{ sample.tolidqmEuaArma1.1 }}.{{ assembly.assembly_version }}](https://github.com/AToL-Bioinformatics/{{ sample.tolidqmEuaArma1.1 }}.{{ assembly.assembly_version }}). Original bioinformatics piplines are available from the links provided in Table 6.
 
 ## **Acknowledgements and funding information**
 
