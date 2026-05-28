@@ -142,12 +142,14 @@ def sanitise_platform(metadata):
 
 def append_assembly_level(metadata):
     '''setting assembly level based on whether hic data were supplied'''
-    if args.hic_metadata:
-        assembly_level = "scaffold"
+    if metadata.get('assembly') is None:
+        pass
+    elif args.hic_metadata:
+        metadata['assembly']['assembly_level'] = "scaffold"
+        logger.debug(f"setting assembly level to scaffold")
     else:
-        assembly_level = "contig"
-    metadata['assembly']['assembly_level'] = assembly_level
-    logger.debug(f"setting assembly level to {assembly_level}")
+        metadata['assembly']['assembly_level'] = "contig"
+        logger.debug(f"setting assembly level to contig")
     return(metadata)
 
 def overwrite_empty_strings(metadata):
