@@ -181,9 +181,7 @@ with open(args.summary, "rt") as f:
 summary_metrics = map_data(summary_mapping_dict, summary_for_mapping)
 
 # parse software tools and extract pipeline versions/hashes
-software_versions = {}
-software_versions.update(parse_software(args.assembly_software, "genomeassembly"))
-software_versions.update(parse_software(args.ascc_software, "ascc"))
+software_versions = parse_software(args.assembly_software, "genomeassembly") | parse_software(args.ascc_software, "ascc")
 if args.treeval_software is not None:
     software_versions.update(parse_software(args.treeval_software, "treeval"))
 else:
