@@ -10,5 +10,5 @@
 | Sequencing chemistry | {{ experiment.sequencing_kit }} |
 | Sequencing facility | {{ experiment.GAL }} |
 | Library layout | {{ experiment.library_layout }} |
-| Flowcell type | {{ experiment.flowcell_type }} | {% if experiment.platform=='OXFORD_NANOPORE'}
+| Flowcell type | {{ experiment.flowcell_type }} | {% if experiment.platform=='Oxford Nanopore' %}
 | Base caller model | {{ experiment.base_caller_model }} | {% endif %}

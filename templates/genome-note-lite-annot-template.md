@@ -48,7 +48,7 @@ Information relating to sample collection, nucleic acid extraction and library p
 | Collection permit | {{ sample.collection_permit }} |
 | Identified by | {{ sample.identified_by }} |
 | Preservation method | {{ sample.preservation_method }} |
-| Preservation temperature | {{ sample.preservation_temperature }} | 
+| Preservation temperature | {{ sample.preservation_temperature }} |
 | Sample tissue | {{ sample.organism_part}} |
 {% include "supplementary_sample_data_for_genome_note.md" ignore missing %}
 Table: Table 1: Sample information about the material used to generate
