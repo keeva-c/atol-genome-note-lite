@@ -148,6 +148,7 @@ def append_assembly_level(metadata):
         assembly_level = "contig"
     metadata['assembly']['assembly_level'] = assembly_level
     logger.debug(f"setting assembly level to {assembly_level}")
+    return(metadata)
 
 def overwrite_empty_strings(metadata):
     '''updating metadata input to remove metadata containing empty strings'''
