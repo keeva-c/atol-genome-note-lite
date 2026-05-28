@@ -232,9 +232,9 @@ Table: Table 9: Resources and software tools used in bioinformatics pipelines.
 ## **Data and code availability**
 
 Raw sequencing data, sample metadata, and genome assembly sequences are available from the European Nucleotide Archive under
-the BioProject accession number {{ bioproject_accession }};
+the BioProject accession number {{ project.project_accession }};
 [https://identifiers.org/ena.embl/](https://identifiers.org/ena.embl/){{
-bioproject_accession }}. Assembly and raw data accession identifiers are
+project.project_accession }}. Assembly and raw data accession identifiers are
 reported in Tables 1 and 5. The genome annotation file is available from *TBD*. Raw sequence data and sample metadata were
 originally submitted to the Bioplatforms Australia Data Portal
 ([https://data.bioplatforms.com/](https://data.bioplatforms.com/)),
@@ -243,7 +243,7 @@ experiment.bpa_package_id }}{% include "supplementary_package_data_for_genome_no
 
 The genome sequence is released openly for reuse.
 
- A code repository containing the workflows and configuration files used to generate the assembly is available from GitHub at [https://github.com/AToL-Bioinformatics/{{ sample.tolidqmEuaArma1.1 }}.{{ assembly.assembly_version }}](https://github.com/AToL-Bioinformatics/{{ sample.tolidqmEuaArma1.1 }}.{{ assembly.assembly_version }}). Original bioinformatics piplines are available from the links provided in Table 6.
+ A code repository containing the workflow configuration files used to generate the assembly is hosted on GitHub at [https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}](https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}). Original bioinformatics piplines are available from the links provided in Table 6.
 
 ## **Acknowledgements and funding information**
 
