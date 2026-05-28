@@ -183,9 +183,13 @@ def standardise_capitalisation(metadata):
     return(metadata)
 
 def capitalise(val):
-    capitalised = val[0].upper() + val[1:]
-    logger.debug(f"capitalised word ({val}) is {capitalised}")
-    return capitalised
+    try:
+        capitalised = val[0].upper() + val[1:]
+        logger.debug(f"Capitalised word {val} to {capitalised}")
+        return capitalised
+    except Exception as e:
+        logger.warning(f"Unable to capitalise {val} - {e}")
+        return val
 
 # functions to make things in the template pretty
 def make_pretty_number(ugly_number):
