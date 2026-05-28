@@ -1,4 +1,4 @@
-# **A genome assembly for {{ "the " ~ taxonomy_info.ncbi_common_name ~ ", " taxonomy_info.ncbi_common_name else "" }}*{{ taxonomy_info.ncbi_scientific_name }}*{{ " " ~ taxonomy_info.ncbi_authority if taxonomy_info.ncbi_authority else "" }}**
+# **A genome assembly for {{ "the " ~ taxonomy_info.ncbi_common_name ~ ", " if taxonomy_info.ncbi_common_name else "" }}*{{ taxonomy_info.ncbi_scientific_name }}*{{ " " ~ taxonomy_info.ncbi_authority if taxonomy_info.ncbi_authority else "" }}**
 
 ## **Authors**
 
@@ -12,7 +12,7 @@ We have assembled and annotated a {{ assembly.assembly_level }}-level genome seq
 
 ### **Species taxonomy**
 
-{{ taxonom_info.ncbi_full_lineage }}; *{{ taxonomy_info.ncbi_scientific_name }}*{{ " " ~ taxonomy_info.ncbi_authority if taxonomy_info.ncbi_authority else "" }} (NCBI:txid{{ taxonomy_info.ncbi_taxon_id }}).
+{{ taxonomy_info.ncbi_full_lineage }}; *{{ taxonomy_info.ncbi_scientific_name }}*{{ " " ~ taxonomy_info.ncbi_authority if taxonomy_info.ncbi_authority else "" }} (NCBI:txid{{ taxonomy_info.ncbi_taxon_id }}).
 
 ### **Background**
 
@@ -20,72 +20,9 @@ The genome of {{ "the " ~ taxonomy_info.ncbi_common_name ~ ", " if taxonomy_info
 sequenced as part of the {{ sample.bpa_initiative }} and has been assembled and annotated in collaboration with the Australian Tree of Life
 Bioinformatics group.
 
-## **Genome sequence report**
-
-Details about the assembled genome sequence, including key assembly metrics and target minimum standards set by the Earth BioGenome Project (EBP) (Earth BioGenome Project, 2026), are summarised in Table 1. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in Figure 1.{% endif %} Genome annotation results are provided in Table 2.
-
-| **Assembly information** | | **EBP standard** |
-| --- | ---- | --- |
-| Assembly name | {{ assembly.assembly_name }} | |
-| Assembly accession | {{ assembly.assembly_accession }} | |
-| Alternate haplotype assembly accession | {{ assembly.alt_hap_accession }} | |
-| Span | {{ round_bases_up(assembly.genome_length) }} | | {% if assembly.assembly_level=='scaffold %}
-| Number of gaps | {{ make_pretty_number(assembly.gap_count) }} | {{% endif %}} | |
-| Depth of coverage | {% if assembly.coverage %}{{ round_decimal(assembly.coverage) }}x{% else %}*not provided*{% endif %} | |
-| Number of contigs | {{ make_pretty_number(assembly.contig_count) }} | |
-| Contig N50 length | {{ round_bases_up(assembly.contig_n50) }} | > 1 Mb |
-| Longest contig | {{ round_bases_up(assembly.longest_contig) }} | {% if assembly.assembly_level=='scaffold %}
-| Number of scaffolds | {{ make_pretty_number(assembly.scaffold_count) }} | |
-| Scaffold N50 length | {{ round_bases_up(assembly.scaffold_n50) }} | Chromosomal scale |
-| Longest scaffold | {{ round_bases_up(assembly.longest_scaffold) }} | {% endif %} | |
-| Consensus quality (QV) | Primary assembly: {{ assembly.primary_qv }} | > 40 |
-| | Alternate assembly: {{ assembly.alt_qv }} | |
-| | Combined: {{ assembly.combined_qv }} | |
-| *k*-mer completeness | Primary assembly: {{ assembly.primary_kmer }}% | > 90% |
-| | Alternate assembly: {{ assembly.alt_kmer }}% | |
-| | Combined: {{ assembly.combined_kmer }}% | |
-| Organelles | {% if assembly.mito_size %}Mitochondrial genome: {{ make_pretty_number(assembly.mito_size) }} bp{% endif %}{% if assembly.plastid_size %} Plastid genome: {{ assembly.plastid_size }}{% endif %}{% if not assembly.mito_size and not assembly.plastid_size %}No organelles assembled{% endif %} | Complete single alleles |
-| **BUSCO assessment** | |
-| Full summary | {{ add_spaces(assembly.busco_string) }} |
-| Single copy BUSCOs | {{ assembly.busco_single }}% | > 90% |
-| Duplicated BUSCOs | {{ assembly.busco_duplicated }}% | < 5% |
-| Reference set | {{ assembly.busco_ref }} | |
-Table: Table 1: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ taxonomy_info.ncbi_scientific_name }}*.
-
-{% if assembly.contact_map_image_path %}
-![Figure 1: Hi-C contact map of the genome assembly, visualised using HiGlass.
-{% if assembly.assembly_level=='chromosome %}Chromosomes {% else %}Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.contact_map_image_path }})
-{% endif %}
-
-| **Annotation information** | |
-| -- | --- |
-| Annotation name | {{ annotation.annotation_name }} |
-| Number of genes | {{ make_pretty_number(annotation.gene_count) }} |
-| Number of CDSs | {{ make_pretty_number(annotation.cds_count )}} |
-| Number of gene transcripts | {{ make_pretty_number(annotation.transcript_count) }} |
-| Average transcript length | {{ round_decimal(annotation.mean_transcript_length) }} |
-| Average transcripts per gene | {{ round_decimal(annotation.mean_transcripts_per_gene) }} |
-| Average exons per transcript | {{ round_decimal(annotation.mean_exons_per_transcript) }} |
-| **BUSCO completeness** | |
-| Full summary | {{ add_spaces(annotation.annot_busco_summary) }} |
-| | *C: complete, S: single copy, D: duplicated, F: fragmented, M: missing* |
-| Reference set | {{ annotation.annot_busco_lineage }} |
-| **OMArk completeness** | |
-| Full summary | {{ add_spaces(annotation.omark_completeness_summary) }} |
-| | *S: single copy, D: duplicated [U: unexpected, E:expected], M: missing* |
-| Number of HOGs | {{ make_pretty_number(annotation.conserved_hogs) }} |
-| Reference lineage | {{ annotation.omark_lineage}} |
-| **OMArk consistency** | |
-| Number of proteins | {{ make_pretty_number(annotation.omark_protein_count) }}
-| Consistent lineage placements | {{ round_decimal(annotation.omark_percent_consistent) }}% |
-| Inconsistent lineage placements | {{ round_decimal(annotation.omark_percent_inconsistent) }}% |
-| Contaminants | {{ round_decimal(annotation.omark_percent_contaminant) }}% |
-| Unknown | {{ round_decimal(annotation.omark_percent_unknown) }}% |
-Table: Table 2: Genome annotation information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}.
-
 ## **Methods**
 
-Information relating to sample collection, nucleic acid extraction and library preparation, and sequencing are provided in Tables 3, 4, and 5 respectively. {% if assembly.genomescope_image_path %}A frequency distribution graph of *k*-mers generated during sequencing is included in{% if assembly.contact_map_image_path %} Figure 2. {% else %} Figure 1. {% endif %}{% endif %}An overview of the computational pipelines used in genome assembly, annotation, and quality assessment are given in Table 6. Individual tools are listed in Table 7.
+Information relating to sample collection, nucleic acid extraction and library preparation, and sequencing are provided in Tables 1, 2, and 3 respectively.{% if assembly.genomescope_image_path %} A frequency distribution graph of *k*-mers generated during sequencing is included in Figure 1.{% endif %} An overview of the computational pipelines used in genome assembly, annotation, and quality assessment are given in Table 4. Individual tools are listed in Table 5.
 
 ### **Sample acquisition**
 
@@ -94,12 +31,12 @@ Information relating to sample collection, nucleic acid extraction and library p
 | **Sample: {{ sample.biosample_accession }}** | |
 | BioSample accession | {{ sample.biosample_accession }} |
 | Scientific name | *{{ taxonomy_info.ncbi_scientific_name }}* |
-| TOLID | {{ sample.tolid }} |
+| ToLID | {{ sample.tolid }} |
 | Specimen identifier | {{ sample.specimen_id }} |
 | Specimen identifier defined by | {{ sample.specimen_id_description }} |
 | Sex | {{ sample.sex }} |
 | Lifestage | {{ sample.lifestage }} |
-| Date | {{ sample.collection_date }} |
+| Collection date | {{ sample.collection_date }} |
 | Locality | {{ sample.region_and_locality }}{% if sample.region_and_locality!=sample.state_or_region %} |
 | State/region | {{ sample.state_or_region }}{% else %}{% endif %} |
 | Country/ocean | {{ sample.country_or_sea }} |
@@ -114,7 +51,7 @@ Information relating to sample collection, nucleic acid extraction and library p
 | Preservation temperature | {{ sample.preservation_temperature }} | 
 | Sample tissue | {{ sample.organism_part}} |
 {% include "supplementary_sample_data_for_genome_note.md" ignore missing %}
-Table: Table 3: Sample information about the material used to generate
+Table: Table 1: Sample information about the material used to generate
 sequencing data.
 
 ### **Nucleic acid extraction and library preparation**
@@ -131,7 +68,7 @@ sequencing data.
 | Library selection | {{ experiment.library_selection }} |
 | Library insert or fragment size | {{ experiment.insert_size }} |
 {% include "supplementary_extract_data_for_genome_note.md" ignore missing %}
-Table: Table 4: Methodological information about nucleic acid material
+Table: Table 2: Methodological information about nucleic acid material
 extracted for sequencing and library preparation.
 
 ### **Sequencing**
@@ -150,45 +87,40 @@ extracted for sequencing and library preparation.
 | Sequencing chemistry | {{ experiment.sequencing_kit }} |
 | Sequencing facility | {{ experiment.GAL }} |
 | Library layout | {{ experiment.library_layout }} |
-| Flowcell type | {{ experiment.flowcell_type }} | {% if experiment.platform=='OXFORD_NANOPORE'}
+| Flowcell type | {{ experiment.flowcell_type }} | {% if experiment.platform=='Oxford Nanopore' %}
 | Base caller model | {{ experiment.base_caller_model }} | {% endif %}
 {% include "supplementary_seq_data_for_genome_note.md" ignore missing %}
-Table: Table 5: Methodological information about sequencing runs.
+Table: Table 3: Methodological information about sequencing runs.
 
 {% if assembly.genomescope_image_path %}
-{% if assembly.contact_map_image_path %}
-![Figure 2: GenomeScope2.0 profile of *k*-mers generated during sequencing. Estimates of genome size (len), proportion of the genome sequence which is not repeated (uniq), and heterozygosity (ab), are given above the *k*-mer frequency distribution plot.]({{ assembly.genomescope_image_path }})
-{% else %}
 ![Figure 1: GenomeScope2.0 profile of *k*-mers generated during sequencing. Estimates of genome size (len), proportion of the genome sequence which is not repeated (uniq), and heterozygosity (ab), are given above the *k*-mer frequency distribution plot.]({{ assembly.genomescope_image_path }})
-{% endif %}
 {% endif %}
 
 ### **Genome assembly and annotation**
 
 |**Pipeline information** | |
 | - | -- |
-| **Reads QC** | | {% if experiment.platform=='PACBIO_SMRT' %}
-| - Pipeline | atol-qc-raw-pacbio |
+| **Reads QC** | | {% if experiment.platform=='PacBio' %}
+| - Pipeline | amytims/atol-qc-raw-pacbio |
 | - Version | *tbd* |
-| - Source | [https://github.com/amytims/atol-qc-raw-pacbio](https://github.com/amytims/atol-qc-raw-pacbio) | {% elif experiment.platform=='OXFORD_NANOPORE' %}
-| - Pipeline | atol-qc-raw-ont |
+| - Source | [https://github.com/amytims/atol-qc-raw-pacbio](https://github.com/amytims/atol-qc-raw-pacbio) | {% elif experiment.platform=='Oxford Nanopore' %}
+| - Pipeline | TomHarrop/atol-qc-raw-ont |
 | - Version | *tbd* |
-| - Source | [https://github.com/TomHarrop/atol-qc-raw-ont](https://github.com/TomHarrop/atol-qc-raw-ont) | {% endif %}
-{% if assembly.assembly_level=!'contig' %}
-| - Pipeline | atol-qc-raw-shortread |
+| - Source | [https://github.com/TomHarrop/atol-qc-raw-ont](https://github.com/TomHarrop/atol-qc-raw-ont) | {% endif %}{% if assembly.assembly_level!='contig' %}
+| - Pipeline | TomHarrop/atol-qc-raw-shortread |
 | - Version | *tbd* |
 | - Source | [https://github.com/TomHarrop/atol-qc-raw-shortread](https://github.com/TomHarrop/atol-qc-raw-shortread) | {% endif %}
 | **Genome assembly** | |
 | - Pipeline | sanger-tol/genomeassembly |
-| - Version | {{ assembly.assembly_pipeline_ver }} |
+| - Version | {{ assembly.genomeassembly_pipeline_version }} |
 | - Source | [https://github.com/sanger-tol/genomeassembly](https://github.com/sanger-tol/genomeassembly) |
-| **Assembly decontamination** | |
+| **Decontamination** | |
 | - Pipeline | sanger-tol/ascc |
-| - Version | {{ assembly.ascc_pipeline_ver }} |
+| - Version | {{ assembly.ascc_pipeline_version }} |
 | - Source | [https://github.com/sanger-tol/ascc](https://github.com/sanger-tol/ascc) | {% if assembly.assembly_level!='contig' %}
 | **Assembly visualisation** | |
 | - Pipeline | sanger-tol/treeval | |
-| - Version | {{ assembly.treeval_pipeline_ver }} |
+| - Version | {{ assembly.treeval_pipeline_version }} |
 | - Source | [https://github.com/sanger-tol/treeval](https://github.com/sanger-tol/treeval) | {% endif %}
 | **Genome annotation** | |
 | - Pipeline | {{ annotation.annotation_pipeline }} |
@@ -198,7 +130,7 @@ Table: Table 5: Methodological information about sequencing runs.
 | - Pipeline | {{ annotation.annot_qc_pipeline }} |
 | - Version | {{ annotation.annot_qc_pipeline_ver }} |
 | - Source | {{ annotation.annot_qc_pipeline_link }} |
-Table: Table 6: Pipelines used in genome assembly, annotation and quality assessment.
+Table: Table 4: Pipelines used in genome assembly, annotation and quality assessment.
 
 | **Tool** | **Source** | **Reference** |
 | -- | --- | --- |
@@ -227,7 +159,75 @@ Table: Table 6: Pipelines used in genome assembly, annotation and quality assess
 | purge_dups | [https://github.com/dfguan/purge_dups](https://github.com/dfguan/purge_dups) | Guan *et al.*, 2020 |
 | samtools | [https://github.com/samtools/samtools](https://github.com/samtools/samtools) | Danecek *et al.*, 2021 |
 | YaHS | [https://github.com/c-zhou/yahs](https://github.com/c-zhou/yahs) | Zhou *et al.*, 2023 |
-Table: Table 9: Resources and software tools used in bioinformatics pipelines.
+Table: Table 5: Resources and software tools used in bioinformatics pipelines.
+
+## **Genome sequence report**
+
+Details about the assembled genome sequence, including key assembly metrics and target minimum standards set by the Earth BioGenome Project (EBP) (Earth BioGenome Project, 2026), are summarised in Table 6. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in {% if assembly.genomescope_image_path %}Figure 2.{% else %} Figure 1.{% endif %}{% endif %} Genome annotation results are provided in Table 7.
+
+| **Assembly information** | | **EBP standard** |
+| --- | ---- | -- |
+| Assembly name | {{ assembly.assembly_name }} | |
+| Assembly accession | {{ assembly.assembly_accession }} | |
+| Alternate haplotype assembly accession | {{ assembly.alt_hap_accession }} | |
+| Span | {{ round_bases_up(assembly.genome_length) }} | | {% if assembly.assembly_level=='scaffold' %}
+| Number of gaps | {{ make_pretty_number(assembly.gap_count) }} | | {% endif %} 
+| Depth of coverage | {% if assembly.coverage %}{{ round_decimal(assembly.coverage) }}x{% else %}*not provided*{% endif %} | |
+| Number of contigs | {{ make_pretty_number(assembly.contig_count) }} | |
+| Contig N50 length | {{ round_bases_up(assembly.contig_n50) }} | > 1 Mb |
+| Longest contig | {{ round_bases_up(assembly.longest_contig) }} | | {% if assembly.assembly_level=='scaffold' %}
+| Number of scaffolds | {{ make_pretty_number(assembly.scaffold_count) }} | |
+| Scaffold N50 length | {{ round_bases_up(assembly.scaffold_n50) }} | Chromosomal scale |
+| Longest scaffold | {{ round_bases_up(assembly.longest_scaffold) }} | | {% endif %} |
+| Consensus quality (QV) | Primary assembly: {{ assembly.primary_qv }} | > 40 |
+| | Alternate assembly: {{ assembly.alt_qv }} | |
+| | Combined: {{ assembly.combined_qv }} | |
+| *k*-mer completeness | Primary assembly: {{ assembly.primary_kmer }}% | > 90% |
+| | Alternate assembly: {{ assembly.alt_kmer }}% | |
+| | Combined: {{ assembly.combined_kmer }}% | |
+| Organelles | {% if assembly.mito_size %}Mitochondrial genome: {{ make_pretty_number(assembly.mito_size) }} bp{% endif %}{% if assembly.plastid_size %} Plastid genome: {{ assembly.plastid_size }}{% endif %}{% if not assembly.mito_size and not assembly.plastid_size %}No organelles assembled{% endif %} | Complete single alleles |
+| Full BUSCO summary | {{ add_spaces(assembly.busco_string) }} |
+| | *C: complete, S: single copy, D: duplicated/multi-copy, F: fragmented, M: missing, n: number of markers, E: proportion with internal stop codons* | |
+| Single copy BUSCOs | {{ assembly.busco_single }}% | > 90% |
+| Duplicated BUSCOs | {{ assembly.busco_duplicated }}% | < 5% |
+| BUSCO Reference set | {{ assembly.busco_ref }} | |
+Table: Table 6: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ taxonomy_info.ncbi_scientific_name }}*.
+
+{% if assembly.contact_map_image_path %}
+{% if assembly.genomescope_image_path %}
+![Figure 2: Hi-C contact map of the genome assembly, visualised using HiGlass.
+{% if assembly.assembly_level=='chromosome' %}Chromosomes {% else %}Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.contact_map_image_path }})
+{% else %}
+![Figure 1: Hi-C contact map of the genome assembly, visualised using HiGlass.
+{% if assembly.assembly_level=='chromosome' %}Chromosomes {% else %}Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.contact_map_image_path }})
+{% endif %}
+{% endif %}
+
+| **Annotation information** | |
+| -- | --- |
+| Annotation name | {{ annotation.annotation_name }} |
+| Number of genes | {{ make_pretty_number(annotation.gene_count) }} |
+| Number of CDSs | {{ make_pretty_number(annotation.cds_count )}} |
+| Number of gene transcripts | {{ make_pretty_number(annotation.transcript_count) }} |
+| Average transcript length | {{ round_decimal(annotation.mean_transcript_length) }} |
+| Average transcripts per gene | {{ round_decimal(annotation.mean_transcripts_per_gene) }} |
+| Average exons per transcript | {{ round_decimal(annotation.mean_exons_per_transcript) }} |
+| **BUSCO completeness** | |
+| Full summary | {{ add_spaces(annotation.annot_busco_summary) }} |
+| | *C: complete, S: single copy, D: duplicated, F: fragmented, M: missing* |
+| Reference set | {{ annotation.annot_busco_lineage }} |
+| **OMArk completeness** | |
+| Full summary | {{ add_spaces(annotation.omark_completeness_summary) }} |
+| | *S: single copy, D: duplicated [U: unexpected, E:expected], M: missing* |
+| Number of HOGs | {{ make_pretty_number(annotation.conserved_hogs) }} |
+| Reference lineage | {{ annotation.omark_lineage}} |
+| **OMArk consistency** | |
+| Number of proteins | {{ make_pretty_number(annotation.omark_protein_count) }}
+| Consistent lineage placements | {{ round_decimal(annotation.omark_percent_consistent) }}% |
+| Inconsistent lineage placements | {{ round_decimal(annotation.omark_percent_inconsistent) }}% |
+| Contaminants | {{ round_decimal(annotation.omark_percent_contaminant) }}% |
+| Unknown | {{ round_decimal(annotation.omark_percent_unknown) }}% |
+Table: Table 7: Genome annotation information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}.
 
 ## **Data and code availability**
 
@@ -235,7 +235,7 @@ Raw sequencing data, sample metadata, and genome assembly sequences are availabl
 the BioProject accession number {{ project.project_accession }};
 [https://identifiers.org/ena.embl/](https://identifiers.org/ena.embl/){{
 project.project_accession }}. Assembly and raw data accession identifiers are
-reported in Tables 1 and 5. The genome annotation file is available from *TBD*. Raw sequence data and sample metadata were
+reported in Tables 1, 3, and 6. The genome annotation file is available from *TBD*. Raw sequence data and sample metadata were
 originally submitted to the Bioplatforms Australia Data Portal
 ([https://data.bioplatforms.com/](https://data.bioplatforms.com/)),
 and are available under the following data package identifiers: {{
@@ -243,7 +243,7 @@ experiment.bpa_package_id }}{% include "supplementary_package_data_for_genome_no
 
 The genome sequence is released openly for reuse.
 
- A code repository containing the workflow configuration files used to generate the assembly is hosted on GitHub at [https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}](https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}). Original bioinformatics piplines are available from the links provided in Table 6.
+ A code repository containing the workflow configuration files used to generate the assembly is hosted on GitHub at [https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}](https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}). Original bioinformatics piplines are available from the links provided in Table 4.
 
 ## **Acknowledgements and funding information**
 
