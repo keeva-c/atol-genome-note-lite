@@ -88,7 +88,8 @@ def preprocess_metadata(metadata_file, processed_files):
         metadata_w_initiative = map_bpa_initiative(unprocessed_file)
         metadata_w_platform = sanitise_platform(metadata_w_initiative)
         metadata_w_asm_lvl = append_assembly_level(metadata_w_platform)
-        processed_metadata = overwrite_empty_strings(metadata_w_asm_lvl)
+        metadata_wo_empty = overwrite_empty_strings(metadata_w_asm_lvl)
+        processed_metadata = standardise_capitalisation(metadata_wo_empty)
     with open(processed_file, 'w') as f:
         json.dump(processed_metadata, f)
     processed_files.append(processed_file)
@@ -167,6 +168,24 @@ def overwrite_empty_strings(metadata):
         elif isinstance(metadata_fields, list):
             output_dict[database_sect] = metadata_fields
     return output_dict
+
+def standardise_capitalisation(metadata):
+    for key, val in metadata.get('experiment').items():
+        if key == "bpa_package_id" or key == "bpa_library_id":
+            continue
+        elif isinstance(val, str) and val[0].islower():
+            metadata['experiment'][key] = capitalise(val)
+    for key, val in metadata.get('sample').items():
+        if key == "specimen_id" or key == "bpa_sample_id" or key == "bioplatforms_project_id" or key == "tolid":
+            continue
+        elif isinstance(val, str) and val[0].islower():
+            metadata['sample'][key] = capitalise(val)
+    return(metadata)
+
+def capitalise(val):
+    capitalised = val[0].upper() + val[1:]
+    logger.debug(f"capitalised word ({val}) is {capitalised}")
+    return capitalised
 
 # functions to make things in the template pretty
 def make_pretty_number(ugly_number):
