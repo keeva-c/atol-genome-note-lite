@@ -5,6 +5,5 @@
 | Nucleic acid treatment | {{ sample.nucleic_acid_treatment }} |
 | Extract concentration (ng/ul) | {{ sample.nucleic_acid_conc }} |
 | Library preparation method | {{ experiment.library_construction_protocol }} |
-| Library selection | {{ experiment.library_selection }} |
-| Library layout | {{ experiment.library_layout }} |
+| Library selection method | {{ experiment.library_selection }} |
 | Library insert or fragment size | {{ experiment.insert_size }} |

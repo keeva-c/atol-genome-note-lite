@@ -6,7 +6,7 @@
 
 ## **Abstract**
 
-We have assembled a {{ assembly.assembly_level }}-level genome sequence for *{{ taxonomy_info.ncbi_scientific_name }}* ({{ taxonomy_info.ncbi_order }}:{{ taxonomy_info.ncbi_family }}). The assembly comprises {% if assembly.assembly_level=='scaffold' %}{{ make_pretty_number(assembly.scaffold_count) }} scaffolds{% elif assembly.assembly_level=='contig' %}{{ make_pretty_number(assembly.contig_count) }} contigs{% endif %} and spans {{ round_bases_up(assembly.genome_length) }}. It has a {% if assembly.assembly_level=='scaffold' %}scaffold N50 of {{ round_bases_up(assembly.scaffold_n50), a }} {% endif %}contig N50 of {{ round_bases_up(assembly.contig_n50) }} and a BUSCO completeness score of {{ assembly.busco_c }}%.
+We have assembled a {{ assembly.assembly_level }}-level genome sequence for *{{ taxonomy_info.ncbi_scientific_name }}* ({{ taxonomy_info.ncbi_order }}:{{ taxonomy_info.ncbi_family }}). The assembly comprises {% if assembly.assembly_level=='scaffold' %}{{ make_pretty_number(assembly.scaffold_count) }} scaffolds{% elif assembly.assembly_level=='contig' %}{{ make_pretty_number(assembly.contig_count) }} contigs{% endif %} and spans {{ round_bases_up(assembly.genome_length) }}. It has a {% if assembly.assembly_level=='scaffold' %}scaffold N50 of {{ round_bases_up(assembly.scaffold_n50) }}, a {% endif %}contig N50 of {{ round_bases_up(assembly.contig_n50) }} and a BUSCO completeness score of {{ assembly.busco_c }}%.
 
 ## **Introduction**
 
@@ -65,7 +65,7 @@ sequencing data.
 | Nucleic acid treatment | {{ sample.nucleic_acid_treatment }} |
 | Extract concentration (ng/ul) | {{ sample.nucleic_acid_conc }} |
 | Library preparation method | {{ experiment.library_construction_protocol }} |
-| Library selection | {{ experiment.library_selection }} |
+| Library selection method | {{ experiment.library_selection }} |
 | Library insert or fragment size | {{ experiment.insert_size }} |
 {% include "supplementary_extract_data_for_genome_note.md" ignore missing %}
 Table: Table 2: Methodological information about nucleic acid material
