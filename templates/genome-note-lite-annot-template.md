@@ -22,7 +22,7 @@ Bioinformatics group.
 
 ## **Methods**
 
-Information relating to sample collection, nucleic acid extraction and library preparation, and sequencing are provided in Tables 1, 2, and 3 respectively.{% if assembly.genomescope_image_path %} A frequency distribution graph of *k*-mers generated during sequencing is included in Figure 1.{% endif %} An overview of the computational pipelines used in genome assembly, annotation, and quality assessment are given in Table 4. Individual tools are listed in Table 5.
+Information relating to sample collection, nucleic acid extraction and library preparation, and sequencing are provided in Tables 1, 2, and 3 respectively.{% if assembly.genomescope_image_path %} A frequency distribution graph of *k*-mers generated during sequencing is included in Figure 1.{% endif %} An overview of the computational pipelines used in genome assembly, annotation, and quality assessment are given in Table 4.
 
 ### **Sample acquisition**
 
@@ -113,14 +113,17 @@ Table: Table 3: Methodological information about sequencing runs.
 | **Genome assembly** | |
 | - Pipeline | sanger-tol/genomeassembly |
 | - Version | {{ assembly.genomeassembly_pipeline_version }} |
+| - Reference | Downie *et al.*, 2025 |
 | - Source | [https://github.com/sanger-tol/genomeassembly](https://github.com/sanger-tol/genomeassembly) |
 | **Decontamination** | |
 | - Pipeline | sanger-tol/ascc |
 | - Version | {{ assembly.ascc_pipeline_version }} |
+| - Reference | Pointon *et al.*, 2026 |
 | - Source | [https://github.com/sanger-tol/ascc](https://github.com/sanger-tol/ascc) | {% if assembly.assembly_level!='contig' %}
 | **Assembly visualisation** | |
-| - Pipeline | sanger-tol/treeval | |
+| - Pipeline | sanger-tol/treeval |
 | - Version | {{ assembly.treeval_pipeline_version }} |
+| - Reference | Pointon *et al.*, 2026 |
 | - Source | [https://github.com/sanger-tol/treeval](https://github.com/sanger-tol/treeval) | {% endif %}
 | **Genome annotation** | |
 | - Pipeline | {{ annotation.annotation_pipeline }} |
@@ -132,38 +135,9 @@ Table: Table 3: Methodological information about sequencing runs.
 | - Source | {{ annotation.annot_qc_pipeline_link }} |
 Table: Table 4: Pipelines used in genome assembly, annotation and quality assessment.
 
-| **Tool** | **Source** | **Reference** |
-| -- | --- | --- |
-| BEDTools | [https://github.com/arq5x/bedtools2](https://github.com/arq5x/bedtools2) | Quinlan and Hall, 2010 |
-| BUSCO | [https://gitlab.com/ezlab/busco](https://gitlab.com/ezlab/busco) | Manni *et al.*, 2021 |
-| bwa-mem2 | [https://github.com/bwa-mem2/bwa-mem2](https://github.com/bwa-mem2/bwa-mem2) | Vasimuddin *et al.*, 2019 |
-| Cooler | [https://github.com/open2c/cooler](https://github.com/open2c/cooler) | Abdennur and Mirny, 2020 |
-| FastK | [https://github.com/thegenemyers/FASTK](https://github.com/thegenemyers/FASTK) | NA |
-| gawk | [https://www.gnu.org/software/gawk/](https://www.gnu.org/software/gawk/) | NA |
-| GeneScopeFK | [https://github.com/thegenemyers/GENESCOPE.FK](https://github.com/thegenemyers/GENESCOPE.FK) | NA |
-| GenomeScope2.0 | [https://github.com/tbenavi1/genomescope2.0](https://github.com/tbenavi1/genomescope2.0) | Ranallo-Benavidez *et al.*, 2020 |
-| Gfastats | [https://github.com/vgl-hub/gfastats](https://github.com/vgl-hub/gfastats) | Formenti *et al.*, 2022 |
-| Hifiasm | [https://github.com/chhylp123/hifiasm](https://github.com/chhylp123/hifiasm) | Cheng *et al.*. 2021 |
-| Juicer | [https://github.com/aidenlab/juicer](https://github.com/aidenlab/juicer) | Durand *et al.*, 2016 |
-| JuicerTools | [https://github.com/aidenlab/JuicerTools](https://github.com/aidenlab/JuicerTools) | Durand *et al.*, 2016 |
-| Merqury.FK | [https://github.com/thegenemyers/MERQURY.FK](https://github.com/thegenemyers/MERQURY.FK) | Rhie *et al.*, 2020 |
-| Minimap2 | [https://github.com/lh3/minimap2](https://github.com/lh3/minimap2) | Li, 2018 |
-| MitoFinder | [https://github.com/RemiAllio/MitoFinder](https://github.com/RemiAllio/MitoFinder) | Allio *et al.*, 2020 |
-| MitoHiFi | [https://github.com/marcelauliano/MitoHiFi](https://github.com/marcelauliano/MitoHiFi) | Uliano-Silva *et al.*, 2023 |
-| Nextflow | [https://github.com/nextflow-io/nextflow](https://github.com/nextflow-io/nextflow) | Di Tommaso *et al.*, 2017 |
-| Nf-core | [https://nf-co.re/](https://nf-co.re/) | Ewels *et al.*, 2020 |
-| Oatk | [https://github.com/c-zhou/oatk](https://github.com/c-zhou/oatk) | Zhou *et al.*, 2024 |
-| pigz | [https://github.com/madler/pigz](https://github.com/madler/pigz) | NA |
-| PretextMap | [https://github.com/sanger-tol/PretextMap](https://github.com/sanger-tol/PretextMap) | NA |
-| PretextSnapshot | [https://github.com/sanger-tol/PretextSnapshot](https://github.com/sanger-tol/PretextSnapshot) | NA |
-| purge_dups | [https://github.com/dfguan/purge_dups](https://github.com/dfguan/purge_dups) | Guan *et al.*, 2020 |
-| samtools | [https://github.com/samtools/samtools](https://github.com/samtools/samtools) | Danecek *et al.*, 2021 |
-| YaHS | [https://github.com/c-zhou/yahs](https://github.com/c-zhou/yahs) | Zhou *et al.*, 2023 |
-Table: Table 5: Resources and software tools used in bioinformatics pipelines.
-
 ## **Genome sequence report**
 
-Details about the assembled genome sequence, including key assembly metrics and target minimum standards set by the Earth BioGenome Project (EBP) (Earth BioGenome Project, 2026), are summarised in Table 6. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in {% if assembly.genomescope_image_path %}Figure 2.{% else %} Figure 1.{% endif %}{% endif %} Genome annotation results are provided in Table 7.
+Details about the assembled genome sequence, including key assembly metrics and target minimum standards set by the Earth BioGenome Project (EBP) (Earth BioGenome Project, 2026), are summarised in Table 5. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in {% if assembly.genomescope_image_path %}Figure 2.{% else %} Figure 1.{% endif %}{% endif %} Genome annotation results are provided in Table 6.
 
 | **Assembly information** | | **EBP standard** |
 | --- | ---- | -- |
@@ -191,7 +165,7 @@ Details about the assembled genome sequence, including key assembly metrics and 
 | Single copy BUSCOs | {{ assembly.busco_single }}% | > 90% |
 | Duplicated BUSCOs | {{ assembly.busco_duplicated }}% | < 5% |
 | BUSCO Reference set | {{ assembly.busco_ref }} | |
-Table: Table 6: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ taxonomy_info.ncbi_scientific_name }}*.
+Table: Table 5: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ taxonomy_info.ncbi_scientific_name }}*.
 
 {% if assembly.contact_map_image_path %}
 {% if assembly.genomescope_image_path %}
@@ -227,7 +201,7 @@ Table: Table 6: Genome assembly information for {{ assembly.assembly_name|defaul
 | Inconsistent lineage placements | {{ round_decimal(annotation.omark_percent_inconsistent) }}% |
 | Contaminants | {{ round_decimal(annotation.omark_percent_contaminant) }}% |
 | Unknown | {{ round_decimal(annotation.omark_percent_unknown) }}% |
-Table: Table 7: Genome annotation information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}.
+Table: Table 6: Genome annotation information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}.
 
 ## **Data and code availability**
 
@@ -235,7 +209,7 @@ Raw sequencing data, sample metadata, and genome assembly sequences are availabl
 the BioProject accession number {{ project.project_accession }};
 [https://identifiers.org/ena.embl/](https://identifiers.org/ena.embl/){{
 project.project_accession }}. Assembly and raw data accession identifiers are
-reported in Tables 1, 3, and 6. The genome annotation file is available from *TBD*. Raw sequence data and sample metadata were
+reported in Tables 1, 3, and 5. The genome annotation file is available from *TBD*. Raw sequence data and sample metadata were
 originally submitted to the Bioplatforms Australia Data Portal
 ([https://data.bioplatforms.com/](https://data.bioplatforms.com/)),
 and are available under the following data package identifiers: {{
@@ -255,85 +229,14 @@ Sample collection and preparation were supported by the individual project partn
 
 ## **References**
 
-Abdennur, N. and Mirny, L. A. (2020) Cooler: Scalable storage for Hi-C
-data and other genomically labeled arrays, *Bioinformatics*, 36 (1), pp.
-311--316. DOI:10.1093/bioinformatics/btz540.
-
-Allio, R., Schomaker‐Bastos, A., Romiguier, J., Prosdocimi, F., Nabholz,
-B. and Delsuc, F. (2020) MitoFinder: Efficient automated large‐scale
-extraction of mitogenomic data in target enrichment phylogenomics,
-*Molecular Ecology Resources*, 20 (4), pp. 892--905.
-DOI:10.1111/1755-0998.13160.
-
 Babirye, S. R., Chafin, T., Duong, C., Muffato, M., Qi, G., Sadasivan Baby, C., Surana, P., and Yates, B. (2025) sanger-tol/genomenote v2.1.1 (2.1.1). Zenodo. DOI:10.5281/zenodo.15052341.
-
-Cheng, H., Concepcion, G. T., Feng, X., Zhang, H. and Li, H. (2021)
-Haplotype-resolved *de novo* assembly using phased assembly graphs with
-hifiasm, *Nature Methods*, 18 (2), pp. 170--175.
-DOI:10.1038/s41592-020-01056-5.
-
-Danecek, P., Bonfield, J. K., Liddle, J., Marshall, J., Ohan, V.,
-Pollard, M. O., *et al.* (2021) Twelve years of SAMtools and BCFtools,
-*GigaScience*, 10 (2). DOI:10.1093/gigascience/giab008.
 
 Darwin Tree of Life Project Consortium (2022) Sequence locally, think globally: The Darwin Tree of Life Project. *Proceedings of the National Academy of Sciences of the United States of America*, 119 (4), e2115642118. DOI:10.1073/pnas.2115642118.
 
-Di Tommaso, P., Chatzou, M., Floden, E. W., Barja, P. P., Palumbo, E.
-and Notredame, C. (2017) Nextflow enables reproducible computational
-workflows, *Nature Biotechnology*, 35 (4), pp. 316--319.
-DOI:10.1038/nbt.3820.
+Downie, J., Krashennikova, K., Muffato, M., Qi, G., Sims, Y., & Surana, P. (2025). sanger-tol/genomeassembly v0.50.0 - Threadtail (0.50.0). Zenodo. DOI:10.5281/zenodo.10391851.
 
-Earth BioGenome Project (2026) Report on Assembly Standards Version 7.0 - January 2026. Retrieved 26 May, 2026, from [https://www.earthbiogenome.org/report-on-assembly-standards](https://www.earthbiogenome.org/report-on-assembly-standards)
+Earth BioGenome Project (2024) Report on Assembly Standards Version 6.0 - September 2024. Retrieved 19 November, 2025, from [https://www.earthbiogenome.org/report-on-assembly-standards](https://www.earthbiogenome.org/report-on-assembly-standards){% if assembly.assembly_level!='contig' %}
 
-Ewels, P. A., Peltzer, A., Fillinger, S., Patel, H., Alneberg, J., Wilm,
-A., Garcia, M. U., Di Tommaso, P. and Nahnsen, S. (2020) The nf-core
-framework for community-curated bioinformatics pipelines, *Nature
-Biotechnology*, 38 (3), pp. 276--278. DOI:10.1038/s41587-020-0439-x.
+Damon-Lee Pointon, Will Eagles, YSims, Matthieu Muffato, Mahesh Binzer-Panchal, Priyanka Surana, Guoying Qi, & Tree of Life service account. (2026). sanger-tol/treeval: 1.4.7 - Ancient Hippaforalkus (H7) (1.4.7). DOI:10.5281/zenodo.10047653.{% endif %}
 
-Formenti, G., Abueg, L., Brajuka, A., Brajuka, N., Gallardo-Alba, C.,
-Giani, A., Fedrigo, O. and Jarvis, E. D. (2022) Gfastats: conversion,
-evaluation and manipulation of genome sequences using assembly graphs,
-*Bioinformatics*, 38 (17), pp. 4214--4216.
-DOI:10.1093/bioinformatics/btac460.
-
-Guan, D., McCarthy, S. A., Wood, J., Howe, K., Wang, Y. and Durbin, R.
-(2020) Identifying and removing haplotypic duplication in primary genome
-assemblies., *Bioinformatics (Oxford, England)*, 36 (9), pp. 2896--2898.
-DOI:10.1093/bioinformatics/btaa025.
-
-Li, H. (2018) Minimap2: pairwise alignment for nucleotide sequences,
-*Bioinformatics*, 34 (18), pp. 3094--3100.
-DOI:10.1093/bioinformatics/bty191.
-
-Manni, M., Berkeley, M. R., Seppey, M., Simão, F. A. and Zdobnov, E. M.
-(2021) BUSCO update: Novel and streamlined workflows along with broader
-and deeper phylogenetic coverage for scoring of eukaryotic, prokaryotic,
-and viral genomes, *Molecular Biology and Evolution*, 38 (10), pp.
-4647--4654. DOI:10.1093/molbev/msab199.
-
-Quinlan, A. R. and Hall, I. M. (2010) BEDTools: a flexible suite of
-utilities for comparing genomic features, *Bioinformatics*, 26 (6), pp.
-841--842. DOI:10.1093/bioinformatics/btq033.
-
-Ranallo-Benavidez, T. R., Jaron, K. S., & Schatz, M. C. (2020) GenomeScope 2.0 and Smudgeplot for reference-free profiling of polyploid genomes. *Nature communications*, 11 (1), 1432. DOI:10.1038/s41467-020-14998-3.
-
-Rhie, A., Walenz, B. P., Koren, S. and Phillippy, A. M. (2020) Merqury:
-Reference-free quality, completeness, and phasing assessment for genome
-assemblies, *Genome Biology*, 21 (1). DOI:10.1186/s13059-020-02134-9.
-
-Uliano-Silva, M., Ferreira, J. G. R. N., Krasheninnikova, K., Blaxter,
-M., Mieszkowska, N., Hall, N., *et al.* (2023) MitoHiFi: a python
-pipeline for mitochondrial genome assembly from PacBio high fidelity
-reads, *BMC Bioinformatics*, 24 (1), pp. 288.
-DOI:10.1186/s12859-023-05385-y.
-
-Vasimuddin, Md., Misra, S., Li, H. and Aluru, S. (2019) Efficient
-Architecture-Aware Acceleration of BWA-MEM for Multicore Systems, in:
-*2019 IEEE International Parallel and Distributed Processing Symposium
-(IPDPS)*. IEEE, pp. 314--324.
-
-Zhou, C., Brown, M., Blaxter, M., The Darwin Tree of Life Consortium, McCarthy, S. A. and Durbin, R. (2024) Oatk: a de novo assembly tool for complex plant organelle genomes, *bioRxiv*. DOI:10.1101/2024.10.23.619857
-
-Zhou, C., McCarthy, S. A. and Durbin, R. (2023) YaHS: yet another Hi-C
-scaffolding tool, *Bioinformatics*, 39 (1).
-DOI:10.1093/bioinformatics/btac808.
+Damon-Lee Pointon, YSims, eeaunin, Jim Downie, & Will Eagles. (2026). sanger-tol/ascc: 1.6.0 - Red Microphone (0.6.0). Zenodo. DOI:10.5281/zenodo.14883765.
