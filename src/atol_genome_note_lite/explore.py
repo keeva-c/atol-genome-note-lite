@@ -194,13 +194,15 @@ def capitalise(val):
         logger.warning(f"Unable to capitalise {val} - {e}")
         return val
 
+# TODO: add removal of other unicode strings (with leading backslashes) to below function?
+
 def del_new_line_char(metadata):
     '''removing new line characters "\n" from metadata values to prevent formatting issues when rendering'''
     for database_sect, metadata_fields in metadata.items():
         if isinstance(metadata_fields, dict):
             for key, val in metadata_fields.items():
                 if isinstance(val, str) and "\n" in val:
-                    sanitised = val.replace("\n","")
+                    sanitised = val.replace("\n"," ")
                     logger.debug(f"New line character replaced in {sanitised}")
                     metadata_fields[key] = sanitised
     return metadata
