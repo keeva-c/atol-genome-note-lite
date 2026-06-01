@@ -89,7 +89,8 @@ def preprocess_metadata(metadata_file, processed_files):
         metadata_w_platform = sanitise_platform(metadata_w_initiative)
         metadata_w_asm_lvl = append_assembly_level(metadata_w_platform)
         metadata_wo_empty = overwrite_empty_strings(metadata_w_asm_lvl)
-        processed_metadata = standardise_capitalisation(metadata_wo_empty)
+        capitalised_metadata = standardise_capitalisation(metadata_wo_empty)
+        processed_metadata = del_new_line_char(capitalised_metadata)
     with open(processed_file, 'w') as f:
         json.dump(processed_metadata, f)
     processed_files.append(processed_file)
@@ -137,7 +138,7 @@ def sanitise_platform(metadata):
         logger.warning(f"Sequencing platform not recognised - platform will be rendered as {verbatim_platform}.")
         cleaned_platform = verbatim_platform
     metadata['experiment']['platform'] = cleaned_platform
-    return(metadata)
+    return metadata
 
 # TODO: handle curation outputs/stats and deduce whether assembly_level is chromosome
 
@@ -170,6 +171,7 @@ def overwrite_empty_strings(metadata):
     return output_dict
 
 def standardise_capitalisation(metadata):
+    '''extracting values in experiment and sample metadata to capitalise'''
     for key, val in metadata.get('experiment').items():
         if key == "bpa_package_id" or key == "bpa_library_id":
             continue
@@ -180,9 +182,10 @@ def standardise_capitalisation(metadata):
             continue
         elif isinstance(val, str) and val[0].islower():
             metadata['sample'][key] = capitalise(val)
-    return(metadata)
+    return metadata
 
 def capitalise(val):
+    '''capitalising first letter of the metadata value'''
     try:
         capitalised = val[0].upper() + val[1:]
         logger.debug(f"Capitalised word {val} to {capitalised}")
@@ -190,6 +193,17 @@ def capitalise(val):
     except Exception as e:
         logger.warning(f"Unable to capitalise {val} - {e}")
         return val
+
+def del_new_line_char(metadata):
+    '''removing new line characters "\n" from metadata values to prevent formatting issues when rendering'''
+    for database_sect, metadata_fields in metadata.items():
+        if isinstance(metadata_fields, dict):
+            for key, val in metadata_fields.items():
+                if isinstance(val, str) and "\n" in val:
+                    sanitised = val.replace("\n","")
+                    logger.debug(f"New line character replaced in {sanitised}")
+                    metadata_fields[key] = sanitised
+    return metadata
 
 # functions to make things in the template pretty
 def make_pretty_number(ugly_number):
