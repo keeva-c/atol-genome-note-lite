@@ -194,7 +194,7 @@ def capitalise(val):
         logger.warning(f"Unable to capitalise {val} - {e}")
         return val
 
-# TODO: add removal of other unicode strings (with leading backslashes) to below function?
+# TODO: add removal of other unicode strings (with leading backslashes) to below function/remove backslash escapes (for double quote marks)?
 
 def del_new_line_char(metadata):
     '''removing new line characters "\n" from metadata values to prevent formatting issues when rendering'''
