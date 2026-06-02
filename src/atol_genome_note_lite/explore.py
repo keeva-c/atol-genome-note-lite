@@ -80,14 +80,17 @@ args = argument_parser.parse_args()
 
 # functions to preprocess metadata
 def preprocess_metadata(metadata_file, processed_files):
-    '''combining the above two metadata formatting functions together and saving output to a new file with '-processed' suffix'''
+    '''combining the below two metadata formatting functions together and saving output to a new file with '-processed' suffix'''
     processed_file = Path(metadata_file).stem + "-processed" + Path(metadata_file).suffix
     logger.info(f"Preprocessing {metadata_file} and saving ouput to interim {processed_file} file")
     with open(metadata_file, 'r') as f:
         unprocessed_file = json.load(f)
         metadata_w_initiative = map_bpa_initiative(unprocessed_file)
         metadata_w_platform = sanitise_platform(metadata_w_initiative)
-        processed_metadata = overwrite_empty_strings(metadata_w_platform)
+        metadata_w_asm_lvl = append_assembly_level(metadata_w_platform)
+        metadata_wo_empty = overwrite_empty_strings(metadata_w_asm_lvl)
+        capitalised_metadata = standardise_capitalisation(metadata_wo_empty)
+        processed_metadata = del_new_line_char(capitalised_metadata)
     with open(processed_file, 'w') as f:
         json.dump(processed_metadata, f)
     processed_files.append(processed_file)
@@ -114,6 +117,8 @@ def map_bpa_initiative(metadata):
         full_initiative = 'Genomics for Forest Resilience Initiative'
     elif initiative_acronym == 'bpa-plants':
         full_initiative = 'Genomics for Australian Plants'
+    elif initiative_acronym == 'aus-venom':
+        full_initiative = 'Australian Venom Innovation and Discovery Initiative'
     else:
         logger.warning(f"Bioplatforms initiative ({initiative_acronym}) not recognised.")
         full_initiative = None
@@ -133,6 +138,20 @@ def sanitise_platform(metadata):
         logger.warning(f"Sequencing platform not recognised - platform will be rendered as {verbatim_platform}.")
         cleaned_platform = verbatim_platform
     metadata['experiment']['platform'] = cleaned_platform
+    return metadata
+
+# TODO: handle curation outputs/stats and deduce whether assembly_level is chromosome
+
+def append_assembly_level(metadata):
+    '''setting assembly level based on whether hic data were supplied'''
+    if metadata.get('assembly') is None:
+        pass
+    elif args.hic_metadata:
+        metadata['assembly']['assembly_level'] = "scaffold"
+        logger.debug(f"setting assembly level to scaffold")
+    else:
+        metadata['assembly']['assembly_level'] = "contig"
+        logger.debug(f"setting assembly level to contig")
     return(metadata)
 
 def overwrite_empty_strings(metadata):
@@ -150,6 +169,43 @@ def overwrite_empty_strings(metadata):
         elif isinstance(metadata_fields, list):
             output_dict[database_sect] = metadata_fields
     return output_dict
+
+def standardise_capitalisation(metadata):
+    '''extracting values in experiment and sample metadata to capitalise'''
+    for key, val in metadata.get('experiment').items():
+        if key == "bpa_package_id" or key == "bpa_library_id":
+            continue
+        elif isinstance(val, str) and val[0].islower():
+            metadata['experiment'][key] = capitalise(val)
+    for key, val in metadata.get('sample').items():
+        if key == "specimen_id" or key == "bpa_sample_id" or key == "bioplatforms_project_id" or key == "tolid":
+            continue
+        elif isinstance(val, str) and val[0].islower():
+            metadata['sample'][key] = capitalise(val)
+    return metadata
+
+def capitalise(val):
+    '''capitalising first letter of the metadata value'''
+    try:
+        capitalised = val[0].upper() + val[1:]
+        logger.debug(f"Capitalised word {val} to {capitalised}")
+        return capitalised
+    except Exception as e:
+        logger.warning(f"Unable to capitalise {val} - {e}")
+        return val
+
+# TODO: add removal of other unicode strings (with leading backslashes) to below function/remove backslash escapes (for double quote marks)?
+
+def del_new_line_char(metadata):
+    '''removing new line characters "\n" from metadata values to prevent formatting issues when rendering'''
+    for database_sect, metadata_fields in metadata.items():
+        if isinstance(metadata_fields, dict):
+            for key, val in metadata_fields.items():
+                if isinstance(val, str) and "\n" in val:
+                    sanitised = val.replace("\n"," ")
+                    logger.debug(f"New line character replaced in {sanitised}")
+                    metadata_fields[key] = sanitised
+    return metadata
 
 # functions to make things in the template pretty
 def make_pretty_number(ugly_number):
