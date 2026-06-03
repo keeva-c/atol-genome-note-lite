@@ -29,11 +29,12 @@ Information relating to sample collection, nucleic acid extraction and library p
 | **Sample information** | |
 | --- | ----- |
 | **Sample: {{ sample.biosample_accession }}** | |
-| BioSample accession | {{ sample.biosample_accession }} |
 | Scientific name | *{{ taxonomy_info.ncbi_scientific_name }}* |
 | ToLID | {{ sample.tolid }} |
 | Specimen identifier | {{ sample.specimen_id }} |
 | Specimen identifier defined by | {{ sample.specimen_id_description }} |
+| Specimen-level BioSample accession | {{ specimen.biosample_accession }} |
+| Sample-level BioSample accession | {{ sample.biosample_accession }} |
 | Sex | {{ sample.sex }} |
 | Lifestage | {{ sample.lifestage }} |
 | Collection date | {{ sample.collection_date }} |
@@ -60,7 +61,7 @@ sequencing data.
 | --- | ----- |
 | **Library: {{ experiment.bpa_library_id }}** | |
 | Data type generated | {{ experiment.library_strategy }} |
-| BioSample accession | {{ sample.biosample_accession }} |
+| Sample-level BioSample accession | {{ sample.biosample_accession }} |
 | Nucleic acid extraction method | {{ sample.extraction_method }} |
 | Nucleic acid treatment | {{ sample.nucleic_acid_treatment }} |
 | Extract concentration (ng/ul) | {{ sample.nucleic_acid_conc }} |
@@ -77,7 +78,7 @@ extracted for sequencing and library preparation.
 | --- | ----- |
 | **Run: {{ runs.sra_run_accession }}** | |
 | Data type generated | {{ experiment.library_strategy }} |
-| BioSample accession | {{ sample.biosample_accession }} |
+| Sample-level BioSample accession | {{ sample.biosample_accession }} |
 | Library identifier | {{ experiment.bpa_library_id }} |
 | Run accession | {{ runs.sra_run_accession }} |
 | Read count | {% if runs.run_read_count %}{{ make_pretty_number(runs.run_read_count) }}{% else %}*not provided*{% endif %} |
