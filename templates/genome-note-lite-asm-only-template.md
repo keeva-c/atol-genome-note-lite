@@ -18,7 +18,7 @@ We have assembled a {{ assembly.assembly_level }}-level genome sequence for *{{ 
 
 The genome of {{ "the " ~ taxonomy_info.ncbi_common_name ~ ", " if taxonomy_info.ncbi_common_name else "" }}*{{ taxonomy_info.ncbi_scientific_name }}* was
 sequenced as part of the {{ sample.bpa_initiative }} and has been assembled in collaboration with the Australian Tree of Life
-Bioinformatics group.{{% if assembly.rna_data_available %}} As part of this project, additional RNA-seq data were generated and made available to support downstream applications of the genome assembly. Details of how these data were generated are included in the Methods section.{% endif %}
+Bioinformatics group.{% if assembly.rna_data_available %} As part of this project, additional RNA-seq data were generated and made available to support downstream applications of the genome assembly. Details of how these data were generated are included in the Methods section.{% endif %}
 
 ## **Methods**
 
