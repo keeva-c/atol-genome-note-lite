@@ -33,6 +33,7 @@ path_to_seq_supplement_output = "templates/supplementary_seq_data_for_genome_not
 path_to_bpa_package_supplement_output = "templates/supplementary_package_data_for_genome_note.md"
 processed_wgs_file_paths = []
 processed_hic_file_paths = []
+processed_rna_file_paths = []
 input_sample_ids = []
 input_library_ids = []
 
@@ -319,13 +320,15 @@ if args.hic_metadata is not None:
     for input_file in args.hic_metadata:
         preprocess_metadata(input_file, processed_hic_file_paths) 
 
+# preprocessing metadata for input RNA-seq
+if args.rna_metadata is not None:
+    for input_file in args.rna_metadata:
+        preprocess_metadata(input_file, processed_rna_file_paths) 
+
 # initialise lists for cross-checking sample and library ids (to avoid duplicating metadata in the genome note lite)
-all_input_files = list(processed_wgs_file_paths)
+all_input_files = processed_wgs_file_paths + processed_hic_file_paths + processed_rna_file_paths
 
-if args.hic_metadata is not None:
-    all_input_files.extend(processed_hic_file_paths)
-
-# read Hi-C and supplementary WGS input metadata and render supplementary helper files
+# read Hi-C, supplementary WGS and RNA-seq input metadata and render supplementary helper files
 for idx, file in enumerate(all_input_files):
     # find the sample and library IDs and append to a list
     with open(file, "rt") as f:
