@@ -94,7 +94,8 @@ def preprocess_metadata(metadata_file, processed_files):
         metadata_w_initiative = map_bpa_initiative(unprocessed_file)
         metadata_w_platform = sanitise_platform(metadata_w_initiative)
         metadata_w_asm_lvl = append_assembly_level(metadata_w_platform)
-        metadata_wo_empty = overwrite_empty_strings(metadata_w_asm_lvl)
+        metadata_w_rna = append_rna_availability(metadata_w_asm_lvl)
+        metadata_wo_empty = overwrite_empty_strings(metadata_w_rna)
         capitalised_metadata = standardise_capitalisation(metadata_wo_empty)
         processed_metadata = del_new_line_char(capitalised_metadata)
     with open(processed_file, 'w') as f:
