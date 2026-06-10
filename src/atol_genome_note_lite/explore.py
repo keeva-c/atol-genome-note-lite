@@ -58,6 +58,12 @@ input_group.add_argument(
     type=Path,
     help="optional JSON file/s listing metadata for a Hi-C sample and sequencing run."
 )
+input_group.add_argument(
+    "--rna_metadata",
+    nargs="*",
+    type=Path,
+    help="optional JSON file/s listing metadata for an RNA-seq sample and sequencing run."
+)
 output_group.add_argument(
     "--output",
     default=Path("results/genome_note_lite.md"),
