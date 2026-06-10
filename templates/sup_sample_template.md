@@ -1,9 +1,10 @@
 | **Sample: {{ sample.biosample_accession }}** | |
-| BioSample accession | {{ sample.biosample_accession }} |
 | Scientific name | *{{ taxonomy_info.ncbi_scientific_name }}* |
 | ToLID | {{ sample.tolid }} |
 | Specimen identifier | {{ sample.specimen_id }} |
 | Specimen identifier defined by | {{ sample.specimen_id_description }} |
+| Specimen-level BioSample accession | {{ specimen.biosample_accession }} |
+| Sample-level BioSample accession | {{ sample.biosample_accession }} |
 | Sex | {{ sample.sex }} |
 | Lifestage | {{ sample.lifestage }} |
 | Collection date | {{ sample.collection_date }} |

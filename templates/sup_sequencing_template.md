@@ -1,6 +1,6 @@
 | **Run: {{ runs.sra_run_accession }}** | |
 | Data type generated | {{ experiment.library_strategy }} |
-| BioSample accession | {{ sample.biosample_accession }} |
+| Sample-level BioSample accession | {{ sample.biosample_accession }} |
 | Library identifier | {{ experiment.bpa_library_id }} |
 | Run accession | {{ runs.sra_run_accession }} |
 | Read count | {% if runs.run_read_count %}{{ make_pretty_number(runs.run_read_count) }}{% else %}*not provided*{% endif %} |
