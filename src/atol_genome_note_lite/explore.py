@@ -154,10 +154,22 @@ def append_assembly_level(metadata):
         pass
     elif args.hic_metadata:
         metadata['assembly']['assembly_level'] = "scaffold"
-        logger.debug(f"setting assembly level to scaffold")
+        logger.debug("setting assembly level to scaffold")
     else:
         metadata['assembly']['assembly_level'] = "contig"
-        logger.debug(f"setting assembly level to contig")
+        logger.debug("setting assembly level to contig")
+    return(metadata)
+
+def append_rna_availability(metadata):
+    '''appending a true/false value to assembly metadata to indicate whether rna-seq data are available for the assembly'''
+    if metadata.get('assembly') is None:
+        pass
+    elif args.rna_metadata:
+        metadata['assembly']['rna_data_available'] = True
+        logger.debug("setting RNA-seq availability to true")
+    else:
+        metadata['assembly']['rna_data_available'] = False
+        logger.debug("setting RNA-seq availability to false")
     return(metadata)
 
 def overwrite_empty_strings(metadata):
