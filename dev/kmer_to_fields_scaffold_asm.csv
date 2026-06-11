@@ -1,0 +1,4 @@
+kmer_field,metadata_field
+asm_hap2_scaffolds_final,alt_kmer
+asm_hap1_scaffolds_final,primary_kmer
+asm_hap2_scaffolds_final+asm_hap1_scaffolds_final,combined_kmer

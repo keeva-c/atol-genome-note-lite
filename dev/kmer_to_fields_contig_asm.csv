@@ -1,0 +1,4 @@
+kmer_field,metadata_field
+asm.purged,primary_kmer
+asm.htigs.all,alt_kmer
+asm.purged+asm.htigs.all,combined_kmer
