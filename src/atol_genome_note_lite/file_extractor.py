@@ -70,7 +70,7 @@ no_hic_patterns = {
     'kmer_stats': f"{tolid}\\..+\\.purged/purging/merqury\\..*/asm\\..*\\.completeness\\.stats",
     'qv_stats': f"{tolid}\\..+\\.purged/purging/merqury\\..*/asm\\..*\\.qv",
     'summary_stats': f"{tolid}\\..+\\.purged/purging/asm\\.purged\\.fa\\.assembly_summary",
-    'mitogenome_stats': f"{tolid}\\..+\\.purged/mito/contigs_stats\\.tsv", # defaulting to mitohifi results generated in `contigs` mode
+    'mitogenome_stats': f"{tolid}\\.mitohifi/contigs_stats\\.tsv", # defaulting to mitohifi results generated from sequence reads (not assembled contigs)
     'software_versions': f"pipeline_info/genomeassembly_software_versions\\.yml",
     'genomescope_plot': f"kmer/k../long/{tolid}.long.k.._linear_plot\\.png" # currently missing in the results directory
 }
