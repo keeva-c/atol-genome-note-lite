@@ -9,12 +9,16 @@ import yaml
 from pathlib import Path
 
 # configure logger
-logging.basicConfig(
-    stream=sys.stderr,
-    level=logging.DEBUG,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
+console_handler = logging.StreamHandler()
+file_handler = logging.FileHandler("combined_parser.log", encoding="utf-8", mode="w")
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+logger.setLevel("DEBUG")
+console_handler.setLevel("DEBUG")
 
 # add arguments
 argument_parser = argparse.ArgumentParser(
@@ -97,13 +101,22 @@ output_group.add_argument(
     default=Path("results/full_metadata.json"),
     help="the full JSON metadata object, including metadata for organism, sample, experiment, and runs, and assembly metrics (only generated if a metadata file is included as input)"
 )
+argument_parser.add_argument(
+    "--phased",
+    action="store_true",
+    help="select this option to extract metrics for both haplotypes"
+)
 args = argument_parser.parse_args()
 
 # set global variables
 json_assembly_object = {}
 path_to_busco_field_mapping = "dev/busco_to_fields.csv"
-path_to_kmer_field_mapping = "dev/kmer_to_fields.csv"
-path_to_qv_field_mapping = "dev/qv_to_fields.csv"
+if args.phased:
+    path_to_kmer_field_mapping = "dev/kmer_to_fields_scaffold_asm.csv"
+    path_to_qv_field_mapping = "dev/qv_to_fields_scaffold_asm.csv"
+else:
+    path_to_kmer_field_mapping = "dev/kmer_to_fields_contig_asm.csv"
+    path_to_qv_field_mapping = "dev/qv_to_fields_contig_asm.csv"
 path_to_summary_field_mapping = "dev/summary_to_fields.csv"
 
 def parse_mappings(mappings):
@@ -113,7 +126,8 @@ def parse_mappings(mappings):
         csvreader = csv.reader(f)
         next(csvreader) # take out the header
         for line in csvreader:
-            mapping_dict[line[1]]=line[0]
+                mapping_dict[line[1]]=line[0]
+    logger.debug(f"this is the mapping dict: {mapping_dict}")
     return mapping_dict
 
 def map_data(mapping_dict, input_data):
@@ -121,21 +135,23 @@ def map_data(mapping_dict, input_data):
     mapped_output = {}
     for mapped_field,original_field in mapping_dict.items():
         mapped_output[mapped_field] = input_data[original_field]
+    logger.debug(f"this is the mapped output: {mapped_output}")
     return mapped_output
 
 def parse_merqury(stats_file, column_for_parsing):
     '''writing a dictionary of metrics for primary, alt and combined assemblies from a tsv input file'''
-    parsed_data_list = []
+    parsed_data_dict = {}
     with open(stats_file, "rt") as f:
         logger.info(f"Parsing Merqury.fk metrics from {stats_file}")
         stats_table = csv.reader(f, delimiter='\t')
         header_row = next(stats_table)
         stats_position = header_row.index(column_for_parsing) # define the position of the stats to be parsed in each row
         for row in stats_table:
-            parsed_data_list.append(row[stats_position])
-    return parsed_data_list
+            parsed_data_dict[row[0]] = row[stats_position]
+    logger.debug(f"this is the merqury output: {parsed_data_dict}")
+    return parsed_data_dict
 
-def map_merqury(mapping_dict, input_list):
+def map_merqury(mapping_dict, input_dict):
     '''mapping values from a list parsed from merqury.fk output to genome note lite field names'''
     mapped_output = {}
     for mapped_field,row_index in mapping_dict.items():
@@ -152,21 +168,39 @@ def parse_software(software_summary, pipeline_name):
 
 logger.info("Starting script")
 
-busco_mapping_dict = parse_mappings(path_to_busco_field_mapping)
+if len(args.busco) == 1:
+    logger.debug("one BUSCO file supplied")
+elif len(args.busco) == 2:
+    logger.debug("two BUSCO files supplied")
+elif len(args.busco) > 2:
+    logger.error("too many BUSCO files supplied")
+
+busco_mapping_dict = parse_mappings(path_to_busco_field_mapping) 
 # extract "results" and "lineage_dataset" objects from json file and merge into one dictionary
-with open(args.busco, "rt") as f:
-    logger.info(f"Parsing BUSCO metrics from {args.busco}")
-    busco_stats = json.load(f)
-    busco_for_mapping = busco_stats['results'] | busco_stats['lineage_dataset']
-busco_metrics = map_data(busco_mapping_dict, busco_for_mapping)
+for busco_file in args.busco:
+    with open(busco_file, "rt") as f:
+        logger.info(f"Parsing BUSCO metrics from {args.busco}")
+        busco_stats = json.load(f)
+        busco_for_mapping = busco_stats['results'] | busco_stats['lineage_dataset']
+    mapped_busco = map_data(busco_mapping_dict, busco_for_mapping)
+    if len(args.busco) == 1:
+        busco_metrics = mapped_busco
+    elif len(args.busco) == 2:
+        busco_metrics = {}
+        if "asm_hap1" in busco_file:
+            hap_1_busco_metrics = {f"hap_1_{key}": value for key, value in mapped_busco.items()}
+            busco_metrics.update(hap_1_busco_metrics)
+        elif "asm_hap2" in busco_file:
+            hap_2_busco_metrics = {f"hap_2_{key}": value for key, value in mapped_busco.items()}
+            busco_metrics.update(hap_2_busco_metrics)
 
 kmer_mapping_dict = parse_mappings(path_to_kmer_field_mapping)
 kmer_for_mapping = parse_merqury(args.kmer, "% Covered")
-kmer_metrics = map_merqury(kmer_mapping_dict, kmer_for_mapping)
+kmer_metrics = map_data(kmer_mapping_dict, kmer_for_mapping)
 
 qv_mapping_dict = parse_mappings(path_to_qv_field_mapping)
 qv_for_mapping = parse_merqury(args.qv, "QV")
-qv_metrics = map_merqury(qv_mapping_dict, qv_for_mapping)
+qv_metrics = map_data(qv_mapping_dict, qv_for_mapping)
 
 summary_mapping_dict = parse_mappings(path_to_summary_field_mapping)
 # extract keys and values from summary text file and add to dictionary
