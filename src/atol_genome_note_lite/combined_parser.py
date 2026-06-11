@@ -25,6 +25,7 @@ input_group = argument_parser.add_argument_group("Input")
 output_group = argument_parser.add_argument_group("Output")
 input_group.add_argument(
     "--busco",
+    nargs="+",
     type=Path,
     help="the JSON summary file generated during BUSCO analysis of the assembly - the file should end with busco.json"
 )
@@ -40,6 +41,7 @@ input_group.add_argument(
 )
 input_group.add_argument(
     "--summary",
+    nargs="+",
     type=Path,
     help="the summary text file generated when using the sanger_tol assembly pipeline - the file should end with .assembly_summary"
 )
@@ -51,7 +53,7 @@ input_group.add_argument(
 input_group.add_argument(
     "--map",
     type=Path,
-    nargs='?',
+    nargs='*',
     help="the PreText Snapshot PNG file of the contact map generated during assembly scaffolding - the file should end with FullMap.png"
 )
 input_group.add_argument(
