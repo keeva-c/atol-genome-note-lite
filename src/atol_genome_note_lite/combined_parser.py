@@ -151,13 +151,6 @@ def parse_merqury(stats_file, column_for_parsing):
     logger.debug(f"this is the merqury output: {parsed_data_dict}")
     return parsed_data_dict
 
-def map_merqury(mapping_dict, input_dict):
-    '''mapping values from a list parsed from merqury.fk output to genome note lite field names'''
-    mapped_output = {}
-    for mapped_field,row_index in mapping_dict.items():
-        mapped_output[mapped_field] = input_list[int(row_index)]
-    return mapped_output
-
 def parse_software(software_summary, pipeline_name):
     with open(software_summary, "rt") as f:
         logger.info(f"Parsing software tools and versions from {software_summary}")
@@ -165,6 +158,18 @@ def parse_software(software_summary, pipeline_name):
         version = all_versions.get("Workflow", {}).get(f"sanger-tol/{pipeline_name}")
         version_dict = {f"{pipeline_name}_pipeline_version": version}
     return version_dict
+
+def handle_haplotypes(mapped_metrics, file_name, final_metrics, input_args):
+    if len(input_args) == 1:
+        final_metrics = mapped_metrics
+    elif len(input_args) == 2:
+        if "asm_hap1" in str(file_name):
+            hap_1_metrics = {f"hap_1_{key}": value for key, value in mapped_metrics.items()}
+            final_metrics.update(hap_1_metrics)
+        elif "asm_hap2" in str(file_name):
+            hap_2_metrics = {f"hap_2_{key}": value for key, value in mapped_metrics.items()}
+            final_metrics.update(hap_2_metrics)
+    return final_metrics
 
 logger.info("Starting script")
 
@@ -177,22 +182,14 @@ elif len(args.busco) > 2:
 
 busco_mapping_dict = parse_mappings(path_to_busco_field_mapping) 
 # extract "results" and "lineage_dataset" objects from json file and merge into one dictionary
+busco_metrics = {}
 for busco_file in args.busco:
     with open(busco_file, "rt") as f:
-        logger.info(f"Parsing BUSCO metrics from {args.busco}")
+        logger.info(f"Parsing BUSCO metrics from {busco_file}")
         busco_stats = json.load(f)
         busco_for_mapping = busco_stats['results'] | busco_stats['lineage_dataset']
     mapped_busco = map_data(busco_mapping_dict, busco_for_mapping)
-    if len(args.busco) == 1:
-        busco_metrics = mapped_busco
-    elif len(args.busco) == 2:
-        busco_metrics = {}
-        if "asm_hap1" in busco_file:
-            hap_1_busco_metrics = {f"hap_1_{key}": value for key, value in mapped_busco.items()}
-            busco_metrics.update(hap_1_busco_metrics)
-        elif "asm_hap2" in busco_file:
-            hap_2_busco_metrics = {f"hap_2_{key}": value for key, value in mapped_busco.items()}
-            busco_metrics.update(hap_2_busco_metrics)
+    busco_metrics = handle_haplotypes(mapped_busco, busco_file, busco_metrics, args.busco)
 
 kmer_mapping_dict = parse_mappings(path_to_kmer_field_mapping)
 kmer_for_mapping = parse_merqury(args.kmer, "% Covered")
@@ -204,17 +201,20 @@ qv_metrics = map_data(qv_mapping_dict, qv_for_mapping)
 
 summary_mapping_dict = parse_mappings(path_to_summary_field_mapping)
 # extract keys and values from summary text file and add to dictionary
-with open(args.summary, "rt") as f:
-    logger.info(f"Parsing summary information and metrics from {args.summary}")
-    summary_for_mapping = {}
-    next(f) #take out the header
-    for line in f:
-        splits = line.strip().split(": ")
-        if len(splits) == 2:
-            key = splits[0]
-            value = splits[1]
-            summary_for_mapping[key]=value
-summary_metrics = map_data(summary_mapping_dict, summary_for_mapping)
+summary_metrics = {}
+for summary_file in args.summary:
+    with open(summary_file, "rt") as f:
+        logger.info(f"Parsing summary information and metrics from {summary_file}")
+        summary_for_mapping = {}
+        next(f) #take out the header
+        for line in f:
+            splits = line.strip().split(": ")
+            if len(splits) == 2:
+                key = splits[0]
+                value = splits[1]
+                summary_for_mapping[key]=value
+    mapped_summary = map_data(summary_mapping_dict, summary_for_mapping)
+    summary_metrics = handle_haplotypes(mapped_summary, summary_file, summary_metrics, args.summary)
 
 # parse software tools and extract pipeline versions/hashes
 software_versions = parse_software(args.assembly_software, "genomeassembly") | parse_software(args.ascc_software, "ascc")
