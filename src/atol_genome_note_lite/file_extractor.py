@@ -52,12 +52,15 @@ tolid = args.tolid
 file_paths = {}
 
 hic_patterns = {
-    'busco_stats': f"{tolid}\\..+\\.phased/scaffolding/busco\\..+/short_summary\\.specific\\..+\\.asm_hap1_scaffolds_final\\.fa\\.json", # specifically taking the phased assembly busco
+    'hap_1_summary_stats': f"{tolid}\\..+\\.phased/scaffolding/asm_hap1_scaffolds_final\\.fa\\.assembly_summary",
+    'hap_2_summary_stats': f"{tolid}\\..+\\.phased/scaffolding/asm_hap2_scaffolds_final\\.fa\\.assembly_summary",
+    'hap_1_busco_stats': f"{tolid}\\..+\\.phased/scaffolding/busco\\..+/short_summary\\.specific\\..+\\.asm_hap1_scaffolds_final\\.fa\\.json", # specifically taking the phased assembly busco
+    'hap_2_busco_stats': f"{tolid}\\..+\\.phased/scaffolding/busco\\..+/short_summary\\.specific\\..+\\.asm_hap2_scaffolds_final\\.fa\\.json",
     'kmer_stats': f"{tolid}\\..+\\.phased/scaffolding/merqury\\..*/asm\\..*\\.completeness\\.stats",
     'qv_stats': f"{tolid}\\..+\\.phased/scaffolding/merqury\\..*/asm\\..*\\.qv",
-    'summary_stats': f"{tolid}\\..+\\.phased/scaffolding/asm_hap1_scaffolds_final\\.fa\\.assembly_summary",
-    'contact_map': f"{tolid}\\..+\\.phased/scaffolding/contact_maps/asm_hap1\\.pretext\\.FullMap\\.png",
-    'mitogenome_stats': f"{tolid}\\..+\\.phased/mito/contigs_stats\\.tsv", # defaulting to mitohifi results generated in `contigs` mode
+    'hap_1_contact_map': f"{tolid}\\..+\\.phased/scaffolding/contact_maps/asm_hap1\\.pretext\\.FullMap\\.png",
+    'hap_2_contact_map': f"{tolid}\\..+\\.phased/scaffolding/contact_maps/asm_hap2\\.pretext\\.FullMap\\.png",
+    'mitogenome_stats': f"{tolid}\\.mitohifi/contigs_stats\\.tsv", # defaulting to mitohifi results generated from sequence reads (not assembled contigs)
     'software_versions': f"pipeline_info/genomeassembly_software_versions\\.yml",
     'genomescope_plot': f"kmer/k../long/{tolid}.long.k.._linear_plot\\.png" # currently missing in the results directory
 }
