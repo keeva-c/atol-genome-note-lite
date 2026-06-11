@@ -18,7 +18,7 @@ We have assembled a {{ assembly.assembly_level }}-level genome sequence for *{{ 
 
 The genome of {{ "the " ~ taxonomy_info.ncbi_common_name ~ ", " if taxonomy_info.ncbi_common_name else "" }}*{{ taxonomy_info.ncbi_scientific_name }}* was
 sequenced as part of the {{ sample.bpa_initiative }} and has been assembled in collaboration with the Australian Tree of Life
-Bioinformatics group.
+Bioinformatics group.{% if assembly.rna_data_available %} As part of this project, additional RNA-seq data were generated and made available to support downstream applications of the genome assembly. Details of how these data were generated are included in the Methods section.{% endif %}
 
 ## **Methods**
 
@@ -184,7 +184,7 @@ experiment.bpa_package_id }}{% include "supplementary_package_data_for_genome_no
 
 The genome sequence is released openly for reuse.
 
- A code repository containing the workflow configuration files used to generate the assembly is hosted on GitHub at [https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}](https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}). Original bioinformatics piplines are available from the links provided in Table 4.
+A code repository containing the workflow configuration files used to generate the assembly is hosted on GitHub at [https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}](https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}). Original bioinformatics piplines are available from the links provided in Table 4.
 
 ## **Acknowledgements and funding information**
 

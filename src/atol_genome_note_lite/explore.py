@@ -33,6 +33,7 @@ path_to_seq_supplement_output = "templates/supplementary_seq_data_for_genome_not
 path_to_bpa_package_supplement_output = "templates/supplementary_package_data_for_genome_note.md"
 processed_wgs_file_paths = []
 processed_hic_file_paths = []
+processed_rna_file_paths = []
 input_sample_ids = []
 input_library_ids = []
 
@@ -57,6 +58,12 @@ input_group.add_argument(
     nargs="*",
     type=Path,
     help="optional JSON file/s listing metadata for a Hi-C sample and sequencing run."
+)
+input_group.add_argument(
+    "--rna_metadata",
+    nargs="*",
+    type=Path,
+    help="optional JSON file/s listing metadata for an RNA-seq sample and sequencing run."
 )
 output_group.add_argument(
     "--output",
@@ -88,7 +95,8 @@ def preprocess_metadata(metadata_file, processed_files):
         metadata_w_initiative = map_bpa_initiative(unprocessed_file)
         metadata_w_platform = sanitise_platform(metadata_w_initiative)
         metadata_w_asm_lvl = append_assembly_level(metadata_w_platform)
-        metadata_wo_empty = overwrite_empty_strings(metadata_w_asm_lvl)
+        metadata_w_rna = append_rna_availability(metadata_w_asm_lvl)
+        metadata_wo_empty = overwrite_empty_strings(metadata_w_rna)
         capitalised_metadata = standardise_capitalisation(metadata_wo_empty)
         processed_metadata = del_new_line_char(capitalised_metadata)
     with open(processed_file, 'w') as f:
@@ -148,10 +156,22 @@ def append_assembly_level(metadata):
         pass
     elif args.hic_metadata:
         metadata['assembly']['assembly_level'] = "scaffold"
-        logger.debug(f"setting assembly level to scaffold")
+        logger.debug("setting assembly level to scaffold")
     else:
         metadata['assembly']['assembly_level'] = "contig"
-        logger.debug(f"setting assembly level to contig")
+        logger.debug("setting assembly level to contig")
+    return(metadata)
+
+def append_rna_availability(metadata):
+    '''appending a true/false value to assembly metadata to indicate whether rna-seq data are available for the assembly'''
+    if metadata.get('assembly') is None:
+        pass
+    elif args.rna_metadata:
+        metadata['assembly']['rna_data_available'] = True
+        logger.debug("setting RNA-seq availability to true")
+    else:
+        metadata['assembly']['rna_data_available'] = False
+        logger.debug("setting RNA-seq availability to false")
     return(metadata)
 
 def overwrite_empty_strings(metadata):
@@ -300,13 +320,15 @@ if args.hic_metadata is not None:
     for input_file in args.hic_metadata:
         preprocess_metadata(input_file, processed_hic_file_paths) 
 
+# preprocessing metadata for input RNA-seq
+if args.rna_metadata is not None:
+    for input_file in args.rna_metadata:
+        preprocess_metadata(input_file, processed_rna_file_paths) 
+
 # initialise lists for cross-checking sample and library ids (to avoid duplicating metadata in the genome note lite)
-all_input_files = list(processed_wgs_file_paths)
+all_input_files = processed_wgs_file_paths + processed_hic_file_paths + processed_rna_file_paths
 
-if args.hic_metadata is not None:
-    all_input_files.extend(processed_hic_file_paths)
-
-# read Hi-C and supplementary WGS input metadata and render supplementary helper files
+# read Hi-C, supplementary WGS and RNA-seq input metadata and render supplementary helper files
 for idx, file in enumerate(all_input_files):
     # find the sample and library IDs and append to a list
     with open(file, "rt") as f:
