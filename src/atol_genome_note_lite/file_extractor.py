@@ -23,12 +23,14 @@ argument_parser = argparse.ArgumentParser(
     description="This tool extracts file paths for files used in the genome note lite from a text file containing the directory contents generated in the genome assembly pipeline.",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
-argument_parser.add_argument(
+input_group = argument_parser.add_argument_group("Input")
+output_group = argument_parser.add_argument_group("Output")
+input_group.add_argument(
     "--file_dir",
     type=Path,
     help="a text file listing all file paths contained in the genome assembly pipeline ouptut directory"
 )
-argument_parser.add_argument(
+input_group.add_argument(
     "--tolid",
     help="the ToLID for the specimen used to generate the genome assembly"
 )
@@ -37,7 +39,7 @@ argument_parser.add_argument(
     action="store_true",
     help="extracts files for assemblies generated with Hi-C data"
 )
-argument_parser.add_argument(
+output_group.add_argument(
     "--output",
     type=Path,
     default=Path("results/found_files.json"),

@@ -69,9 +69,13 @@ This tool extracts file paths for files used in the genome note lite from a text
 
 options:
   -h, --help           show this help message and exit
+  --hic                extracts files for assemblies generated with Hi-C data (default: False)
+
+Input:
   --file_dir FILE_DIR  a text file listing all file paths contained in the genome assembly pipeline ouptut directory (default: None)
   --tolid TOLID        the ToLID for the specimen used to generate the genome assembly (default: None)
-  --hic                extracts files for assemblies generated with Hi-C data (default: False)
+
+Output:
   --output OUTPUT      a JSON file containing the list of extracted paths with their file types (default: results/found_files.json)
 ```
 
