@@ -81,6 +81,11 @@ argument_parser.add_argument(
     action="store_true",
     help="runs the genome note lite for an assembly only (no annotation)."
 )
+argument_parser.add_argument(
+    "--phased_haplotypes",
+    action="store_true",
+    help="reports on both haplotype assemblies."
+)
 args = argument_parser.parse_args()
 
 # TODO: check that arguments are valid paths
@@ -96,7 +101,8 @@ def preprocess_metadata(metadata_file, processed_files):
         metadata_w_platform = sanitise_platform(metadata_w_initiative)
         metadata_w_asm_lvl = append_assembly_level(metadata_w_platform)
         metadata_w_rna = append_rna_availability(metadata_w_asm_lvl)
-        metadata_wo_empty = overwrite_empty_strings(metadata_w_rna)
+        metadata_w_haps = append_haplotype_number(metadata_w_rna)
+        metadata_wo_empty = overwrite_empty_strings(metadata_w_haps)
         capitalised_metadata = standardise_capitalisation(metadata_wo_empty)
         processed_metadata = del_new_line_char(capitalised_metadata)
     with open(processed_file, 'w') as f:
@@ -160,6 +166,18 @@ def append_assembly_level(metadata):
     else:
         metadata['assembly']['assembly_level'] = "contig"
         logger.debug("setting assembly level to contig")
+    return(metadata)
+
+def append_haplotype_number(metadata):
+    '''setting the number of haplotypes to report on based on input arguments'''
+    if metadata.get('assembly') is None:
+        pass
+    elif args.phased_haplotypes:
+        metadata['assembly']['haplotypes'] = 2
+        logger.debug("setting the number of haplotypes to report on to 2")
+    else:
+        metadata['assembly']['haplotypes'] = None
+        logger.debug("setting the number of haplotypes to report on to none")
     return(metadata)
 
 def append_rna_availability(metadata):
