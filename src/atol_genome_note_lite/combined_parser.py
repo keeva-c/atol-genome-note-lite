@@ -18,7 +18,7 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 console_handler.setFormatter(formatter)
 file_handler.setFormatter(formatter)
 logger.setLevel("DEBUG")
-console_handler.setLevel("DEBUG")
+console_handler.setLevel("INFO")
 
 # add arguments
 argument_parser = argparse.ArgumentParser(
@@ -104,20 +104,22 @@ output_group.add_argument(
 argument_parser.add_argument(
     "--phased",
     action="store_true",
-    help="select this option to extract metrics for both haplotypes"
+    help="select this option to extract metrics for phased assemblies. Metrics will be extracted for both haplotypes if sufficient data is proivided."
 )
 args = argument_parser.parse_args()
 
 # set global variables
 json_assembly_object = {}
+busco_metrics = {}
+summary_metrics = {}
 path_to_busco_field_mapping = "dev/busco_to_fields.csv"
+path_to_summary_field_mapping = "dev/summary_to_fields.csv"
 if args.phased:
     path_to_kmer_field_mapping = "dev/kmer_to_fields_scaffold_asm.csv"
     path_to_qv_field_mapping = "dev/qv_to_fields_scaffold_asm.csv"
 else:
     path_to_kmer_field_mapping = "dev/kmer_to_fields_contig_asm.csv"
     path_to_qv_field_mapping = "dev/qv_to_fields_contig_asm.csv"
-path_to_summary_field_mapping = "dev/summary_to_fields.csv"
 
 def parse_mappings(mappings):
     '''saving genome note field names to a dictionary'''
@@ -160,8 +162,11 @@ def parse_software(software_summary, pipeline_name):
     return version_dict
 
 def handle_haplotypes(mapped_metrics, file_name, final_metrics, input_args):
-    if len(input_args) == 1:
+    if len(input_args) == 1 and not args.phased:
         final_metrics = mapped_metrics
+    elif len(input_args) == 1 and args.phased:
+        logger.warning(f"The phasing option has been selected but {str(file_name)} is the only file of it's type which has been provided. Metrics will automatically be assigned to haplotype 1.")
+        final_metrics = {f"hap_1_{key}": value for key, value in mapped_metrics.items()}
     elif len(input_args) == 2:
         if "asm_hap1" in str(file_name):
             hap_1_metrics = {f"hap_1_{key}": value for key, value in mapped_metrics.items()}
@@ -169,20 +174,16 @@ def handle_haplotypes(mapped_metrics, file_name, final_metrics, input_args):
         elif "asm_hap2" in str(file_name):
             hap_2_metrics = {f"hap_2_{key}": value for key, value in mapped_metrics.items()}
             final_metrics.update(hap_2_metrics)
+        else:
+            logger.error(f"Could not determine whether {str(file_name)} was generated from hap 1 or hap 2. File path must include 'asm_hap1' or 'asm_hap2'.")
+    elif len(input_args) > 2:
+        logger.error(f"More than the expected number of files of this type have been supplied: {input_args}.")
     return final_metrics
 
 logger.info("Starting script")
 
-if len(args.busco) == 1:
-    logger.debug("one BUSCO file supplied")
-elif len(args.busco) == 2:
-    logger.debug("two BUSCO files supplied")
-elif len(args.busco) > 2:
-    logger.error("too many BUSCO files supplied")
-
 busco_mapping_dict = parse_mappings(path_to_busco_field_mapping) 
 # extract "results" and "lineage_dataset" objects from json file and merge into one dictionary
-busco_metrics = {}
 for busco_file in args.busco:
     with open(busco_file, "rt") as f:
         logger.info(f"Parsing BUSCO metrics from {busco_file}")
@@ -201,7 +202,6 @@ qv_metrics = map_data(qv_mapping_dict, qv_for_mapping)
 
 summary_mapping_dict = parse_mappings(path_to_summary_field_mapping)
 # extract keys and values from summary text file and add to dictionary
-summary_metrics = {}
 for summary_file in args.summary:
     with open(summary_file, "rt") as f:
         logger.info(f"Parsing summary information and metrics from {summary_file}")
