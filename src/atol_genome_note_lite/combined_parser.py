@@ -112,6 +112,7 @@ args = argument_parser.parse_args()
 json_assembly_object = {}
 busco_metrics = {}
 summary_metrics = {}
+contact_maps = {}
 path_to_busco_field_mapping = "dev/busco_to_fields.csv"
 path_to_summary_field_mapping = "dev/summary_to_fields.csv"
 if args.phased:
@@ -129,15 +130,16 @@ def parse_mappings(mappings):
         next(csvreader) # take out the header
         for line in csvreader:
                 mapping_dict[line[1]]=line[0]
-    logger.debug(f"this is the mapping dict: {mapping_dict}")
     return mapping_dict
 
 def map_data(mapping_dict, input_data):
     '''mapping values from a dictionary to genome note field names'''
     mapped_output = {}
     for mapped_field,original_field in mapping_dict.items():
-        mapped_output[mapped_field] = input_data[original_field]
-    logger.debug(f"this is the mapped output: {mapped_output}")
+        try:
+            mapped_output[mapped_field] = input_data[original_field]
+        except KeyError as e:
+            logger.error(f"Could not find the expected field: {e}. You may need to toggle the --phased option.")
     return mapped_output
 
 def parse_merqury(stats_file, column_for_parsing):
@@ -165,7 +167,7 @@ def handle_haplotypes(mapped_metrics, file_name, final_metrics, input_args):
     if len(input_args) == 1 and not args.phased:
         final_metrics = mapped_metrics
     elif len(input_args) == 1 and args.phased:
-        logger.warning(f"The phasing option has been selected but {str(file_name)} is the only file of it's type which has been provided. Metrics will automatically be assigned to haplotype 1.")
+        logger.warning(f"The phasing option has been selected but {str(file_name)} is the only file of its type which has been provided. Parsed information will automatically be assigned to haplotype 1.")
         final_metrics = {f"hap_1_{key}": value for key, value in mapped_metrics.items()}
     elif len(input_args) == 2:
         if "asm_hap1" in str(file_name):
@@ -244,12 +246,14 @@ else:
     logger.warning("No mitochondrial statistics provided, output will not containg mitogenome length")
 
 # add contact map path to combined metrics dictionary
-if args.map is not None:
-    logger.info(f"Parsing contact map file name: {args.map}")
-    contact_map = {"contact_map_image_path": str(args.map)}
-    json_assembly_object.update(contact_map)
-else:
+if args.map is None:
     logger.warning("No contact map provided, output will not reference contact map")
+else:
+    for map in args.map:
+        logger.info(f"Parsing contact map file name: {map}")
+        mapped_path = {"contact_map_image_path": str(map)}
+        contact_maps = handle_haplotypes(mapped_path, map, contact_maps, args.map)
+    json_assembly_object.update(contact_maps)
 
 # add GenomeScope2.0 kmer plot path to combined metrics dictionary
 if args.kmer_plot is not None:
