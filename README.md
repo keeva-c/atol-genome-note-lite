@@ -63,20 +63,21 @@ The [`file_extractor.py`](https://github.com/keeva-c/atol-genome-note-lite/blob/
 ### Full usage:
 
 ```
-usage: file_extractor.py [-h] [--file_dir FILE_DIR] [--tolid TOLID] [--hic] [--output OUTPUT]
+usage: file_extractor.py [-h] [--file_dir FILE_DIR] [--genome_id GENOME_ID] [--hic] [--output OUTPUT]
 
 This tool extracts file paths for files used in the genome note lite from a text file containing the directory contents generated in the genome assembly pipeline.
 
 options:
-  -h, --help           show this help message and exit
-  --hic                extracts files for assemblies generated with Hi-C data (default: False)
+  -h, --help            show this help message and exit
+  --hic                 extracts files for assemblies generated with Hi-C data (default: False)
 
 Input:
-  --file_dir FILE_DIR  a text file listing all file paths contained in the genome assembly pipeline ouptut directory (default: None)
-  --tolid TOLID        the ToLID for the specimen used to generate the genome assembly (default: None)
+  --file_dir FILE_DIR   a text file listing all file paths contained in the genome assembly pipeline ouptut directory (default: None)
+  --genome_id GENOME_ID
+                        the genome ID, i.e. ToLID.assembly_version (default: None)
 
 Output:
-  --output OUTPUT      a JSON file containing the list of extracted paths with their file types (default: results/found_files.json)
+  --output OUTPUT       a JSON file containing the list of extracted paths with their file types (default: results/found_files.json)
 ```
 
 ## Assembly metadata and metrics

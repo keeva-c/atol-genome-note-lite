@@ -31,8 +31,8 @@ input_group.add_argument(
     help="a text file listing all file paths contained in the genome assembly pipeline ouptut directory"
 )
 input_group.add_argument(
-    "--tolid",
-    help="the ToLID for the specimen used to generate the genome assembly"
+    "--genome_id",
+    help="the genome ID, i.e. ToLID.assembly_version"
 )
 argument_parser.add_argument(
     "--hic",
@@ -47,35 +47,39 @@ output_group.add_argument(
 )
 args = argument_parser.parse_args()
 
-# TODO: handle output directories and file paths for assemblies generated without hi-c
-
 # set global variables
-tolid = args.tolid
+genome_id = args.genome_id
 file_paths = {}
 
 hic_patterns = {
-    'hap_1_summary_stats': f"{tolid}\\..+\\.phased/scaffolding/asm_hap1_scaffolds_final\\.fa\\.assembly_summary",
-    'hap_2_summary_stats': f"{tolid}\\..+\\.phased/scaffolding/asm_hap2_scaffolds_final\\.fa\\.assembly_summary",
-    'hap_1_busco_stats': f"{tolid}\\..+\\.phased/scaffolding/busco\\..+/short_summary\\.specific\\..+\\.asm_hap1_scaffolds_final\\.fa\\.json", # specifically taking the phased assembly busco
-    'hap_2_busco_stats': f"{tolid}\\..+\\.phased/scaffolding/busco\\..+/short_summary\\.specific\\..+\\.asm_hap2_scaffolds_final\\.fa\\.json",
-    'kmer_stats': f"{tolid}\\..+\\.phased/scaffolding/merqury\\..*/asm\\..*\\.completeness\\.stats",
-    'qv_stats': f"{tolid}\\..+\\.phased/scaffolding/merqury\\..*/asm\\..*\\.qv",
-    'hap_1_contact_map': f"{tolid}\\..+\\.phased/scaffolding/contact_maps/asm_hap1\\.pretext\\.FullMap\\.png",
-    'hap_2_contact_map': f"{tolid}\\..+\\.phased/scaffolding/contact_maps/asm_hap2\\.pretext\\.FullMap\\.png",
-    'mitogenome_stats': f"{tolid}\\.mitohifi/contigs_stats\\.tsv", # defaulting to mitohifi results generated from sequence reads (not assembled contigs)
+    'hap_1_summary_stats': f"{genome_id}\\..+\\.phased/scaffolding/asm_hap1_scaffolds_final\\.fa\\.assembly_summary",
+    'hap_2_summary_stats': f"{genome_id}\\..+\\.phased/scaffolding/asm_hap2_scaffolds_final\\.fa\\.assembly_summary",
+    'hap_1_busco_stats': f"{genome_id}\\..+\\.phased/scaffolding/busco\\..+/short_summary\\.specific\\..+\\.asm_hap1_scaffolds_final\\.fa\\.json", # specifically taking the phased assembly busco
+    'hap_2_busco_stats': f"{genome_id}\\..+\\.phased/scaffolding/busco\\..+/short_summary\\.specific\\..+\\.asm_hap2_scaffolds_final\\.fa\\.json",
+    'kmer_stats': f"{genome_id}\\..+\\.phased/scaffolding/merqury\\..*/asm\\..*\\.completeness\\.stats",
+    'qv_stats': f"{genome_id}\\..+\\.phased/scaffolding/merqury\\..*/asm\\..*\\.qv",
+    'hap_1_contact_map': f"{genome_id}\\..+\\.phased/scaffolding/contact_maps/asm_hap1\\.pretext\\.FullMap\\.png",
+    'hap_2_contact_map': f"{genome_id}\\..+\\.phased/scaffolding/contact_maps/asm_hap2\\.pretext\\.FullMap\\.png",
+    'mitogenome_stats': f"{genome_id}\\.mitohifi/contigs_stats\\.tsv", # defaulting to mitohifi results generated from sequence reads (not assembled contigs)
     'software_versions': f"pipeline_info/genomeassembly_software_versions\\.yml",
-    'genomescope_plot': f"kmer/k../long/{tolid}.long.k.._linear_plot\\.png" # currently missing in the results directory
+    'genomescope_plot': f"kmer/k../long/{genome_id}.long.k.._linear_plot\\.png" # currently missing in the results directory
 }
 
 no_hic_patterns = {
-    'busco_stats': f"{tolid}\\..+\\.purged/purging/busco\\..+/short_summary\\.specific\\..+\\.purged\\.fa\\.json",
-    'kmer_stats': f"{tolid}\\..+\\.purged/purging/merqury\\..*/asm\\..*\\.completeness\\.stats",
-    'qv_stats': f"{tolid}\\..+\\.purged/purging/merqury\\..*/asm\\..*\\.qv",
-    'summary_stats': f"{tolid}\\..+\\.purged/purging/asm\\.purged\\.fa\\.assembly_summary",
-    'mitogenome_stats': f"{tolid}\\.mitohifi/contigs_stats\\.tsv", # defaulting to mitohifi results generated from sequence reads (not assembled contigs)
+    'busco_stats': f"{genome_id}\\..+\\.purged/purging/busco\\..+/short_summary\\.specific\\..+\\.purged\\.fa\\.json",
+    'kmer_stats': f"{genome_id}\\..+\\.purged/purging/merqury\\..*/asm\\..*\\.completeness\\.stats",
+    'qv_stats': f"{genome_id}\\..+\\.purged/purging/merqury\\..*/asm\\..*\\.qv",
+    'summary_stats': f"{genome_id}\\..+\\.purged/purging/asm\\.purged\\.fa\\.assembly_summary",
+    'mitogenome_stats': f"{genome_id}\\.mitohifi/contigs_stats\\.tsv", # defaulting to mitohifi results generated from sequence reads (not assembled contigs)
     'software_versions': f"pipeline_info/genomeassembly_software_versions\\.yml",
-    'genomescope_plot': f"kmer/k../long/{tolid}.long.k.._linear_plot\\.png" # currently missing in the results directory
+    'genomescope_plot': f"kmer/k../long/{genome_id}.long.k.._linear_plot\\.png" # currently missing in the results directory
 }
+
+# configurations
+if args.hic:
+    patterns = hic_patterns
+else:
+    patterns = no_hic_patterns
 
 # functions
 def find_file(file_type, pattern):
@@ -89,14 +93,7 @@ def find_file(file_type, pattern):
     else:
         logger.info(f"File path found for {file_type}")
         path_list = path_list[0]
-#        path_list[0] = Path(path_list[0]) # convert string to Path
     return path_list
-
-# configurations
-if args.hic:
-    patterns = hic_patterns
-else:
-    patterns = no_hic_patterns
 
 # start script
 with open(args.file_dir, "r", encoding="utf-8") as f:
@@ -107,10 +104,10 @@ for file_type, pattern in patterns.items():
     file_paths[file_type] = path
 
 with open(args.output, "wt", encoding="utf-8") as f:
-    logger.info(f"Writing file paths for {args.tolid} to {args.output}")
+    logger.info(f"Writing file paths for {args.genome_id} to {args.output}")
     json.dump(file_paths, f)
 
-print(f"rclone copy command for {args.tolid}:")
+print(f"rclone copy command for {args.genome_id}:")
 
 for file_path in file_paths.values():
     if file_path:
