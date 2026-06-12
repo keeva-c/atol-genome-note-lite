@@ -31,7 +31,7 @@ input_group.add_argument(
     "--busco",
     nargs="+",
     type=Path,
-    help="the JSON summary file generated during BUSCO analysis of the assembly - the file should end with busco.json"
+    help="the JSON summary file generated during BUSCO analysis of the assembly - the file should end with busco.json. Include two summaries for phased haplotypes."
 )
 input_group.add_argument(
     "--kmer",
@@ -47,7 +47,7 @@ input_group.add_argument(
     "--summary",
     nargs="+",
     type=Path,
-    help="the summary text file generated when using the sanger_tol assembly pipeline - the file should end with .assembly_summary"
+    help="the summary text file generated when using the sanger_tol assembly pipeline - the file should end with .assembly_summary. Include two summaries for phased haplotypes."
 )
 input_group.add_argument(
     "--assembly_software",
@@ -58,7 +58,7 @@ input_group.add_argument(
     "--map",
     type=Path,
     nargs='*',
-    help="the PreText Snapshot PNG file of the contact map generated during assembly scaffolding - the file should end with FullMap.png"
+    help="the PreText Snapshot PNG file of the contact map generated during assembly scaffolding - the file should end with FullMap.png. Include two files for phased haplotypes."
 )
 input_group.add_argument(
     "--kmer_plot",
