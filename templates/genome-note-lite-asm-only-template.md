@@ -130,7 +130,7 @@ Table: Table 4: Pipelines used in genome assembly and quality assessment.
 
 ## **Genome sequence report**
 
-Details about the assembled genome sequence, including key assembly metrics and target minimum standards set by the Earth BioGenome Project (EBP) (Earth BioGenome Project, 2026), are summarised in Table 5. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in {% if assembly.genomescope_image_path %}Figure 2.{% else %} Figure 1.{% endif %}{% endif %}{% if assembly.hap_1_contact_map_image_path and hap_2_contact_map_image_path %}Hi-C contact maps for haplotypes 1 and 2 are provided in {% if assembly.genomescope_image_path %}Figures 2 and 3, respectively.{% else %} Figures 1 and 2, respectively.{% endif %}{% endif %}
+Details about the assembled genome sequence, including key assembly metrics and target minimum standards set by the Earth BioGenome Project (EBP) (Earth BioGenome Project, 2026), are summarised in Table 5. {% if assembly.contact_map_image_path %}A Hi-C contact map for the assembly is provided in {% if assembly.genomescope_image_path %}Figure 2.{% else %} Figure 1.{% endif %}{% endif %}{% if assembly.hap_1_contact_map_image_path and assembly.hap_2_contact_map_image_path %}Hi-C contact maps for haplotypes 1 and 2 are provided in {% if assembly.genomescope_image_path %}Figures 2 and 3, respectively.{% else %} Figures 1 and 2, respectively.{% endif %}{% endif %}
 
 {% if assembly.haplotypes == 2 %}| **Assembly information** | | **EBP standard** |
 | --- | ---- | -- |
@@ -148,7 +148,7 @@ Details about the assembled genome sequence, including key assembly metrics and 
 | Longest scaffold | {{ round_bases_up(assembly.hap_1_longest_scaffold) }} | |
 | Consensus quality (QV) | Haplotype 1: {{ assembly.primary_qv }} | > 40 |
 | | Combined haplotypes: {{ assembly.combined_qv }} | |
-| *k*-mer completeness | {{ assembly.primary_kmer }}% | > 90% |
+| *k*-mer completeness | Haplotype 1: {{ assembly.primary_kmer }}% | > 90% |
 | | Combined haplotypes: {{ assembly.combined_kmer }}% | |
 | Full BUSCO summary | {{ add_spaces(assembly.hap_1_busco_string) }} |
 | | *C: complete, S: single copy, D: duplicated/multi-copy, F: fragmented, M: missing, n: number of markers, E: proportion with internal stop codons* | |
@@ -169,7 +169,7 @@ Details about the assembled genome sequence, including key assembly metrics and 
 | Longest scaffold | {{ round_bases_up(assembly.hap_2_longest_scaffold) }} | |
 | Consensus quality (QV) | Haplotype 2: {{ assembly.alt_qv }} | > 40 |
 | | Combined haplotypes: {{ assembly.combined_qv }} | |
-| *k*-mer completeness | {{ assembly.alt_kmer }}% | > 90% |
+| *k*-mer completeness | Haplotype 2: {{ assembly.alt_kmer }}% | > 90% |
 | | Combined haplotypes: {{ assembly.combined_kmer }}% | |
 | Full BUSCO summary | {{ add_spaces(assembly.hap_2_busco_string) }} |
 | | *C: complete, S: single copy, D: duplicated/multi-copy, F: fragmented, M: missing, n: number of markers, E: proportion with internal stop codons* | |
@@ -206,8 +206,11 @@ Table: Table 5: Genome assembly information for {{ assembly.assembly_name|defaul
 | Organelles | {% if assembly.mito_size %}Mitochondrial genome: {{ make_pretty_number(assembly.mito_size) }} bp{% endif %}{% if assembly.plastid_size %} Plastid genome: {{ assembly.plastid_size }}{% endif %}{% if not assembly.mito_size and not assembly.plastid_size %}No organelles assembled{% endif %} | Complete single alleles |
 Table: Table 5: Genome assembly information for {{ assembly.assembly_name|default("*genome assembly name*",true) }}, sequenced from *{{ taxonomy_info.ncbi_scientific_name }}*.{% endif %}
 
-{% if assembly.contact_map_image_path %}{% if assembly.genomescope_image_path %}![Figure 2: Hi-C contact map of the genome assembly, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %}Chromosomes {% else %}Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.contact_map_image_path }}){% else %}![Figure 1: Hi-C contact map of the genome assembly, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %}Chromosomes {% else %}Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.contact_map_image_path }}){% endif %}{% endif %}{% if assembly.hap_1_contact_map_image_path %}{% if assembly.genomescope_image_path %}![Figure 2: Hi-C contact map of {{ assembly.hap_1_assembly_name }}, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %}Chromosomes {% else %}Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.hap_1_contact_map_image_path }}){% if assembly.hap_2_contact_map_image_path %}![Figure 3: Hi-C contact map of {{ assembly.hap_2_assembly_name }}, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %}Chromosomes {% else %}Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.hap_2_contact_map_image_path }}){% endif %}{% else %}![Figure 1: Hi-C contact map of {{ assembly.hap_1_assembly_name }}, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %}Chromosomes {% else %}Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.hap_1_contact_map_image_path }}){% if assembly.hap_2_contact_map_image_path %}![Figure 2: Hi-C contact map of {{ assembly.hap_2_assembly_name }}, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %}Chromosomes {% else %}Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.hap_2_contact_map_image_path }}){% endif %}
-{% endif %}{% endif %}
+{% if assembly.contact_map_image_path and assembly.genomescope_image_path %}![Figure 2: Hi-C contact map of the genome assembly, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %} Chromosomes {% else %} Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.contact_map_image_path }}){% elif assembly.contact_map_image_path and not assembly.genomescope_image_path %}![Figure 1: Hi-C contact map of the genome assembly, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %} Chromosomes {% else %} Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.contact_map_image_path }}){% endif %}{% if assembly.hap_1_contact_map_image_path and assembly.genomescope_image_path %}![Figure 2: Hi-C contact map of {{ assembly.hap_1_assembly_name }}, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %} Chromosomes {% else %} Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.hap_1_contact_map_image_path }}){% if assembly.hap_2_contact_map_image_path %}
+
+![Figure 3: Hi-C contact map of {{ assembly.hap_2_assembly_name }}, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %} Chromosomes {% else %} Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.hap_2_contact_map_image_path }}){% endif %}{% elif assembly.hap_1_contact_map_image_path and not assembly.genomescope_image_path %}![Figure 1: Hi-C contact map of {{ assembly.hap_1_assembly_name }}, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %} Chromosomes {% else %} Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.hap_1_contact_map_image_path }}){% if assembly.hap_2_contact_map_image_path %}
+
+![Figure 2: Hi-C contact map of {{ assembly.hap_2_assembly_name }}, visualised using HiGlass.{% if assembly.assembly_level=='chromosome' %} Chromosomes {% else %} Scaffolds {% endif %}are shown in order of size from left to right and top to bottom.]({{ assembly.hap_2_contact_map_image_path }}){% endif %}{% endif %}
 
 ## **Data and code availability**
 
