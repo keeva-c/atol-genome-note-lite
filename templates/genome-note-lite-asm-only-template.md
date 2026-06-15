@@ -103,13 +103,13 @@ Table: Table 3: Methodological information about sequencing runs.
 | - | -- |
 | **Reads QC** | | {% if experiment.platform=='PacBio' %}
 | - Pipeline | amytims/atol-qc-raw-pacbio |
-| - Version | *tbd* |
+| - Version | {{ assembly.pacbio_qv_version }} |
 | - Source | [https://github.com/amytims/atol-qc-raw-pacbio](https://github.com/amytims/atol-qc-raw-pacbio) | {% elif experiment.platform=='Oxford Nanopore' %}
 | - Pipeline | TomHarrop/atol-qc-raw-ont |
-| - Version | *tbd* |
+| - Version | {{ assembly.ont_qv_version }} |
 | - Source | [https://github.com/TomHarrop/atol-qc-raw-ont](https://github.com/TomHarrop/atol-qc-raw-ont) | {% endif %}{% if assembly.assembly_level!='contig' %}
 | - Pipeline | TomHarrop/atol-qc-raw-shortread |
-| - Version | *tbd* |
+| - Version | {{ assembly.short_read_qv_version }} |
 | - Source | [https://github.com/TomHarrop/atol-qc-raw-shortread](https://github.com/TomHarrop/atol-qc-raw-shortread) | {% endif %}
 | **Genome assembly** | |
 | - Pipeline | sanger-tol/genomeassembly |
@@ -146,7 +146,7 @@ Details about the assembled genome sequence, including key assembly metrics and 
 | Number of scaffolds | {{ make_pretty_number(assembly.hap_1_scaffold_count) }} | |
 | Scaffold N50 length | {{ round_bases_up(assembly.hap_1_scaffold_n50) }} | Chromosomal scale |
 | Longest scaffold | {{ round_bases_up(assembly.hap_1_longest_scaffold) }} | |
-| Consensus quality (QV) | {{ assembly.primary_qv }} | > 40 |
+| Consensus quality (QV) | Haplotype 1: {{ assembly.primary_qv }} | > 40 |
 | | Combined haplotypes: {{ assembly.combined_qv }} | |
 | *k*-mer completeness | {{ assembly.primary_kmer }}% | > 90% |
 | | Combined haplotypes: {{ assembly.combined_kmer }}% | |
@@ -167,7 +167,7 @@ Details about the assembled genome sequence, including key assembly metrics and 
 | Number of scaffolds | {{ make_pretty_number(assembly.hap_2_scaffold_count) }} | |
 | Scaffold N50 length | {{ round_bases_up(assembly.hap_2_scaffold_n50) }} | Chromosomal scale |
 | Longest scaffold | {{ round_bases_up(assembly.hap_2_longest_scaffold) }} | |
-| Consensus quality (QV) | {{ assembly.alt_qv }} | > 40 |
+| Consensus quality (QV) | Haplotype 2: {{ assembly.alt_qv }} | > 40 |
 | | Combined haplotypes: {{ assembly.combined_qv }} | |
 | *k*-mer completeness | {{ assembly.alt_kmer }}% | > 90% |
 | | Combined haplotypes: {{ assembly.combined_kmer }}% | |
