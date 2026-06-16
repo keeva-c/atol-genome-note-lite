@@ -22,7 +22,7 @@ Bioinformatics group.{% if assembly.rna_data_available %} As part of this projec
 
 ## **Methods**
 
-Information relating to sample collection, nucleic acid extraction and library preparation, and sequencing are provided in Tables 1, 2, and 3 respectively.{% if assembly.genomescope_image_path %} A frequency distribution graph of *k*-mers generated during sequencing is included in Figure 1.{% endif %} An overview of the computational pipelines used in genome assembly and quality assessment are given in Table 4.
+Information relating to sample collection, nucleic acid extraction and library preparation, and sequencing are provided in Tables 1, 2, and 3 respectively.{% if assembly.genomescope_image_path %} A frequency distribution graph of *k*-mers generated during sequencing is included in Figure 1.{% endif %} An overview of the computational pipelines used in genome assembly and quality assessment are given in Table 4. Configuration and workflow files used to execute the pipelines are provided in a code repository at [https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}](https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}).
 
 ### **Sample acquisition**
 
