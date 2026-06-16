@@ -130,7 +130,7 @@ def map_bpa_initiative(metadata):
     elif initiative_acronym == 'forest-resilience':
         full_initiative = 'Genomics for Forest Resilience Initiative'
     elif initiative_acronym == 'bpa-plants':
-        full_initiative = 'Genomics for Australian Plants'
+        full_initiative = 'Genomics for Australian Plants Initiative'
     elif initiative_acronym == 'aus-venom':
         full_initiative = 'Australian Venom Innovation and Discovery Initiative'
     else:
