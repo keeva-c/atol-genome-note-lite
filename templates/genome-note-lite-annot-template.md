@@ -104,13 +104,10 @@ Table: Table 3: Methodological information about sequencing runs.
 | - | -- |
 | **Reads QC** | | {% if experiment.platform=='PacBio' %}
 | - Pipeline | amytims/atol-qc-raw-pacbio |
-| - Version | {{ assembly.pacbio_qv_version }} |
 | - Source | [https://github.com/amytims/atol-qc-raw-pacbio](https://github.com/amytims/atol-qc-raw-pacbio) | {% elif experiment.platform=='Oxford Nanopore' %}
 | - Pipeline | TomHarrop/atol-qc-raw-ont |
-| - Version | {{ assembly.ont_qv_version }} |
 | - Source | [https://github.com/TomHarrop/atol-qc-raw-ont](https://github.com/TomHarrop/atol-qc-raw-ont) | {% endif %}{% if assembly.assembly_level!='contig' %}
 | - Pipeline | TomHarrop/atol-qc-raw-shortread |
-| - Version | {{ assembly.short_read_qv_version }} |
 | - Source | [https://github.com/TomHarrop/atol-qc-raw-shortread](https://github.com/TomHarrop/atol-qc-raw-shortread) | {% endif %}
 | **Genome assembly** | |
 | - Pipeline | sanger-tol/genomeassembly |
