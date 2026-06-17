@@ -10,7 +10,7 @@ src/atol_genome_note_lite/explore.py
    --hic_metadata : 0 or more paths/to/hic/metadata.json 
    --rna_metadata: 0 or more paths/to/rna/metadata.json
    --output : optional path/to/results/output.md
-   --phased_haplotypes : triggers the genome note lite to report on 2 haplotype assemblies
+   --number_of_haplotypes : specifies the number of haplotype assemblies to report on
    --w_annotation : specifies generating a genome note lite with annotation section 
    or 
    --wo_annotation : specifies generating a genome note lite without annotation section
@@ -24,7 +24,7 @@ Optionally, you can include:
  * one or more JSON files containing metadata for the organism, sample, and Hi-C run, if one or more sets of Hi-C reads were used to generate the assembly
  * one or more JSON files containing metadata for the organism, sample, and RNA-seq run, if one or more sets of transcriptomic reads were used to generate the assembly
  * specification of whether the genome note lite should include a section on genome annotation (if neither `--w_annotation` or `--wo_annotation` flags are used, no annotation information will be included by default)
- * specification of whether the genome note lite should include assembly stats and metrics for haplotype 1 and haplotype 2
+ * specification of how many haplotypic assemblies the genome note lite should include assembly stats and metrics for
 
 ## Output
 
@@ -32,8 +32,7 @@ Optionally, you can include:
 
  ## Full usage
  ```
-usage: explore.py [-h] [--wgs_metadata WGS_METADATA [WGS_METADATA ...]] [--hic_metadata [HIC_METADATA ...]] [--rna_metadata [RNA_METADATA ...]] [--output OUTPUT]
-                  [--w_annotation] [--wo_annotation] [--phased_haplotypes]
+usage: explore.py [-h] [--wgs_metadata WGS_METADATA [WGS_METADATA ...]] [--hic_metadata [HIC_METADATA ...]] [--rna_metadata [RNA_METADATA ...]] [--number_of_haplotypes NUMBER_OF_HAPLOTYPES] [--output OUTPUT] [--w_annotation] [--wo_annotation]
 
 This tool generates a draft genome note lite markdown document based on sample, read, assembly, and annotation metadata.
 
@@ -41,16 +40,16 @@ options:
   -h, --help            show this help message and exit
   --w_annotation        runs the genome note lite for an assembly with an annotation. (default: False)
   --wo_annotation       runs the genome note lite for an assembly only (no annotation). (default: False)
-  --phased_haplotypes   reports on both haplotype assemblies. (default: False)
 
 Input:
   --wgs_metadata WGS_METADATA [WGS_METADATA ...]
-                        at least one JSON file listing metadata for a WGS sample and sequencing run. The first file should also contain assembly metadata and
-                        optionally annotation metadata. (default: None)
+                        at least one JSON file listing metadata for a WGS sample and sequencing run. The first file should also contain assembly metadata and optionally annotation metadata. (default: None)
   --hic_metadata [HIC_METADATA ...]
                         optional JSON file/s listing metadata for a Hi-C sample and sequencing run. (default: None)
   --rna_metadata [RNA_METADATA ...]
                         optional JSON file/s listing metadata for an RNA-seq sample and sequencing run. (default: None)
+  --number_of_haplotypes NUMBER_OF_HAPLOTYPES
+                        the number of phased haplotype assemblies the genome note lite should report on. If set to 0, the genome note lite will report on an unphased primary assembly. (default: 0)
 
 Output:
   --output OUTPUT       optional output file address. (default: results/genome_note_lite.md)
