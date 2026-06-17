@@ -65,6 +65,12 @@ input_group.add_argument(
     type=Path,
     help="optional JSON file/s listing metadata for an RNA-seq sample and sequencing run."
 )
+input_group.add_argument(
+    "--number_of_haplotypes",
+    default=0,
+    type=int,
+    help="the number of phased haplotype assemblies the genome note lite should report on. If set to 0, the genome note lite will report on an unphased primary assembly."
+)
 output_group.add_argument(
     "--output",
     default=Path("results/genome_note_lite.md"),
@@ -80,11 +86,6 @@ argument_parser.add_argument(
     "--wo_annotation",
     action="store_true",
     help="runs the genome note lite for an assembly only (no annotation)."
-)
-argument_parser.add_argument(
-    "--phased_haplotypes",
-    action="store_true",
-    help="reports on both haplotype assemblies."
 )
 args = argument_parser.parse_args()
 
@@ -172,12 +173,15 @@ def append_haplotype_number(metadata):
     '''setting the number of haplotypes to report on based on input arguments'''
     if metadata.get('assembly') is None:
         pass
-    elif args.phased_haplotypes:
+    elif args.number_of_haplotypes==2:
         metadata['assembly']['haplotypes'] = 2
         logger.debug("setting the number of haplotypes to report on to 2")
+    elif args.number_of_haplotypes==1:
+        metadata['assembly']['haplotypes'] = 1
+        logger.debug("setting the number of haplotypes to report on to 1")
     else:
-        metadata['assembly']['haplotypes'] = None
-        logger.debug("setting the number of haplotypes to report on to none")
+        metadata['assembly']['haplotypes'] = 0
+        logger.debug("setting the number of haplotypes to report on to 0")
     return(metadata)
 
 def append_rna_availability(metadata):
