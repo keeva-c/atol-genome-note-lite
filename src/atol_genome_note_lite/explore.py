@@ -335,6 +335,10 @@ def render_helper(helper_template, helper_metadata, helper_output, enum_idx):
 
 logger.info("Starting script")
 
+# sanity check on input arguments
+if args.hic_metadata and args.number_of_haplotypes==0:
+    logger.warning("Hi-C data have been provided but the number of haplotypes is set to 0. For phased assemblies, set --number_of_haplotypes to 1 or 2")
+
 # preprocessing metadata for input WGS metadata
 for input_file in args.wgs_metadata:
     preprocess_metadata(input_file, processed_wgs_file_paths) 
