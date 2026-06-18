@@ -129,17 +129,21 @@ def parse_mappings(mappings):
         csvreader = csv.reader(f)
         next(csvreader) # take out the header
         for line in csvreader:
-                mapping_dict[line[1]]=line[0]
+                mapping_dict[line[0]]=line[1]
     return mapping_dict
 
 def map_data(mapping_dict, input_data):
     '''mapping values from a dictionary to genome note field names'''
     mapped_output = {}
-    for mapped_field,original_field in mapping_dict.items():
+    for original_field, mapped_field in mapping_dict.items():
         try:
             mapped_output[mapped_field] = input_data[original_field]
-        except KeyError as e:
-            logger.error(f"Could not find the expected field: {e}. You may need to toggle the --phased option.")
+        except KeyError:
+            logger.info(f"Could not find field '{original_field}' in input data. Continuing mapping...")
+    if len(mapped_output) < len(set(mapping_dict.values())):
+        logger.error(f"Mapping error: number of mapped fields is less than expected. The field/s: {set(mapping_dict.values()) - set(mapped_output.values())} were not mapped. You may need to toggle the --phased option.")
+    elif len(mapped_output) == len(set(mapping_dict.values())):
+        logger.info("Expected number of fields found.")
     return mapped_output
 
 def parse_merqury(stats_file, column_for_parsing):
