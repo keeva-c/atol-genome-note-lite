@@ -225,7 +225,7 @@ experiment.bpa_package_id }}{% include "supplementary_package_data_for_genome_no
 
 The genome sequence is released openly for reuse.
 
-A code repository containing the workflow configuration files used to generate the genome sequence is hosted on GitHub at [https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}](https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}). Original bioinformatics piplines are available from the links provided in Table 4.
+A code repository containing the workflow configuration files used to generate the genome sequence is hosted on GitHub at [https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}](https://github.com/AToL-Bioinformatics/{{ sample.tolid }}.{{ assembly.assembly_version }}). Original bioinformatics pipelines are available from the links provided in Table 4.
 
 ## **Acknowledgements and funding information**
 
