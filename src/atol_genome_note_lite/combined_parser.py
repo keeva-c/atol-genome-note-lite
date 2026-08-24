@@ -84,6 +84,12 @@ input_group.add_argument(
     help="the YAML file summarising tools and versions used by the treeval pipeline - the file should end with treeval_software_versions.yml"
 )
 input_group.add_argument(
+    "--read_stats",
+    type=Path,
+    nargs='?',
+    help="the JSON stats generated during raw reads qc. Include multiple JSON files if multiple packages were used to generate the assembly"
+)
+input_group.add_argument(
     "--metadata",
     type=Path,
     nargs='?',
@@ -266,6 +272,29 @@ if args.kmer_plot is not None:
     json_assembly_object.update(kmer_plot)
 else:
     logger.warning("No kmer frequency distribution graph provided, output will not reference kmer plot")
+
+# parse reads qc stats into separate dictionary
+if args.read_stats is not None:
+    with open(args.read_stats, "rt") as f:
+        logger.info(f"Parsing reads qc stats from: {args.read_stats}")
+        read_stats = json.load(f)
+        all_parsed_read_stats = []
+        for qc_read in read_stats:
+            experiment_id = qc_read.get("experiment_id")
+            base_count = qc_read.get("base_count")
+            read_count = qc_read.get("read_count")
+            for record in qc_read.get("submission_records"):
+                if record.get("status") == "accepted": # TODO: check that there is not more than one 'accepted' run submission per qc read
+                    run_accession = record.get("accession")
+                if run_accession is None:
+                    logger.warning(f"No run accession found for experiment id: {experiment_id}, qc read id: {record.get("id")}")
+            parsed_stats = {
+                "experiment_id": experiment_id,
+                "run_base_count": base_count,
+                "run_read_count": read_count,
+                "sra_run_accession": run_accession
+            }
+            all_parsed_read_stats.append(parsed_stats)
 
 # write combined metrics output to json 
 with open(args.output, "wt", encoding="utf-8") as f:
