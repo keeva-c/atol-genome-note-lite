@@ -84,11 +84,17 @@ input_group.add_argument(
     help="the YAML file summarising tools and versions used by the treeval pipeline - the file should end with treeval_software_versions.yml"
 )
 input_group.add_argument(
-    "--read_stats",
+    "--autofiltered_output",
     type=Path,
-    nargs='?',
-    help="the JSON stats generated during raw reads qc. Include multiple JSON files if multiple packages were used to generate the assembly"
+    nargs='*',
+    help="the txt file listing sequences automatically removed from the assembly during ascc - the file should end with assembly_filtering_removed_sequences.txt. Include two files for phased haplotypes - include asm_hap1 and asm_hap2 in the file names."
 )
+# input_group.add_argument(
+#     "--read_stats",
+#     type=Path,
+#     nargs='?',
+#     help="the JSON stats generated during raw reads qc. Include multiple JSON files if multiple packages were used to generate the assembly"
+# )
 input_group.add_argument(
     "--metadata",
     type=Path,
@@ -173,6 +179,13 @@ def parse_software(software_summary, pipeline_name):
         version_dict = {f"{pipeline_name}_pipeline_version": version}
     return version_dict
 
+def count_lines(removed_sequences):
+    with open(removed_sequences, "rt") as f:
+        logger.info(f"Parsing log of removed sequences from {removed_sequences}")
+        num_of_lines = len(f.readlines())
+        logger.debug(f"the number of sequences removed is: {num_of_lines}")
+    return num_of_lines
+
 def handle_haplotypes(mapped_metrics, file_name, final_metrics, input_args):
     if len(input_args) == 1 and not args.phased:
         final_metrics = mapped_metrics
@@ -239,6 +252,16 @@ else:
 for metrics in [busco_metrics, kmer_metrics, qv_metrics, summary_metrics, software_versions]:
     json_assembly_object.update(metrics)
 
+# add count of autofiltered sequences to combined metrics dictionary
+if args.autofiltered_output is not None:
+    autoremoved_seqs = {}
+    for autofiltered in args.autofiltered_output:
+        seq_count = {"contaminants_removed": count_lines(autofiltered)}
+        seq_count_combined = handle_haplotypes(seq_count, autofiltered, autoremoved_seqs, args.autofiltered_output)
+    json_assembly_object.update(seq_count_combined)
+else:
+    logger.warning("No list of sequences removed during ASCC provided, output will not reference number of removed sequences")
+
 # parse contigs_stats from mitogenome assembler and extract mitochondrion length
 if args.mito is not None:
     with open(args.mito, "rt") as f:
@@ -253,7 +276,7 @@ if args.mito is not None:
     mito_length = {'mito_size': mito_bp}
     json_assembly_object.update(mito_length)
 else:
-    logger.warning("No mitochondrial statistics provided, output will not containg mitogenome length")
+    logger.warning("No mitochondrial statistics provided, output will not contain mitogenome length")
 
 # add contact map path to combined metrics dictionary
 if args.map is None:
@@ -274,27 +297,27 @@ else:
     logger.warning("No kmer frequency distribution graph provided, output will not reference kmer plot")
 
 # parse reads qc stats into separate dictionary
-if args.read_stats is not None:
-    with open(args.read_stats, "rt") as f:
-        logger.info(f"Parsing reads qc stats from: {args.read_stats}")
-        read_stats = json.load(f)
-        all_parsed_read_stats = []
-        for qc_read in read_stats:
-            experiment_id = qc_read.get("experiment_id")
-            base_count = qc_read.get("base_count")
-            read_count = qc_read.get("read_count")
-            for record in qc_read.get("submission_records"):
-                if record.get("status") == "accepted": # TODO: check that there is not more than one 'accepted' run submission per qc read
-                    run_accession = record.get("accession")
-                if run_accession is None:
-                    logger.warning(f"No run accession found for experiment id: {experiment_id}, qc read id: {record.get("id")}")
-            parsed_stats = {
-                "experiment_id": experiment_id,
-                "run_base_count": base_count,
-                "run_read_count": read_count,
-                "sra_run_accession": run_accession
-            }
-            all_parsed_read_stats.append(parsed_stats)
+# if args.read_stats is not None:
+#     with open(args.read_stats, "rt") as f:
+#         logger.info(f"Parsing reads qc stats from: {args.read_stats}")
+#         read_stats = json.load(f)
+#         all_parsed_read_stats = []
+#         for qc_read in read_stats:
+#             experiment_id = qc_read.get("experiment_id")
+#             base_count = qc_read.get("base_count")
+#             read_count = qc_read.get("read_count")
+#             for record in qc_read.get("submission_records"):
+#                 if record.get("status") == "accepted": # TODO: check that there is not more than one 'accepted' run submission per qc read
+#                     run_accession = record.get("accession")
+#                 if run_accession is None:
+#                     logger.warning(f"No run accession found for experiment id: {experiment_id}, qc read id: {record.get("id")}")
+#             parsed_stats = {
+#                 "experiment_id": experiment_id,
+#                 "run_base_count": base_count,
+#                 "run_read_count": read_count,
+#                 "sra_run_accession": run_accession
+#             }
+#             all_parsed_read_stats.append(parsed_stats)
 
 # write combined metrics output to json 
 with open(args.output, "wt", encoding="utf-8") as f:
