@@ -375,13 +375,13 @@ for idx, file in enumerate(all_input_files):
 # initialise main template
 if args.w_annotation:
     logger.info("Preparing genome note lite template for annotated assembly")
-    template = env.get_template("genome-note-lite-annot-template.md")
+    template = env.get_template("canopy-genome-note-lite-annot-template.md")
 elif args.wo_annotation:
     logger.info("Preparing genome note lite template for assembly without annotation")
-    template = env.get_template("genome-note-lite-asm-only-template.md")
+    template = env.get_template("canopy-genome-note-lite-asm-only-template.md")
 else:
     logger.info("Preparing genome note lite template for assembly without annotation (by default)")
-    template = env.get_template("genome-note-lite-asm-only-template.md")
+    template = env.get_template("canopy-genome-note-lite-asm-only-template.md")
 
 # prepare output directory
 if str(args.output) == "results/genome_note_lite.md":
