@@ -236,7 +236,7 @@ Table: Table 5: Genome assembly information for {{ assembly.assembly_name|defaul
 | Full summary | {{ add_spaces(annotation.omark_completeness_summary) }} |
 | | *S: single copy, D: duplicated [U: unexpected, E:expected], M: missing* |
 | Number of HOGs | {{ make_pretty_number(annotation.conserved_hogs) }} |
-| Reference lineage | {{ annotation.omark_lineage}} |
+| Reference lineage | {{ annotation.omark_lineage }} |
 | **OMArk consistency** | |
 | Number of proteins | {{ make_pretty_number(annotation.omark_protein_count) }}
 | Consistent lineage placements | {{ round_decimal(annotation.omark_percent_consistent) }}% |
