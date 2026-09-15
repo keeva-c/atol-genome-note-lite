@@ -65,6 +65,12 @@ input_group.add_argument(
     type=Path,
     help="optional JSON file/s listing metadata for an RNA-seq sample and sequencing run."
 )
+input_group.add_argument(
+    "--number_of_haplotypes",
+    default=0,
+    type=int,
+    help="the number of phased haplotype assemblies the genome note lite should report on. If set to 0, the genome note lite will report on an unphased primary assembly."
+)
 output_group.add_argument(
     "--output",
     default=Path("results/genome_note_lite.md"),
@@ -96,7 +102,8 @@ def preprocess_metadata(metadata_file, processed_files):
         metadata_w_platform = sanitise_platform(metadata_w_initiative)
         metadata_w_asm_lvl = append_assembly_level(metadata_w_platform)
         metadata_w_rna = append_rna_availability(metadata_w_asm_lvl)
-        metadata_wo_empty = overwrite_empty_strings(metadata_w_rna)
+        metadata_w_haps = append_haplotype_number(metadata_w_rna)
+        metadata_wo_empty = overwrite_empty_strings(metadata_w_haps)
         capitalised_metadata = standardise_capitalisation(metadata_wo_empty)
         processed_metadata = del_new_line_char(capitalised_metadata)
     with open(processed_file, 'w') as f:
@@ -124,7 +131,9 @@ def map_bpa_initiative(metadata):
     elif initiative_acronym == 'forest-resilience':
         full_initiative = 'Genomics for Forest Resilience Initiative'
     elif initiative_acronym == 'bpa-plants':
-        full_initiative = 'Genomics for Australian Plants'
+        full_initiative = 'Genomics for Australian Plants Initiative'
+    elif initiative_acronym == 'grasslands':
+        full_initiative = 'Australian Grasslands Initiative'
     elif initiative_acronym == 'aus-venom':
         full_initiative = 'Australian Venom Innovation and Discovery Initiative'
     else:
@@ -160,6 +169,21 @@ def append_assembly_level(metadata):
     else:
         metadata['assembly']['assembly_level'] = "contig"
         logger.debug("setting assembly level to contig")
+    return(metadata)
+
+def append_haplotype_number(metadata):
+    '''setting the number of haplotypes to report on based on input arguments'''
+    if metadata.get('assembly') is None:
+        pass
+    elif args.number_of_haplotypes==2:
+        metadata['assembly']['haplotypes'] = 2
+        logger.debug("setting the number of haplotypes to report on to 2")
+    elif args.number_of_haplotypes==1:
+        metadata['assembly']['haplotypes'] = 1
+        logger.debug("setting the number of haplotypes to report on to 1")
+    else:
+        metadata['assembly']['haplotypes'] = 0
+        logger.debug("setting the number of haplotypes to report on to 0")
     return(metadata)
 
 def append_rna_availability(metadata):
@@ -311,6 +335,10 @@ def render_helper(helper_template, helper_metadata, helper_output, enum_idx):
 
 logger.info("Starting script")
 
+# sanity check on input arguments
+if args.hic_metadata and args.number_of_haplotypes==0:
+    logger.warning("Hi-C data have been provided but the number of haplotypes is set to 0. For phased assemblies, set --number_of_haplotypes to 1 or 2")
+
 # preprocessing metadata for input WGS metadata
 for input_file in args.wgs_metadata:
     preprocess_metadata(input_file, processed_wgs_file_paths) 
@@ -347,13 +375,13 @@ for idx, file in enumerate(all_input_files):
 # initialise main template
 if args.w_annotation:
     logger.info("Preparing genome note lite template for annotated assembly")
-    template = env.get_template("genome-note-lite-annot-template.md")
+    template = env.get_template("canopy-genome-note-lite-annot-template.md")
 elif args.wo_annotation:
     logger.info("Preparing genome note lite template for assembly without annotation")
-    template = env.get_template("genome-note-lite-asm-only-template.md")
+    template = env.get_template("canopy-genome-note-lite-asm-only-template.md")
 else:
     logger.info("Preparing genome note lite template for assembly without annotation (by default)")
-    template = env.get_template("genome-note-lite-asm-only-template.md")
+    template = env.get_template("canopy-genome-note-lite-asm-only-template.md")
 
 # prepare output directory
 if str(args.output) == "results/genome_note_lite.md":

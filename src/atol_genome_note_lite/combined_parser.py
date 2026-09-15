@@ -9,12 +9,16 @@ import yaml
 from pathlib import Path
 
 # configure logger
-logging.basicConfig(
-    stream=sys.stderr,
-    level=logging.DEBUG,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
+console_handler = logging.StreamHandler()
+file_handler = logging.FileHandler("combined_parser.log", encoding="utf-8", mode="w")
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+logger.setLevel("DEBUG")
+console_handler.setLevel("INFO")
 
 # add arguments
 argument_parser = argparse.ArgumentParser(
@@ -25,8 +29,9 @@ input_group = argument_parser.add_argument_group("Input")
 output_group = argument_parser.add_argument_group("Output")
 input_group.add_argument(
     "--busco",
+    nargs="+",
     type=Path,
-    help="the JSON summary file generated during BUSCO analysis of the assembly - the file should end with busco.json"
+    help="the JSON summary file generated during BUSCO analysis of the assembly - the file should end with busco.json. Include two summaries for phased haplotypes."
 )
 input_group.add_argument(
     "--kmer",
@@ -40,8 +45,9 @@ input_group.add_argument(
 )
 input_group.add_argument(
     "--summary",
+    nargs="+",
     type=Path,
-    help="the summary text file generated when using the sanger_tol assembly pipeline - the file should end with .assembly_summary"
+    help="the summary text file generated when using the sanger_tol assembly pipeline - the file should end with .assembly_summary. Include two summaries for phased haplotypes."
 )
 input_group.add_argument(
     "--assembly_software",
@@ -51,8 +57,8 @@ input_group.add_argument(
 input_group.add_argument(
     "--map",
     type=Path,
-    nargs='?',
-    help="the PreText Snapshot PNG file of the contact map generated during assembly scaffolding - the file should end with FullMap.png"
+    nargs='*',
+    help="the PreText Snapshot PNG file of the contact map generated during assembly scaffolding - the file should end with FullMap.png. Include two files for phased haplotypes."
 )
 input_group.add_argument(
     "--kmer_plot",
@@ -78,6 +84,18 @@ input_group.add_argument(
     help="the YAML file summarising tools and versions used by the treeval pipeline - the file should end with treeval_software_versions.yml"
 )
 input_group.add_argument(
+    "--autofiltered_output",
+    type=Path,
+    nargs='*',
+    help="the txt file listing sequences automatically removed from the assembly during ascc - the file should end with assembly_filtering_removed_sequences.txt. Include two files for phased haplotypes - include asm_hap1 and asm_hap2 in the file names."
+)
+# input_group.add_argument(
+#     "--read_stats",
+#     type=Path,
+#     nargs='?',
+#     help="the JSON stats generated during raw reads qc. Include multiple JSON files if multiple packages were used to generate the assembly"
+# )
+input_group.add_argument(
     "--metadata",
     type=Path,
     nargs='?',
@@ -95,14 +113,26 @@ output_group.add_argument(
     default=Path("results/full_metadata.json"),
     help="the full JSON metadata object, including metadata for organism, sample, experiment, and runs, and assembly metrics (only generated if a metadata file is included as input)"
 )
+argument_parser.add_argument(
+    "--phased",
+    action="store_true",
+    help="select this option to extract metrics for phased assemblies. Metrics will be extracted for both haplotypes if sufficient data is proivided."
+)
 args = argument_parser.parse_args()
 
 # set global variables
 json_assembly_object = {}
+busco_metrics = {}
+summary_metrics = {}
+contact_maps = {}
 path_to_busco_field_mapping = "dev/busco_to_fields.csv"
-path_to_kmer_field_mapping = "dev/kmer_to_fields.csv"
-path_to_qv_field_mapping = "dev/qv_to_fields.csv"
 path_to_summary_field_mapping = "dev/summary_to_fields.csv"
+if args.phased:
+    path_to_kmer_field_mapping = "dev/kmer_to_fields_scaffold_asm.csv"
+    path_to_qv_field_mapping = "dev/qv_to_fields_scaffold_asm.csv"
+else:
+    path_to_kmer_field_mapping = "dev/kmer_to_fields_contig_asm.csv"
+    path_to_qv_field_mapping = "dev/qv_to_fields_contig_asm.csv"
 
 def parse_mappings(mappings):
     '''saving genome note field names to a dictionary'''
@@ -111,34 +141,35 @@ def parse_mappings(mappings):
         csvreader = csv.reader(f)
         next(csvreader) # take out the header
         for line in csvreader:
-            mapping_dict[line[1]]=line[0]
+                mapping_dict[line[0]]=line[1]
     return mapping_dict
 
 def map_data(mapping_dict, input_data):
     '''mapping values from a dictionary to genome note field names'''
     mapped_output = {}
-    for mapped_field,original_field in mapping_dict.items():
-        mapped_output[mapped_field] = input_data[original_field]
+    for original_field, mapped_field in mapping_dict.items():
+        try:
+            mapped_output[mapped_field] = input_data[original_field]
+        except KeyError:
+            logger.info(f"Could not find field '{original_field}' in input data. Continuing mapping...")
+    if len(mapped_output) < len(set(mapping_dict.values())):
+        logger.error(f"Mapping error: number of mapped fields is less than expected. The field/s: {set(mapping_dict.values()) - set(mapped_output.values())} were not mapped. You may need to toggle the --phased option.")
+    elif len(mapped_output) == len(set(mapping_dict.values())):
+        logger.info("Expected number of fields found.")
     return mapped_output
 
 def parse_merqury(stats_file, column_for_parsing):
     '''writing a dictionary of metrics for primary, alt and combined assemblies from a tsv input file'''
-    parsed_data_list = []
+    parsed_data_dict = {}
     with open(stats_file, "rt") as f:
         logger.info(f"Parsing Merqury.fk metrics from {stats_file}")
         stats_table = csv.reader(f, delimiter='\t')
         header_row = next(stats_table)
         stats_position = header_row.index(column_for_parsing) # define the position of the stats to be parsed in each row
         for row in stats_table:
-            parsed_data_list.append(row[stats_position])
-    return parsed_data_list
-
-def map_merqury(mapping_dict, input_list):
-    '''mapping values from a list parsed from merqury.fk output to genome note lite field names'''
-    mapped_output = {}
-    for mapped_field,row_index in mapping_dict.items():
-        mapped_output[mapped_field] = input_list[int(row_index)]
-    return mapped_output
+            parsed_data_dict[row[0]] = row[stats_position]
+    logger.debug(f"this is the merqury output: {parsed_data_dict}")
+    return parsed_data_dict
 
 def parse_software(software_summary, pipeline_name):
     with open(software_summary, "rt") as f:
@@ -148,37 +179,67 @@ def parse_software(software_summary, pipeline_name):
         version_dict = {f"{pipeline_name}_pipeline_version": version}
     return version_dict
 
+def count_lines(removed_sequences):
+    with open(removed_sequences, "rt") as f:
+        logger.info(f"Parsing log of removed sequences from {removed_sequences}")
+        num_of_lines = len(f.readlines())
+        logger.debug(f"the number of sequences removed is: {num_of_lines}")
+    return num_of_lines
+
+def handle_haplotypes(mapped_metrics, file_name, final_metrics, input_args):
+    if len(input_args) == 1 and not args.phased:
+        final_metrics = mapped_metrics
+    elif len(input_args) == 1 and args.phased:
+        logger.warning(f"The phasing option has been selected but {str(file_name)} is the only file of its type which has been provided. Parsed information will automatically be assigned to haplotype 1.")
+        final_metrics = {f"hap_1_{key}": value for key, value in mapped_metrics.items()}
+    elif len(input_args) == 2:
+        if "asm_hap1" in str(file_name):
+            hap_1_metrics = {f"hap_1_{key}": value for key, value in mapped_metrics.items()}
+            final_metrics.update(hap_1_metrics)
+        elif "asm_hap2" in str(file_name):
+            hap_2_metrics = {f"hap_2_{key}": value for key, value in mapped_metrics.items()}
+            final_metrics.update(hap_2_metrics)
+        else:
+            logger.error(f"Could not determine whether {str(file_name)} was generated from hap 1 or hap 2. File path must include 'asm_hap1' or 'asm_hap2'.")
+    elif len(input_args) > 2:
+        logger.error(f"More than the expected number of files of this type have been supplied: {input_args}.")
+    return final_metrics
+
 logger.info("Starting script")
 
-busco_mapping_dict = parse_mappings(path_to_busco_field_mapping)
+busco_mapping_dict = parse_mappings(path_to_busco_field_mapping) 
 # extract "results" and "lineage_dataset" objects from json file and merge into one dictionary
-with open(args.busco, "rt") as f:
-    logger.info(f"Parsing BUSCO metrics from {args.busco}")
-    busco_stats = json.load(f)
-    busco_for_mapping = busco_stats['results'] | busco_stats['lineage_dataset']
-busco_metrics = map_data(busco_mapping_dict, busco_for_mapping)
+for busco_file in args.busco:
+    with open(busco_file, "rt") as f:
+        logger.info(f"Parsing BUSCO metrics from {busco_file}")
+        busco_stats = json.load(f)
+        busco_for_mapping = busco_stats['results'] | busco_stats['lineage_dataset']
+    mapped_busco = map_data(busco_mapping_dict, busco_for_mapping)
+    busco_metrics = handle_haplotypes(mapped_busco, busco_file, busco_metrics, args.busco)
 
 kmer_mapping_dict = parse_mappings(path_to_kmer_field_mapping)
 kmer_for_mapping = parse_merqury(args.kmer, "% Covered")
-kmer_metrics = map_merqury(kmer_mapping_dict, kmer_for_mapping)
+kmer_metrics = map_data(kmer_mapping_dict, kmer_for_mapping)
 
 qv_mapping_dict = parse_mappings(path_to_qv_field_mapping)
 qv_for_mapping = parse_merqury(args.qv, "QV")
-qv_metrics = map_merqury(qv_mapping_dict, qv_for_mapping)
+qv_metrics = map_data(qv_mapping_dict, qv_for_mapping)
 
 summary_mapping_dict = parse_mappings(path_to_summary_field_mapping)
 # extract keys and values from summary text file and add to dictionary
-with open(args.summary, "rt") as f:
-    logger.info(f"Parsing summary information and metrics from {args.summary}")
-    summary_for_mapping = {}
-    next(f) #take out the header
-    for line in f:
-        splits = line.strip().split(": ")
-        if len(splits) == 2:
-            key = splits[0]
-            value = splits[1]
-            summary_for_mapping[key]=value
-summary_metrics = map_data(summary_mapping_dict, summary_for_mapping)
+for summary_file in args.summary:
+    with open(summary_file, "rt") as f:
+        logger.info(f"Parsing summary information and metrics from {summary_file}")
+        summary_for_mapping = {}
+        next(f) #take out the header
+        for line in f:
+            splits = line.strip().split(": ")
+            if len(splits) == 2:
+                key = splits[0]
+                value = splits[1]
+                summary_for_mapping[key]=value
+    mapped_summary = map_data(summary_mapping_dict, summary_for_mapping)
+    summary_metrics = handle_haplotypes(mapped_summary, summary_file, summary_metrics, args.summary)
 
 # parse software tools and extract pipeline versions/hashes
 software_versions = parse_software(args.assembly_software, "genomeassembly") | parse_software(args.ascc_software, "ascc")
@@ -190,6 +251,16 @@ else:
 # combine parsed metrics into one dictionary
 for metrics in [busco_metrics, kmer_metrics, qv_metrics, summary_metrics, software_versions]:
     json_assembly_object.update(metrics)
+
+# add count of autofiltered sequences to combined metrics dictionary
+if args.autofiltered_output is not None:
+    autoremoved_seqs = {}
+    for autofiltered in args.autofiltered_output:
+        seq_count = {"contaminants_removed": count_lines(autofiltered)}
+        seq_count_combined = handle_haplotypes(seq_count, autofiltered, autoremoved_seqs, args.autofiltered_output)
+    json_assembly_object.update(seq_count_combined)
+else:
+    logger.warning("No list of sequences removed during ASCC provided, output will not reference number of removed sequences")
 
 # parse contigs_stats from mitogenome assembler and extract mitochondrion length
 if args.mito is not None:
@@ -205,15 +276,17 @@ if args.mito is not None:
     mito_length = {'mito_size': mito_bp}
     json_assembly_object.update(mito_length)
 else:
-    logger.warning("No mitochondrial statistics provided, output will not containg mitogenome length")
+    logger.warning("No mitochondrial statistics provided, output will not contain mitogenome length")
 
 # add contact map path to combined metrics dictionary
-if args.map is not None:
-    logger.info(f"Parsing contact map file name: {args.map}")
-    contact_map = {"contact_map_image_path": str(args.map)}
-    json_assembly_object.update(contact_map)
-else:
+if args.map is None:
     logger.warning("No contact map provided, output will not reference contact map")
+else:
+    for map in args.map:
+        logger.info(f"Parsing contact map file name: {map}")
+        mapped_path = {"contact_map_image_path": str(map)}
+        contact_maps = handle_haplotypes(mapped_path, map, contact_maps, args.map)
+    json_assembly_object.update(contact_maps)
 
 # add GenomeScope2.0 kmer plot path to combined metrics dictionary
 if args.kmer_plot is not None:
@@ -222,6 +295,29 @@ if args.kmer_plot is not None:
     json_assembly_object.update(kmer_plot)
 else:
     logger.warning("No kmer frequency distribution graph provided, output will not reference kmer plot")
+
+# parse reads qc stats into separate dictionary
+# if args.read_stats is not None:
+#     with open(args.read_stats, "rt") as f:
+#         logger.info(f"Parsing reads qc stats from: {args.read_stats}")
+#         read_stats = json.load(f)
+#         all_parsed_read_stats = []
+#         for qc_read in read_stats:
+#             experiment_id = qc_read.get("experiment_id")
+#             base_count = qc_read.get("base_count")
+#             read_count = qc_read.get("read_count")
+#             for record in qc_read.get("submission_records"):
+#                 if record.get("status") == "accepted": # TODO: check that there is not more than one 'accepted' run submission per qc read
+#                     run_accession = record.get("accession")
+#                 if run_accession is None:
+#                     logger.warning(f"No run accession found for experiment id: {experiment_id}, qc read id: {record.get("id")}")
+#             parsed_stats = {
+#                 "experiment_id": experiment_id,
+#                 "run_base_count": base_count,
+#                 "run_read_count": read_count,
+#                 "sra_run_accession": run_accession
+#             }
+#             all_parsed_read_stats.append(parsed_stats)
 
 # write combined metrics output to json 
 with open(args.output, "wt", encoding="utf-8") as f:

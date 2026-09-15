@@ -1,6 +1,5 @@
 | **Sample: {{ sample.biosample_accession }}** | |
-| Scientific name | *{{ taxonomy_info.ncbi_scientific_name }}* |
-| ToLID | {{ sample.tolid }} |
+| Scientific name | *{{ organism.taxonomy_info.ncbi_scientific_name }}* |
 | Specimen identifier | {{ sample.specimen_id }} |
 | Specimen identifier defined by | {{ sample.specimen_id_description }} |
 | Specimen-level BioSample accession | {{ specimen.biosample_accession }} |
