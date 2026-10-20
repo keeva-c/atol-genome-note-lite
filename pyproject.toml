@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=42", "wheel", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atol-genome-note-lite"
+dynamic = ["version"]
+description = "Generate a markdown report for a genome sequence"
+readme = "README.md"
+authors = [
+    { name = "Amy Tims", email = "amy.tims@unimelb.edu.au" },
+    { name = "Emily Marshall", email = "emily@biocommons.org.au" },
+    { name = "Keeva Connolly", email = "keeva.connolly@qcif.edu.au" },
+    { name = "Tom Harrop", email = "tharrop@unimelb.edu.au" },
+]
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Private :: Do Not Upload",
+    "Programming Language :: Python :: 3.11",
+]
+requires-python = ">=3.11,<3.15"
+dependencies = ["linkml>=1.12.1", "pydantic>=2.14.1"]
+
+[project.urls]
+"Homepage" = "https://github.com/keeva-c/atol-genome-note-lite"
+
+[project.scripts]
+atol-genome-note-lite = "atol_genome_note_lite.atol_genome_note_lite:main"
+
+[tool.setuptools.package-data]
+"atol_genome_note_lite" = ["templates/*.j2", "templates/*.md"]
+
+
+[tool.setuptools_scm]
