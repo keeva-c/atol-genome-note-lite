@@ -30,6 +30,7 @@ dependencies = ["linkml>=1.12.1", "pydantic>=2.14.1"]
 
 [project.scripts]
 atol-genome-note-lite = "atol_genome_note_lite.atol_genome_note_lite:main"
+generate-pydantic-models = "atol_genome_note_lite.scripts.generate_pydantic_models:main"
 
 [tool.setuptools.package-data]
 "atol_genome_note_lite" = ["templates/*.j2", "templates/*.md"]
