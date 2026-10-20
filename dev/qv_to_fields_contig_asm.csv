@@ -1,0 +1,4 @@
+qv_field,metadata_field
+asm.purged,primary_qv
+asm.htigs.all,alt_qv
+both,combined_qv

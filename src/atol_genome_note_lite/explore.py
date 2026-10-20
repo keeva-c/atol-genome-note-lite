@@ -1,23 +1,411 @@
+#!/usr/bin/env python3
+
+import argparse
+import jinja2
 import json
-from jinja2 import Template
+import logging
+import os
+import sys
+#from jinja2 import Template, Environment, FileSystemLoader, Undefined
+from pathlib import Path
 
-print("Starting script")
+# configure logger
+logger = logging.getLogger(__name__)
+console_handler = logging.StreamHandler()
+file_handler = logging.FileHandler("genome_note_lite.log", encoding="utf-8", mode="w")
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+logger.setLevel("DEBUG")
+console_handler.setLevel("INFO")
 
-# path_to_template = args.template
-path_to_template = "dev/not-a-genome-note_template.md"
-path_to_output = "results/genome_note.md"
-path_to_sample_metadata = "dev/sample_1.json"
+# setting the global default undefined value
+class undefined_tokens(jinja2.Undefined):
+    def __str__(self):
+        return "*not provided*"
 
-# read the template
-with open(path_to_template, "rt") as f:
-    template = Template(f.read())
+# set global variables
+path_to_sample_supplement_output = "templates/supplementary_sample_data_for_genome_note.md"
+path_to_extract_supplement_output = "templates/supplementary_extract_data_for_genome_note.md"
+path_to_seq_supplement_output = "templates/supplementary_seq_data_for_genome_note.md"
+path_to_bpa_package_supplement_output = "templates/supplementary_package_data_for_genome_note.md"
+processed_wgs_file_paths = []
+processed_hic_file_paths = []
+processed_rna_file_paths = []
+input_sample_ids = []
+input_library_ids = []
+
+# setting the environment for the genome note templates
+env = jinja2.Environment(loader=jinja2.FileSystemLoader("templates"),undefined=undefined_tokens)
+
+# set input arguments
+argument_parser = argparse.ArgumentParser(
+    description="This tool generates a draft genome note lite markdown document based on sample, read, assembly, and annotation metadata.",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+input_group = argument_parser.add_argument_group("Input")
+output_group = argument_parser.add_argument_group("Output")
+input_group.add_argument(
+    "--wgs_metadata",
+    nargs="+",
+    type=Path,
+    help="at least one JSON file listing metadata for a WGS sample and sequencing run. The first file should also contain assembly metadata and optionally annotation metadata."
+)
+input_group.add_argument(
+    "--hic_metadata",
+    nargs="*",
+    type=Path,
+    help="optional JSON file/s listing metadata for a Hi-C sample and sequencing run."
+)
+input_group.add_argument(
+    "--rna_metadata",
+    nargs="*",
+    type=Path,
+    help="optional JSON file/s listing metadata for an RNA-seq sample and sequencing run."
+)
+input_group.add_argument(
+    "--number_of_haplotypes",
+    default=0,
+    type=int,
+    help="the number of phased haplotype assemblies the genome note lite should report on. If set to 0, the genome note lite will report on an unphased primary assembly."
+)
+output_group.add_argument(
+    "--output",
+    default=Path("results/genome_note_lite.md"),
+    type=Path,
+    help="optional output file address."
+)
+argument_parser.add_argument(
+    "--w_annotation",
+    action="store_true",
+    help="runs the genome note lite for an assembly with an annotation."
+)
+argument_parser.add_argument(
+    "--wo_annotation",
+    action="store_true",
+    help="runs the genome note lite for an assembly only (no annotation)."
+)
+args = argument_parser.parse_args()
+
+# TODO: check that arguments are valid paths
+
+# functions to preprocess metadata
+def preprocess_metadata(metadata_file, processed_files):
+    '''combining the below two metadata formatting functions together and saving output to a new file with '-processed' suffix'''
+    processed_file = Path(metadata_file).stem + "-processed" + Path(metadata_file).suffix
+    logger.info(f"Preprocessing {metadata_file} and saving ouput to interim {processed_file} file")
+    with open(metadata_file, 'r') as f:
+        unprocessed_file = json.load(f)
+        metadata_w_initiative = map_bpa_initiative(unprocessed_file)
+        metadata_w_platform = sanitise_platform(metadata_w_initiative)
+        metadata_w_asm_lvl = append_assembly_level(metadata_w_platform)
+        metadata_w_rna = append_rna_availability(metadata_w_asm_lvl)
+        metadata_w_haps = append_haplotype_number(metadata_w_rna)
+        metadata_wo_empty = overwrite_empty_strings(metadata_w_haps)
+        capitalised_metadata = standardise_capitalisation(metadata_wo_empty)
+        processed_metadata = del_new_line_char(capitalised_metadata)
+    with open(processed_file, 'w') as f:
+        json.dump(processed_metadata, f)
+    processed_files.append(processed_file)
+    return processed_files
+
+def map_bpa_initiative(metadata):
+    '''add standardised bpa_initiative attribute based on bioplatforms_project_id metadata'''
+    initiative_acronym = metadata.get('sample', {}).get('bioplatforms_project_id')
+    if initiative_acronym == 'bpa-ipm':
+        full_initiative = 'Integrated Pest Management Omics Initiative'
+    elif initiative_acronym == 'threatened-species':
+        full_initiative = 'Threatened Species Initiative'
+    elif initiative_acronym == 'aus-fish':
+        full_initiative = 'Australian Fish Genomics Initiative'
+    elif initiative_acronym == 'aus-avian':
+        full_initiative = 'Australian Avian Genomics Initiative'
+    elif initiative_acronym == 'fungi':
+        full_initiative = 'Australian Functional Fungi Initiative'
+    elif initiative_acronym == 'cipps':
+        full_initiative = 'ARC for Innovations in Peptide and Protein Science (CIPPS)'
+    elif initiative_acronym == 'ausarg':
+        full_initiative = 'Australian Amphibian and Reptile Genomics Initiative'
+    elif initiative_acronym == 'forest-resilience':
+        full_initiative = 'Genomics for Forest Resilience Initiative'
+    elif initiative_acronym == 'bpa-plants':
+        full_initiative = 'Genomics for Australian Plants Initiative'
+    elif initiative_acronym == 'grasslands':
+        full_initiative = 'Australian Grasslands Initiative'
+    elif initiative_acronym == 'aus-venom':
+        full_initiative = 'Australian Venom Innovation and Discovery Initiative'
+    else:
+        logger.warning(f"Bioplatforms initiative ({initiative_acronym}) not recognised.")
+        full_initiative = None
+    metadata['sample']['bpa_initiative'] = full_initiative
+    return metadata
+
+def sanitise_platform(metadata):
+    '''sanitise the controlled vocab values required by INSDC to be more human-readable'''
+    verbatim_platform = metadata.get('experiment', {}).get('platform')
+    if verbatim_platform == 'PACBIO_SMRT':
+        cleaned_platform = 'PacBio'
+    elif verbatim_platform == 'OXFORD_NANOPORE':
+        cleaned_platform = 'Oxford Nanopore'
+    elif verbatim_platform == 'ILLUMINA':
+        cleaned_platform = 'Illumina'
+    else:
+        logger.warning(f"Sequencing platform not recognised - platform will be rendered as {verbatim_platform}.")
+        cleaned_platform = verbatim_platform
+    metadata['experiment']['platform'] = cleaned_platform
+    return metadata
+
+# TODO: handle curation outputs/stats and deduce whether assembly_level is chromosome
+
+def append_assembly_level(metadata):
+    '''setting assembly level based on whether hic data were supplied'''
+    if metadata.get('assembly') is None:
+        pass
+    elif args.hic_metadata:
+        metadata['assembly']['assembly_level'] = "scaffold"
+        logger.debug("setting assembly level to scaffold")
+    else:
+        metadata['assembly']['assembly_level'] = "contig"
+        logger.debug("setting assembly level to contig")
+    return(metadata)
+
+def append_haplotype_number(metadata):
+    '''setting the number of haplotypes to report on based on input arguments'''
+    if metadata.get('assembly') is None:
+        pass
+    elif args.number_of_haplotypes==2:
+        metadata['assembly']['haplotypes'] = 2
+        logger.debug("setting the number of haplotypes to report on to 2")
+    elif args.number_of_haplotypes==1:
+        metadata['assembly']['haplotypes'] = 1
+        logger.debug("setting the number of haplotypes to report on to 1")
+    else:
+        metadata['assembly']['haplotypes'] = 0
+        logger.debug("setting the number of haplotypes to report on to 0")
+    return(metadata)
+
+def append_rna_availability(metadata):
+    '''appending a true/false value to assembly metadata to indicate whether rna-seq data are available for the assembly'''
+    if metadata.get('assembly') is None:
+        pass
+    elif args.rna_metadata:
+        metadata['assembly']['rna_data_available'] = True
+        logger.debug("setting RNA-seq availability to true")
+    else:
+        metadata['assembly']['rna_data_available'] = False
+        logger.debug("setting RNA-seq availability to false")
+    return(metadata)
+
+def overwrite_empty_strings(metadata):
+    '''updating metadata input to remove metadata containing empty strings'''
+    output_dict = {}
+    for database_sect, metadata_fields in metadata.items():
+        if isinstance(metadata_fields, dict):
+            updated_metadata = {}
+            for field, value in metadata_fields.items():
+                if value == "" or value is None:
+                    continue
+                else:
+                    updated_metadata[field] = value
+            output_dict[database_sect] = updated_metadata
+        elif isinstance(metadata_fields, list):
+            output_dict[database_sect] = metadata_fields
+    return output_dict
+
+def standardise_capitalisation(metadata):
+    '''extracting values in experiment and sample metadata to capitalise'''
+    for key, val in metadata.get('experiment').items():
+        if key == "bpa_package_id" or key == "bpa_library_id":
+            continue
+        elif isinstance(val, str) and val[0].islower():
+            metadata['experiment'][key] = capitalise(val)
+    for key, val in metadata.get('sample').items():
+        if key == "specimen_id" or key == "bpa_sample_id" or key == "bioplatforms_project_id" or key == "tolid":
+            continue
+        elif isinstance(val, str) and val[0].islower():
+            metadata['sample'][key] = capitalise(val)
+    return metadata
+
+def capitalise(val):
+    '''capitalising first letter of the metadata value'''
+    try:
+        capitalised = val[0].upper() + val[1:]
+        logger.debug(f"Capitalised word {val} to {capitalised}")
+        return capitalised
+    except Exception as e:
+        logger.warning(f"Unable to capitalise {val} - {e}")
+        return val
+
+# TODO: add removal of other unicode strings (with leading backslashes) to below function/remove backslash escapes (for double quote marks)?
+
+def del_new_line_char(metadata):
+    '''removing new line characters "\n" from metadata values to prevent formatting issues when rendering'''
+    for database_sect, metadata_fields in metadata.items():
+        if isinstance(metadata_fields, dict):
+            for key, val in metadata_fields.items():
+                if isinstance(val, str) and "\n" in val:
+                    sanitised = val.replace("\n"," ")
+                    logger.debug(f"New line character replaced in {sanitised}")
+                    metadata_fields[key] = sanitised
+    return metadata
+
+# functions to make things in the template pretty
+def make_pretty_number(ugly_number):
+    if float(ugly_number) > 1_000:
+        return "{:,}".format(int(ugly_number))
+    else:
+        return ugly_number
+
+def round_decimal(decimal):
+    if decimal is not None:
+        return "{:,.1f}".format(float(decimal))
+    else:
+        return decimal
+
+def round_bases_up(base_pairs):
+    if int(base_pairs) > 1_000_000_000:
+        return "{:.2f} Gb".format(int(base_pairs) / 1_000_000_000)
+    elif int(base_pairs) > 1_000_000:
+        return "{:.2f} Mb".format(int(base_pairs) / 1_000_000)
+    elif int(base_pairs) > 1_000:
+        return "{:.2f} kb".format(int(base_pairs) / 1_000)
+    else:
+        return base_pairs + " bp"
+
+def add_spaces(long_string):
+    separator = " "
+    formatted_string = ""
+    for character in long_string:
+        if character != ",":
+            formatted_string = formatted_string + character
+        elif character == ",":
+            formatted_string = formatted_string + character + separator
+    return formatted_string
+
+# functions to render helper files to append to core template
+def render_if_not_duplicate(helper_file, helper_metadata, helper_sample, helper_library, enum_idx):
+    '''checking if the sample and library ids in the metadata file have previously been encountered, and passing the metadata to the render_helper function if the sample or library has not perviously been rendered into markdown'''
+    logger.info(f"Reading metadata from {helper_file} and rendering helper files")
+    # render the sample helper file
+    if helper_sample not in input_sample_ids:
+        render_helper(
+            helper_template="sup_sample_template.md",
+            helper_metadata=helper_metadata,
+            helper_output=path_to_sample_supplement_output,
+            enum_idx=enum_idx
+        )
+    # render the extraction helper file
+    if helper_library not in input_library_ids:
+        render_helper(
+            helper_template="sup_extract_template.md",
+            helper_metadata=helper_metadata,
+            helper_output=path_to_extract_supplement_output,
+            enum_idx=enum_idx
+        )
+    # render the sequencing helper file
+    render_helper(
+        helper_template="sup_sequencing_template.md",
+        helper_metadata=helper_metadata,
+        helper_output=path_to_seq_supplement_output,
+        enum_idx=enum_idx
+    )
+    # render the package helper file
+    render_helper(
+        helper_template="sup_bpa_package_template.md",
+        helper_metadata=helper_metadata,
+        helper_output=path_to_bpa_package_supplement_output,
+        enum_idx=enum_idx
+    )
+
+def render_helper(helper_template, helper_metadata, helper_output, enum_idx):
+    '''rendering the supplementary helper files, and appending the newly rendered markdown to the original markdown if multiple metadata files were provided in the original input arguments'''
+    sup_template = env.get_template(helper_template)
+    sup_render = sup_template.render(helper_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal)
+    if enum_idx == 1 or not os.path.exists(helper_output):
+        with open(helper_output, "wt", encoding="utf-8") as f:
+            f.write(sup_render)
+    elif enum_idx > 1:
+        with open(helper_output, "at", encoding="utf-8") as f:
+            if helper_template != "sup_bpa_package_template.md":
+                f.write('\n' + sup_render)
+            elif helper_template == "sup_bpa_package_template.md":
+                f.write(sup_render)
+
+logger.info("Starting script")
+
+# sanity check on input arguments
+if args.hic_metadata and args.number_of_haplotypes==0:
+    logger.warning("Hi-C data have been provided but the number of haplotypes is set to 0. For phased assemblies, set --number_of_haplotypes to 1 or 2")
+
+# preprocessing metadata for input WGS metadata
+for input_file in args.wgs_metadata:
+    preprocess_metadata(input_file, processed_wgs_file_paths) 
+
+# preprocessing metadata for input Hi-C 
+if args.hic_metadata is not None:
+    for input_file in args.hic_metadata:
+        preprocess_metadata(input_file, processed_hic_file_paths) 
+
+# preprocessing metadata for input RNA-seq
+if args.rna_metadata is not None:
+    for input_file in args.rna_metadata:
+        preprocess_metadata(input_file, processed_rna_file_paths) 
+
+# initialise lists for cross-checking sample and library ids (to avoid duplicating metadata in the genome note lite)
+all_input_files = processed_wgs_file_paths + processed_hic_file_paths + processed_rna_file_paths
+
+# read Hi-C, supplementary WGS and RNA-seq input metadata and render supplementary helper files
+for idx, file in enumerate(all_input_files):
+    # find the sample and library IDs and append to a list
+    with open(file, "rt") as f:
+        full_metadata = json.load(f)
+        sample_name = full_metadata['sample']['bpa_sample_id']
+        library_name = full_metadata['experiment']['bpa_library_id']
+        if idx == 0:
+            next(enumerate(all_input_files))
+        else:
+            render_if_not_duplicate(file, full_metadata, sample_name, library_name, idx)
+    logger.debug(f"Appending {sample_name} to input sample IDs list from {file}")
+    input_sample_ids.append(sample_name)
+    logger.debug(f"Appending {library_name} to input library IDs list from {file}")
+    input_library_ids.append(library_name)
+
+# initialise main template
+if args.w_annotation:
+    logger.info("Preparing genome note lite template for annotated assembly")
+    template = env.get_template("canopy-genome-note-lite-annot-template.md")
+elif args.wo_annotation:
+    logger.info("Preparing genome note lite template for assembly without annotation")
+    template = env.get_template("canopy-genome-note-lite-asm-only-template.md")
+else:
+    logger.info("Preparing genome note lite template for assembly without annotation (by default)")
+    template = env.get_template("canopy-genome-note-lite-asm-only-template.md")
+
+# prepare output directory
+if str(args.output) == "results/genome_note_lite.md":
+    if not os.path.isdir("results"):
+        os.mkdir("results")
 
 # read the sample metadata
-print(f"Reading sample metadata from {path_to_sample_metadata}")
-with open(path_to_sample_metadata, "rt") as f:
-    sample_metadata = json.load(f)
+logger.info(f"Reading metadata from {processed_wgs_file_paths[0]}")
+with open(processed_wgs_file_paths[0], "rt") as f:
+    assembly_sample_metadata = json.load(f)
 
-# render the template
-print(f"Writing output to {path_to_output}")
-with open(path_to_output, "wt") as f:
-    f.write(template.render(sample_metadata))
+# render the core template, integrating the supplementary markdown files for hi-c and/or secondary wgs data
+logger.info(f"Rendering core template, including helper files (if applicable) and writing output to {args.output}")
+with open(args.output, "wt", encoding="utf-8") as f:
+    try:
+        f.write(template.render(assembly_sample_metadata,make_pretty_number=make_pretty_number,round_bases_up=round_bases_up,round_decimal=round_decimal,add_spaces=add_spaces))
+    except jinja2.exceptions.UndefinedError as e_jinja_undefined:
+        logger.exception(f"Some expected metadata object (e.g. organism, sample, experiment, runs, assembly, or annotation) was not found in the input metadata: {e_jinja_undefined}")
+
+# remove processed metadata and supplementary markdown files
+logger.info("Removing processed metadata and supplementary helper files and ending script")
+for file in all_input_files:
+    os.remove(file)
+
+for file in [path_to_sample_supplement_output, path_to_extract_supplement_output, path_to_seq_supplement_output, path_to_bpa_package_supplement_output]:
+    if os.path.exists(file):
+        os.remove(file)
