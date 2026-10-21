@@ -85,7 +85,7 @@ classes:
       - bpa_package_id
 
   Runs:
-    description: Containing information related to the qc reads (ERR) 
+    description: Containing information related to the qc reads (ERR)
     slots:
       - submission_records
       - read_count
@@ -193,12 +193,12 @@ classes:
   TaxonomyInfo:
     description: Containing information retrieved from the NCBI Taxonomy
     slots:
-      - ncbi_common_name
-      - ncbi_scientific_name
       - ncbi_authority
-      - ncbi_order
+      - ncbi_common_name
       - ncbi_family
       - ncbi_full_lineage
+      - ncbi_order
+      - ncbi_scientific_name
       - ncbi_taxon_id
 
   SubmissionRecords:

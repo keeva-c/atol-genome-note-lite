@@ -28,7 +28,7 @@ class ConfiguredBaseModel(BaseModel):
         validate_by_name=True,
         validate_assignment=True,
         validate_default=True,
-        extra="forbid",
+        extra="ignore",
         arbitrary_types_allowed=True,
         use_enum_values=True,
         strict=False,
@@ -625,22 +625,22 @@ class TaxonomyInfo(ConfiguredBaseModel):
         {"from_schema": "https://example.org/atol-report-schema"}
     )
 
-    ncbi_common_name: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
-    )
-    ncbi_scientific_name: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
-    )
     ncbi_authority: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
     )
-    ncbi_order: Optional[str] = Field(
+    ncbi_common_name: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
     )
     ncbi_family: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
     )
     ncbi_full_lineage: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
+    ncbi_order: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
+    ncbi_scientific_name: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
     )
     ncbi_taxon_id: Optional[int] = Field(

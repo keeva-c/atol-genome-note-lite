@@ -4,15 +4,10 @@ import argparse
 from importlib.resources import files
 from pathlib import Path
 
+from atol_genome_note_lite.common import _existing_file
 from black import FileMode, format_str
 from linkml.generators.pydanticgen import PydanticGenerator
 
-
-def _existing_file(path):
-    p = Path(path)
-    if not p.exists():
-        raise FileNotFoundError(p)
-    return p
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -51,10 +46,7 @@ def main():
 
     args = parse_arguments()
 
-    models = PydanticGenerator(
-        schema=args.schema,
-        black=True,
-    )
+    models = PydanticGenerator(schema=args.schema, black=True, extra_fields="ignore")
 
     formatted = format_str(models.serialize(), mode=FileMode())
 
