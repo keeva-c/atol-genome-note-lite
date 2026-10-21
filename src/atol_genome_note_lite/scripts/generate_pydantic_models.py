@@ -4,6 +4,7 @@ import argparse
 from importlib.resources import files
 from pathlib import Path
 
+from black import FileMode, format_str
 from linkml.generators.pydanticgen import PydanticGenerator
 
 
@@ -55,8 +56,10 @@ def main():
         black=True,
     )
 
+    formatted = format_str(models.serialize(), mode=FileMode())
+
     if args.dry_run is True:
-        print(models.serialize())
+        print(formatted)
 
     if args.models.exists() and args.force is False and args.dry_run is False:
         raise FileExistsError(args.models)
@@ -64,7 +67,7 @@ def main():
     if args.dry_run is False:
         args.models.parent.mkdir(parents=True, exist_ok=True)
         with open(args.models, "wt") as f:
-            _ = f.write(models.serialize())
+            _ = f.write(formatted)
 
 
 if __name__ == "__main__":

@@ -56,11 +56,17 @@ linkml_meta = LinkMLMeta(
     {
         "default_prefix": "https://example.org/atol-report-schema/",
         "default_range": "string",
-        "description": "this is a test of modelling the atol genome report schema " "with linkml",
+        "description": "this is a test of modelling the atol genome report schema "
+        "with linkml",
         "id": "https://example.org/atol-report-schema",
         "imports": ["linkml:types"],
         "name": "atol-genome-report-schema",
-        "prefixes": {"linkml": {"prefix_prefix": "linkml", "prefix_reference": "https://w3id.org/linkml/"}},
+        "prefixes": {
+            "linkml": {
+                "prefix_prefix": "linkml",
+                "prefix_reference": "https://w3id.org/linkml/",
+            }
+        },
         "source_file": "/home/tharrop/Projects/atol-genome-note-lite/src/atol_genome_note_lite/schema/atol_genome_report_schema.yaml",
     }
 )
@@ -76,28 +82,36 @@ class PackageDataContainer(ConfiguredBaseModel):
     )
 
     project: Optional[Project] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}}
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}},
     )
     organism: Optional[Organism] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}}
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}},
     )
     specimen: Optional[Specimen] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}}
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}},
     )
     sample: Optional[Sample] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}}
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}},
     )
     experiment: Optional[Experiment] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}}
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}},
     )
     runs: Optional[Runs] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}}
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}},
     )
     assembly: Optional[Assembly] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}}
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}},
     )
     annotation: Optional[Annotation] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}}
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["PackageDataContainer"]}},
     )
 
 
@@ -106,7 +120,9 @@ class Project(ConfiguredBaseModel):
     Containing information related to the 'root' level bioproject
     """
 
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "https://example.org/atol-report-schema"})
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
 
     project_accession: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Project"]}}
@@ -118,7 +134,9 @@ class Organism(ConfiguredBaseModel):
     Containing information related to the taxon
     """
 
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "https://example.org/atol-report-schema"})
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
 
     taxonomy_info: Optional[TaxonomyInfo] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Organism"]}}
@@ -130,10 +148,13 @@ class Specimen(ConfiguredBaseModel):
     Containing information related to the specimen-level sample
     """
 
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "https://example.org/atol-report-schema"})
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
 
     biosample_accession: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Specimen", "Sample"]}}
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["Specimen", "Sample"]}},
     )
 
 
@@ -142,45 +163,80 @@ class Sample(ConfiguredBaseModel):
     Containing information related to the sample-level sample
     """
 
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "https://example.org/atol-report-schema"})
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
 
     project_collaborators: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
     )
-    bpa_sample_id: str = Field(default=..., json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
-    bioplatforms_project_id: str = Field(default=..., json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
-    bpa_initiative: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
-    biosample_accession: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Specimen", "Sample"]}}
+    bpa_sample_id: str = Field(
+        default=..., json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
     )
-    specimen_id: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
+    bioplatforms_project_id: str = Field(
+        default=..., json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
+    bpa_initiative: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
+    biosample_accession: Optional[str] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["Specimen", "Sample"]}},
+    )
+    specimen_id: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
     specimen_id_description: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
     )
-    sex: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
-    lifestage: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
-    collection_date: Optional[date] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
+    sex: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
+    lifestage: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
+    collection_date: Optional[date] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
     region_and_locality: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
     )
-    state_or_region: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
-    country_or_sea: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
+    state_or_region: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
+    country_or_sea: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
     indigenous_location: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
     )
-    latitude: Optional[float] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
-    longitude: Optional[float] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
-    collected_by: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
-    collection_method: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
-    collection_permit: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
-    identified_by: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
+    latitude: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
+    longitude: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
+    collected_by: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
+    collection_method: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
+    collection_permit: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
+    identified_by: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
     preservation_method: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
     )
     preservation_temperature: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
     )
-    organism_part: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}})
+    organism_part: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Sample"]}}
+    )
 
 
 class Experiment(ConfiguredBaseModel):
@@ -188,10 +244,16 @@ class Experiment(ConfiguredBaseModel):
     Containing information related to the experiment (ERX)
     """
 
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "https://example.org/atol-report-schema"})
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
 
-    data_owner: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}})
-    bpa_library_id: str = Field(default=..., json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}})
+    data_owner: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
+    )
+    bpa_library_id: str = Field(
+        default=..., json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
+    )
     library_strategy: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
     )
@@ -210,23 +272,33 @@ class Experiment(ConfiguredBaseModel):
     library_selection: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
     )
-    insert_size: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}})
-    platform: str = Field(default=..., json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}})
+    insert_size: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
+    )
+    platform: str = Field(
+        default=..., json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
+    )
     instrument_model: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
     )
     sequencing_kit: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
     )
-    gal: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}})
+    gal: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
+    )
     library_layout: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
     )
-    flowcell_type: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}})
+    flowcell_type: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
+    )
     base_caller_model: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
     )
-    bpa_package_id: str = Field(default=..., json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}})
+    bpa_package_id: str = Field(
+        default=..., json_schema_extra={"linkml_meta": {"domain_of": ["Experiment"]}}
+    )
 
 
 class Runs(ConfiguredBaseModel):
@@ -234,13 +306,19 @@ class Runs(ConfiguredBaseModel):
     Containing information related to the qc reads (ERR)
     """
 
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "https://example.org/atol-report-schema"})
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
 
     submission_records: Optional[SubmissionRecords] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Runs"]}}
     )
-    read_count: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Runs"]}})
-    base_count: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Runs"]}})
+    read_count: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Runs"]}}
+    )
+    base_count: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Runs"]}}
+    )
 
 
 class Assembly(ConfiguredBaseModel):
@@ -248,16 +326,28 @@ class Assembly(ConfiguredBaseModel):
     Containing information related to the genome assembly
     """
 
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "https://example.org/atol-report-schema"})
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
 
-    assembly_level: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    haplotypes: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
+    assembly_level: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    haplotypes: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
     rna_data_available: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
-    tol_id: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    version: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    assembly_name: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
+    tol_id: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    version: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    assembly_name: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
     hap_1_assembly_name: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
@@ -282,31 +372,69 @@ class Assembly(ConfiguredBaseModel):
     hap_2_contaminants_removed: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
-    coverage: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    scaffold_count: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    contig_count: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    genome_length: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    scaffold_n50: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    contig_n50: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    gap_count: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    longest_contig: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
+    coverage: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    scaffold_count: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    contig_count: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    genome_length: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    scaffold_n50: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    contig_n50: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    gap_count: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    longest_contig: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
     longest_scaffold: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
-    busco_string: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    busco_single: Optional[float] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
+    busco_string: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    busco_single: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
     busco_duplicated: Optional[float] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
-    busco_ref: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    primary_qv: Optional[float] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    alt_qv: Optional[float] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    combined_qv: Optional[float] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    primary_kmer: Optional[float] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    alt_kmer: Optional[float] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    combined_kmer: Optional[float] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    mito_size: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    plastid_size: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
+    busco_ref: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    primary_qv: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    alt_qv: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    combined_qv: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    primary_kmer: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    alt_kmer: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    combined_kmer: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    mito_size: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    plastid_size: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
     hap_1_scaffold_count: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
@@ -319,8 +447,12 @@ class Assembly(ConfiguredBaseModel):
     hap_1_contig_n50: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
-    hap_1_busco_c: Optional[float] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    hap_1_gap_count: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
+    hap_1_busco_c: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    hap_1_gap_count: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
     hap_1_contig_count: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
@@ -339,7 +471,9 @@ class Assembly(ConfiguredBaseModel):
     hap_1_busco_duplicated: Optional[float] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
-    hap_1_busco_ref: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
+    hap_1_busco_ref: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
     hap_2_scaffold_count: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
@@ -352,8 +486,12 @@ class Assembly(ConfiguredBaseModel):
     hap_2_contig_n50: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
-    hap_2_busco_c: Optional[float] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
-    hap_2_gap_count: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
+    hap_2_busco_c: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
+    hap_2_gap_count: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
     hap_2_contig_count: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
@@ -372,7 +510,9 @@ class Assembly(ConfiguredBaseModel):
     hap_2_busco_duplicated: Optional[float] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
-    hap_2_busco_ref: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}})
+    hap_2_busco_ref: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
+    )
     genomescope_image_path: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
@@ -401,7 +541,9 @@ class Annotation(ConfiguredBaseModel):
     Containing information related to the genome Annotation
     """
 
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "https://example.org/atol-report-schema"})
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
 
     annotation_pipeline: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Annotation"]}}
@@ -424,8 +566,12 @@ class Annotation(ConfiguredBaseModel):
     annotation_name: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Annotation"]}}
     )
-    gene_count: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Annotation"]}})
-    cds_count: Optional[int] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Annotation"]}})
+    gene_count: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Annotation"]}}
+    )
+    cds_count: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Annotation"]}}
+    )
     transcript_count: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Annotation"]}}
     )
@@ -450,7 +596,9 @@ class Annotation(ConfiguredBaseModel):
     conserved_hogs: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Annotation"]}}
     )
-    omark_lineage: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Annotation"]}})
+    omark_lineage: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Annotation"]}}
+    )
     omark_protein_count: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Annotation"]}}
     )
@@ -473,7 +621,9 @@ class TaxonomyInfo(ConfiguredBaseModel):
     Containing information retrieved from the NCBI Taxonomy
     """
 
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "https://example.org/atol-report-schema"})
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
 
     ncbi_common_name: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
@@ -484,8 +634,12 @@ class TaxonomyInfo(ConfiguredBaseModel):
     ncbi_authority: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
     )
-    ncbi_order: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}})
-    ncbi_family: Optional[str] = Field(default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}})
+    ncbi_order: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
+    ncbi_family: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
     ncbi_full_lineage: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
     )
@@ -499,10 +653,13 @@ class SubmissionRecords(ConfiguredBaseModel):
     Containing information about the ERR submission record
     """
 
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({"from_schema": "https://example.org/atol-report-schema"})
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
 
     accession: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SubmissionRecords"]}}
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["SubmissionRecords"]}},
     )
 
 
