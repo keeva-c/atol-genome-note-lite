@@ -38,7 +38,7 @@ def parse_arguments() -> argparse.Namespace:
     _ = parser.add_argument(
         "--force",
         help="Overwrite the Pydantic models output if it exists.",
-        action="store_true"
+        action="store_true",
     )
 
     _ = parser.add_argument("-n", "--dry_run", action="store_true", default=False)
@@ -64,7 +64,7 @@ def main():
     if args.dry_run is False:
         args.models.parent.mkdir(parents=True, exist_ok=True)
         with open(args.models, "wt") as f:
-            f.write(models.serialize())
+            _ = f.write(models.serialize())
 
 
 if __name__ == "__main__":
