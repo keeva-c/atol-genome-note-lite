@@ -120,7 +120,6 @@ classes:
       - busco_string
       - busco_single
       - busco_duplicated
-      - busco_ref
       - primary_qv
       - alt_qv
       - combined_qv
@@ -141,7 +140,6 @@ classes:
       - hap_1_busco_string
       - hap_1_busco_single
       - hap_1_busco_duplicated
-      - hap_1_busco_ref
       - hap_2_scaffold_count
       - hap_2_genome_length
       - hap_2_scaffold_n50
@@ -154,7 +152,6 @@ classes:
       - hap_2_busco_string
       - hap_2_busco_single
       - hap_2_busco_duplicated
-      - hap_2_busco_ref
       - genomescope_image_path
       - contact_map_image_path
       - hap_1_contact_map_image_path
@@ -193,6 +190,7 @@ classes:
   TaxonomyInfo:
     description: Containing information retrieved from the NCBI Taxonomy
     slots:
+      - busco_odb12_dataset_name
       - ncbi_authority
       - ncbi_common_name
       - ncbi_family
@@ -364,7 +362,6 @@ slots:
     range: float
   hap_1_busco_duplicated:
     range: float
-  hap_1_busco_ref:
   hap_2_assembly_name:
   hap_2_assembly_accession:
   hap_2_gap_count:
@@ -384,7 +381,6 @@ slots:
     range: float
   hap_2_busco_duplicated:
     range: float
-  hap_2_busco_ref:
   mito_size:
     range: integer
   plastid_size:
@@ -402,7 +398,6 @@ slots:
     range: float
   busco_duplicated:
     range: float
-  busco_ref:
   annotation_pipeline:
   annotation_pipeline_ver:
   annotation_pipeline_link:
@@ -438,3 +433,4 @@ slots:
     range: float
   omark_percent_unknown:
     range: float
+  busco_odb12_dataset_name:

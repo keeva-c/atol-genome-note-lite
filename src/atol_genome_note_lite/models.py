@@ -408,9 +408,6 @@ class Assembly(ConfiguredBaseModel):
     busco_duplicated: Optional[float] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
-    busco_ref: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
-    )
     primary_qv: Optional[float] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
@@ -471,9 +468,6 @@ class Assembly(ConfiguredBaseModel):
     hap_1_busco_duplicated: Optional[float] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
-    hap_1_busco_ref: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
-    )
     hap_2_scaffold_count: Optional[int] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
@@ -508,9 +502,6 @@ class Assembly(ConfiguredBaseModel):
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
     hap_2_busco_duplicated: Optional[float] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
-    )
-    hap_2_busco_ref: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["Assembly"]}}
     )
     genomescope_image_path: Optional[str] = Field(
@@ -625,6 +616,9 @@ class TaxonomyInfo(ConfiguredBaseModel):
         {"from_schema": "https://example.org/atol-report-schema"}
     )
 
+    busco_odb12_dataset_name: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
     ncbi_authority: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
     )
