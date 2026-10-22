@@ -8,6 +8,44 @@ imports:
 default_range: string
 
 classes:
+  # Classes I've modified
+  TaxonomyInfo:
+    description: Containing information retrieved from Canopy's Taxonomy table
+    slots:
+      - busco_odb12_dataset_name
+      - ncbi_authority
+      - ncbi_common_name
+      - ncbi_family
+      - ncbi_full_lineage
+      - ncbi_order
+      - ncbi_scientific_name
+      - ncbi_taxon_id
+
+  SeqStats:
+    description: A line of results from seqkit stats
+    slots:
+      - avg_len
+      - AvgQual
+      - format
+      - GC(%)
+      - max_len
+      - min_len
+      - N50
+      - N50_num
+      - num_seqs
+      - num_seqs
+      - Q1
+      - Q2
+      - Q20(%)
+      - Q3
+      - Q30(%)
+      - sequencing_depth
+      - sum_gap
+      - sum_len
+      - sum_n
+      - type
+
+  # Classes I haven't looked at yet
   PackageDataContainer:
     tree_root: true
     description: Container class containing all metadata and metrics associated with one data package on the Bioplatforms data portal
@@ -187,24 +225,51 @@ classes:
       - omark_percent_contaminant
       - omark_percent_unknown
 
-  TaxonomyInfo:
-    description: Containing information retrieved from the NCBI Taxonomy
-    slots:
-      - busco_odb12_dataset_name
-      - ncbi_authority
-      - ncbi_common_name
-      - ncbi_family
-      - ncbi_full_lineage
-      - ncbi_order
-      - ncbi_scientific_name
-      - ncbi_taxon_id
-
   SubmissionRecords:
     description: Containing information about the ERR submission record
     slots:
       - accession
 
 slots:
+  # New slots
+  avg_len:
+    range: float
+  AvgQual:
+    range: float
+  format:
+  GC(%):
+    range: float
+  max_len:
+    range: integer
+  min_len:
+    range: integer
+  N50:
+    range: integer
+  N50_num:
+    range: integer
+  num_seqs:
+    range: integer
+  Q1:
+    range: integer
+  Q2:
+    range: integer
+  Q20(%):
+    range: integer
+  Q3:
+    range: integer
+  Q30(%):
+    range: integer
+  sequencing_depth:
+    range: integer
+  sum_gap:
+    range: integer
+  sum_len:
+    range: integer
+  sum_n:
+    range: integer
+  type:
+
+  # Existing slots
   project:
     range: Project
   organism:

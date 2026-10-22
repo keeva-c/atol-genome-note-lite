@@ -72,6 +72,115 @@ linkml_meta = LinkMLMeta(
 )
 
 
+class TaxonomyInfo(ConfiguredBaseModel):
+    """
+    Containing information retrieved from Canopy's Taxonomy table
+    """
+
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
+
+    busco_odb12_dataset_name: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
+    ncbi_authority: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
+    ncbi_common_name: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
+    ncbi_family: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
+    ncbi_full_lineage: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
+    ncbi_order: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
+    ncbi_scientific_name: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
+    ncbi_taxon_id: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
+    )
+
+
+class SeqStats(ConfiguredBaseModel):
+    """
+    A line of results from seqkit stats
+    """
+
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
+
+    avg_len: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    AvgQual: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    format: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    GC___: Optional[float] = Field(
+        default=None,
+        alias="GC(%)",
+        json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}},
+    )
+    max_len: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    min_len: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    N50: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    N50_num: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    num_seqs: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    Q1: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    Q2: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    Q20___: Optional[int] = Field(
+        default=None,
+        alias="Q20(%)",
+        json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}},
+    )
+    Q3: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    Q30___: Optional[int] = Field(
+        default=None,
+        alias="Q30(%)",
+        json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}},
+    )
+    sequencing_depth: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    sum_gap: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    sum_len: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    sum_n: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+    type: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
+    )
+
+
 class PackageDataContainer(ConfiguredBaseModel):
     """
     Container class containing all metadata and metrics associated with one data package on the Bioplatforms data portal
@@ -607,41 +716,6 @@ class Annotation(ConfiguredBaseModel):
     )
 
 
-class TaxonomyInfo(ConfiguredBaseModel):
-    """
-    Containing information retrieved from the NCBI Taxonomy
-    """
-
-    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
-        {"from_schema": "https://example.org/atol-report-schema"}
-    )
-
-    busco_odb12_dataset_name: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
-    )
-    ncbi_authority: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
-    )
-    ncbi_common_name: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
-    )
-    ncbi_family: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
-    )
-    ncbi_full_lineage: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
-    )
-    ncbi_order: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
-    )
-    ncbi_scientific_name: Optional[str] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
-    )
-    ncbi_taxon_id: Optional[int] = Field(
-        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["TaxonomyInfo"]}}
-    )
-
-
 class SubmissionRecords(ConfiguredBaseModel):
     """
     Containing information about the ERR submission record
@@ -659,6 +733,8 @@ class SubmissionRecords(ConfiguredBaseModel):
 
 # Model rebuild
 # see https://pydantic-docs.helpmanual.io/usage/models/#rebuilding-a-model
+TaxonomyInfo.model_rebuild()
+SeqStats.model_rebuild()
 PackageDataContainer.model_rebuild()
 Project.model_rebuild()
 Organism.model_rebuild()
@@ -668,5 +744,4 @@ Experiment.model_rebuild()
 Runs.model_rebuild()
 Assembly.model_rebuild()
 Annotation.model_rebuild()
-TaxonomyInfo.model_rebuild()
 SubmissionRecords.model_rebuild()

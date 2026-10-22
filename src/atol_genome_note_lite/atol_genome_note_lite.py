@@ -6,9 +6,10 @@ import json
 from pathlib import Path
 
 import jinja2
+import pandas as pd
 
 from atol_genome_note_lite.common import _existing_file, logger
-from atol_genome_note_lite.models import TaxonomyInfo
+from atol_genome_note_lite.models import TaxonomyInfo, SeqStats
 from canopy_client import CanopySession
 from yaml_manifest import Manifest
 
@@ -27,6 +28,7 @@ def parse_arguments() -> argparse.Namespace:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
+    # inputs
     _ = parser.add_argument(
         "--template",
         type=_existing_file,
@@ -34,6 +36,13 @@ def parse_arguments() -> argparse.Namespace:
         help="Base template.",
     )
 
+    _ = parser.add_argument(
+        "--seq_stats",
+        type=_existing_file,
+        help="Output from seq stats.",
+    )
+
+    # outputs
     _ = parser.add_argument(
         "--outdir", type=Path, help="Output directory.", required=True
     )
@@ -61,8 +70,14 @@ def render_template(template_path: Path, **kwargs) -> str:
     return template.render(kwargs)
 
 
-def seqstats():
-    pass
+def read_seq_stats(seq_stats_file: Path) -> dict[str, SeqStats]:
+    """
+    Parse the seqkit stats output into a dict of SeqStats models keyed by the
+    file path
+    """
+    seq_stats = pd.read_csv(seq_stats_file, sep="\t", index_col="file")
+    seq_stats_dict = seq_stats.to_dict(orient="index", index=True)
+    return {k: SeqStats(**v) for k, v in seq_stats_dict.items()}
 
 
 def main():
@@ -75,6 +90,15 @@ def main():
         manifest = Manifest.model_validate_json(f.read())
     taxon_id = manifest.taxon_id
 
+    assemblies = {
+        "hap_1": manifest.treeval_assembly.outputs_for("ascc")
+        .get("PRIMARY", Path())
+        .as_posix(),
+        "hap_2": manifest.treeval_assembly.outputs_for("ascc")
+        .get("HAPLO", Path())
+        .as_posix(),
+    }
+
     # 1. Read the required information off Canopy
     canopy_session = CanopySession()
 
@@ -82,9 +106,14 @@ def main():
     taxonomy_info = TaxonomyInfo(**canopy_taxonomy_info)
 
     # 2. Harvest info from results files
+    if args.seq_stats:
+        seq_stats = read_seq_stats(seq_stats_file=args.seq_stats)
 
     # 3. Combine into a single  context
-    context = {"taxonomy_info": taxonomy_info.model_dump()}
+    context = {
+        "taxonomy_info": taxonomy_info.model_dump(),
+        "assembly": {k: seq_stats.get(v, None) for k, v in assemblies.items()},
+    }
 
     # 4. Use the context to render the templates
     outdir = Path(args.outdir)
