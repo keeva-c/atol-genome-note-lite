@@ -59,7 +59,7 @@ linkml_meta = LinkMLMeta(
         "description": "this is a test of modelling the atol genome report schema "
         "with linkml",
         "id": "https://example.org/atol-report-schema",
-        "imports": ["linkml:types"],
+        "imports": ["linkml:types", "busco_json_schema"],
         "name": "atol-genome-report-schema",
         "prefixes": {
             "linkml": {
@@ -70,6 +70,599 @@ linkml_meta = LinkMLMeta(
         "source_file": "/home/tharrop/Projects/atol-genome-note-lite/src/atol_genome_note_lite/schema/atol_genome_report_schema.yaml",
     }
 )
+
+
+class BuscoStats(ConfiguredBaseModel):
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {
+            "from_schema": "https://example.org/atol-report-schema-busco",
+            "tree_root": True,
+        }
+    )
+
+    parameters: Optional[BuscoParameter] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["BuscoStats"]}}
+    )
+    lineage_dataset: Optional[BuscoLineageDataset] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {"domain_of": ["BuscoStats", "BuscoParameter"]}
+        },
+    )
+    versions: Optional[BuscoVersion] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["BuscoStats"]}}
+    )
+    results: Optional[BuscoResult] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["BuscoStats"]}}
+    )
+    metrics: Optional[BuscoMetric] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["BuscoStats"]}}
+    )
+
+
+class BuscoParameter(ConfiguredBaseModel):
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema-busco"}
+    )
+
+    out_path: Optional[str] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    cpu: Optional[int] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    force: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    restart: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    quiet: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    download_path: Optional[str] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    datasets_version: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "odb12"}],
+            }
+        },
+    )
+    offline: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    download_base_url: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "https://busco-data.ezlab.org/v5/data/"}],
+            }
+        },
+    )
+    auto_lineage: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    auto_lineage_prok: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    auto_lineage_euk: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    use_augustus: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    use_miniprot: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    use_metaeuk: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    batch_mode: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    tar: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    opt_out_run_stats: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    plot_percentages: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    out: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "asm-busco"}],
+            }
+        },
+    )
+    mode: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "euk_genome_min"}],
+            }
+        },
+    )
+    lineage_dataset: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoStats", "BuscoParameter"],
+                "examples": [{"value": "/path/to/lineages/lepidoptera_odb12"}],
+            }
+        },
+    )
+    ncbi_taxid: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "7088"}],
+            }
+        },
+    )
+    orthodb_version: Optional[float] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "12.1"}],
+            }
+        },
+    )
+    dataset_version: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "02"}],
+            }
+        },
+    )
+    contig_break: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "10"}],
+            }
+        },
+    )
+    scaffold_composition: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    in_: Optional[str] = Field(
+        default=None,
+        alias="in",
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "/path/to/asm_hap1_scaffolds_final.fa"}],
+            }
+        },
+    )
+    main_out: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "/path/to/asm_hap1_scaffolds_final.fa"}],
+            }
+        },
+    )
+    lineage_results_dir: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "run_lepidoptera_odb12"}],
+            }
+        },
+    )
+    domain: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter", "BuscoResult"],
+                "examples": [{"value": "eukaryota"}],
+            }
+        },
+    )
+    skip_bbtools: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={"linkml_meta": {"domain_of": ["BuscoParameter"]}},
+    )
+    gene_predictor: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter"],
+                "examples": [{"value": "miniprot"}],
+            }
+        },
+    )
+
+
+class BuscoLineageDataset(ConfiguredBaseModel):
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema-busco"}
+    )
+
+    name: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoLineageDataset"],
+                "examples": [{"value": "lepidoptera_odb12"}],
+            }
+        },
+    )
+    creation_date: Optional[date] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoLineageDataset"],
+                "examples": [{"value": "2026-05-22"}],
+            }
+        },
+    )
+    number_of_buscos: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoLineageDataset"],
+                "examples": [{"value": "5760"}],
+            }
+        },
+    )
+    number_of_species: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoLineageDataset"],
+                "examples": [{"value": "79"}],
+            }
+        },
+    )
+
+
+class BuscoVersion(ConfiguredBaseModel):
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema-busco"}
+    )
+
+    python: Optional[list[Union[int, str]]] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "any_of": [{"range": "integer"}, {"range": "string"}],
+                "domain_of": ["BuscoVersion"],
+                "examples": [{"value": "[3, 12, 11, 'final', 0]"}],
+            }
+        },
+    )
+    busco: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoVersion"],
+                "examples": [{"value": "6.0.0"}],
+            }
+        },
+    )
+    hmmsearch: Optional[float] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoVersion"],
+                "examples": [{"value": "3.4"}],
+            }
+        },
+    )
+    bbtools: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["BuscoVersion"]}}
+    )
+    miniprot_index: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoVersion"],
+                "examples": [{"value": "0.17-r279"}],
+            }
+        },
+    )
+    miniprot_align: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoVersion"],
+                "examples": [{"value": "0.17-r279"}],
+            }
+        },
+    )
+
+
+class BuscoResult(ConfiguredBaseModel):
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema-busco"}
+    )
+
+    one_line_summary: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [
+                    {"value": "C:99.0%[S:96.6%,D:2.4%],F:0.1%,M:0.9%,n:5760,E:7.3%"}
+                ],
+            }
+        },
+    )
+    Complete_percentage: Optional[float] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [{"value": "99.0"}],
+            }
+        },
+    )
+    Complete_BUSCOs: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [{"value": "5703"}],
+            }
+        },
+    )
+    Single_copy_percentage: Optional[float] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [{"value": "96.6"}],
+            }
+        },
+    )
+    Single_copy_BUSCOs: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["BuscoResult"]}}
+    )
+    Multi_copy_percentage: Optional[float] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [{"value": "2.4"}],
+            }
+        },
+    )
+    Multi_copy_BUSCOs: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [{"value": "139"}],
+            }
+        },
+    )
+    Fragmented_percentage: Optional[float] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [{"value": "0.1"}],
+            }
+        },
+    )
+    Fragmented_BUSCOs: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {"domain_of": ["BuscoResult"], "examples": [{"value": "5"}]}
+        },
+    )
+    Missing_percentage: Optional[float] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [{"value": "0.9"}],
+            }
+        },
+    )
+    Missing_BUSCOs: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {"domain_of": ["BuscoResult"], "examples": [{"value": "52"}]}
+        },
+    )
+    n_markers: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [{"value": "5760"}],
+            }
+        },
+    )
+    domain: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoParameter", "BuscoResult"],
+                "examples": [{"value": "eukaryota"}],
+            }
+        },
+    )
+    avg_identity: Optional[float] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [{"value": "0.81"}],
+            }
+        },
+    )
+    internal_stop_codon_count: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [{"value": "419"}],
+            }
+        },
+    )
+    internal_stop_codon_percent: Optional[float] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult"],
+                "examples": [{"value": "7.3"}],
+            }
+        },
+    )
+    Number_of_scaffolds: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "447"}],
+            }
+        },
+    )
+    Number_of_contigs: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "465"}],
+            }
+        },
+    )
+    Total_length: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "531458053"}],
+            }
+        },
+    )
+    Percent_gaps: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "0.000%"}],
+            }
+        },
+    )
+    Scaffold_N50: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "17662296"}],
+            }
+        },
+    )
+    Contigs_N50: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "14578451"}],
+            }
+        },
+    )
+
+
+class BuscoMetric(ConfiguredBaseModel):
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema-busco"}
+    )
+
+    Number_of_scaffolds: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "447"}],
+            }
+        },
+    )
+    Number_of_contigs: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "465"}],
+            }
+        },
+    )
+    Total_length: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "531458053"}],
+            }
+        },
+    )
+    Percent_gaps: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "0.000%"}],
+            }
+        },
+    )
+    Scaffold_N50: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "17662296"}],
+            }
+        },
+    )
+    Contigs_N50: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["BuscoResult", "BuscoMetric"],
+                "examples": [{"value": "14578451"}],
+            }
+        },
+    )
 
 
 class TaxonomyInfo(ConfiguredBaseModel):
@@ -733,6 +1326,12 @@ class SubmissionRecords(ConfiguredBaseModel):
 
 # Model rebuild
 # see https://pydantic-docs.helpmanual.io/usage/models/#rebuilding-a-model
+BuscoStats.model_rebuild()
+BuscoParameter.model_rebuild()
+BuscoLineageDataset.model_rebuild()
+BuscoVersion.model_rebuild()
+BuscoResult.model_rebuild()
+BuscoMetric.model_rebuild()
 TaxonomyInfo.model_rebuild()
 SeqStats.model_rebuild()
 PackageDataContainer.model_rebuild()

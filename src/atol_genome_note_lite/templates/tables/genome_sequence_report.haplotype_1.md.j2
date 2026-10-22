@@ -2,12 +2,12 @@
 | **Haplotype 1** | |
 | Assembly name | {{ assembly.hap_1.assembly_name }} | |
 | Assembly accession | {{ assembly.hap_1_assembly_accession }} | |
-| Span | {{ assembly.hap_1.sum_len }} | |
-| Number of gaps | {{ assembly.hap_1.sum_gap }} | | 
-| Sequencing depth | {{ assembly.hap_1.sequencing_depth }}× | |
-| Number of contigs | {{ assembly.hap_1.num_seqs }} | |
-| Contig N50 length | {{ assembly.hap_1.N50 }} | > 1 Mb |
-| Longest contig | {{ assembly.hap_1.max_len }} | |
+| Span | {{ assembly.hap1.seq_stats.sum_len }} | |
+| Number of gaps | {{ assembly.hap1.seq_stats.sum_gap }} | | 
+| Sequencing depth | {{ assembly.hap1.seq_stats.sequencing_depth }}× | |
+| Number of contigs | {{ assembly.hap1.seq_stats.num_seqs }} | |
+| Contig N50 length | {{ assembly.hap1.seq_stats.N50 }} | > 1 Mb |
+| Longest contig | {{ assembly.hap1.seq_stats.max_len }} | |
 | Number of scaffolds | {{ assembly.hap_1_scaffold_count }} | |
 | Scaffold N50 length | {{ assembly.hap_1_scaffold_n50 }} | Chromosomal scale |
 | Longest scaffold | {{ assembly.hap_1_longest_scaffold }} | |
@@ -15,8 +15,8 @@
 | | Combined haplotypes: {{ assembly.combined_qv }} | |
 | *k*-mer completeness | Haplotype 1: {{ assembly.primary_kmer }}% | > 90% |
 | | Combined haplotypes: {{ assembly.combined_kmer }}% | |
-| Full BUSCO summary | {{ assembly.hap_1_busco_string }} |
+| Full BUSCO summary | {{ assembly.hap1.busco_stats.results.one_line_summary }} |
 | | *C: complete, S: single copy, D: duplicated/multi-copy, F: fragmented, M: missing, n: number of markers, E: proportion with internal stop codons* | |
-| Single copy BUSCOs | {{ assembly.hap_1_busco_single }}% | > 90% |
-| Duplicated BUSCOs | {{ assembly.hap_1_busco_duplicated }}% | < 5% |
-| BUSCO Reference set | {{ taxonomy_info.busco_odb12_dataset_name }}_odb12 | |
+| Single-copy BUSCOs | {{ assembly.hap1.busco_stats.results.Single_copy_percentage }} % | >90 % |
+| Multi-copy BUSCOs | {{ assembly.hap1.busco_stats.results.Multi_copy_percentage }} % | <5 % |
+| BUSCO Reference set | {{ assembly.hap1.busco_stats.lineage_dataset.name }} | |

@@ -1,0 +1,328 @@
+id: https://example.org/atol-report-schema-busco
+name: atol-genome-report-schema-busco
+description: this is a test of modelling BUSCO JSON file
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+# This was produced by `schemauto generalize-json
+# test-data/short_summary.specific.lepidoptera_odb12.asm_hap1_scaffolds_final.fa.json`
+# then manually refined.
+
+classes:
+  BuscoStats:
+    slots:
+      - parameters
+      - lineage_dataset
+      - versions
+      - results
+      - metrics
+    tree_root: true
+    attributes:
+      parameters:
+        multivalued: false
+        inlined_as_list: true
+        range: BuscoParameter
+      lineage_dataset:
+        multivalued: false
+        inlined_as_list: true
+        range: BuscoLineageDataset
+      versions:
+        multivalued: false
+        inlined_as_list: true
+        range: BuscoVersion
+      results:
+        multivalued: false
+        inlined_as_list: true
+        range: BuscoResult
+      metrics:
+        multivalued: false
+        inlined_as_list: true
+        range: BuscoMetric
+  BuscoParameter:
+    slots:
+      - out_path
+      - cpu
+      - force
+      - restart
+      - quiet
+      - download_path
+      - datasets_version
+      - offline
+      - download_base_url
+      - auto-lineage
+      - auto-lineage-prok
+      - auto-lineage-euk
+      - use_augustus
+      - use_miniprot
+      - use_metaeuk
+      - batch_mode
+      - tar
+      - opt-out-run-stats
+      - plot_percentages
+      - out
+      - mode
+      - lineage_dataset
+      - ncbi_taxid
+      - orthodb_version
+      - dataset_version
+      - contig_break
+      - scaffold_composition
+      - in
+      - main_out
+      - lineage_results_dir
+      - domain
+      - skip_bbtools
+      - gene_predictor
+  BuscoLineageDataset:
+    slots:
+      - name
+      - creation_date
+      - number_of_buscos
+      - number_of_species
+  BuscoVersion:
+    slots:
+      - python
+      - busco
+      - hmmsearch
+      - bbtools
+      - miniprot_index
+      - miniprot_align
+  BuscoResult:
+    slots:
+      - one_line_summary
+      - Complete percentage
+      - Complete BUSCOs
+      - Single copy percentage
+      - Single copy BUSCOs
+      - Multi copy percentage
+      - Multi copy BUSCOs
+      - Fragmented percentage
+      - Fragmented BUSCOs
+      - Missing percentage
+      - Missing BUSCOs
+      - n_markers
+      - domain
+      - avg_identity
+      - internal_stop_codon_count
+      - internal_stop_codon_percent
+      - Number of scaffolds
+      - Number of contigs
+      - Total length
+      - Percent gaps
+      - Scaffold N50
+      - Contigs N50
+  BuscoMetric:
+    slots:
+      - Number of scaffolds
+      - Number of contigs
+      - Total length
+      - Percent gaps
+      - Scaffold N50
+      - Contigs N50
+
+slots:
+  out_path:
+  cpu:
+    range: integer
+  force:
+    range: boolean
+  restart:
+    range: boolean
+  quiet:
+    range: boolean
+  download_path:
+  datasets_version:
+    examples:
+      - value: odb12
+  offline:
+    range: boolean
+  download_base_url:
+    examples:
+      - value: https://busco-data.ezlab.org/v5/data/
+  auto-lineage:
+    range: boolean
+  auto-lineage-prok:
+    range: boolean
+  auto-lineage-euk:
+    range: boolean
+  use_augustus:
+    range: boolean
+  use_miniprot:
+    range: boolean
+  use_metaeuk:
+    range: boolean
+  batch_mode:
+    range: boolean
+  tar:
+    range: boolean
+  opt-out-run-stats:
+    range: boolean
+  plot_percentages:
+    range: boolean
+  out:
+    examples:
+      - value: asm-busco
+  mode:
+    examples:
+      - value: euk_genome_min
+  lineage_dataset:
+    examples:
+      - value: /path/to/lineages/lepidoptera_odb12
+  ncbi_taxid:
+    examples:
+      - value: "7088"
+    range: integer
+  orthodb_version:
+    examples:
+      - value: "12.1"
+    range: float
+  dataset_version:
+    examples:
+      - value: "02"
+    range: integer
+  contig_break:
+    examples:
+      - value: "10"
+    range: integer
+  scaffold_composition:
+    range: boolean
+  in:
+    examples:
+      - value: /path/to/asm_hap1_scaffolds_final.fa
+  main_out:
+    examples:
+      - value: /path/to/asm_hap1_scaffolds_final.fa
+  lineage_results_dir:
+    examples:
+      - value: run_lepidoptera_odb12
+  domain:
+    examples:
+      - value: eukaryota
+  skip_bbtools:
+    range: boolean
+  gene_predictor:
+    examples:
+      - value: miniprot
+  name:
+    examples:
+      - value: lepidoptera_odb12
+  creation_date:
+    examples:
+      - value: "2026-05-22"
+    range: date
+  number_of_buscos:
+    examples:
+      - value: "5760"
+    range: integer
+  number_of_species:
+    examples:
+      - value: "79"
+    range: integer
+  python:
+    examples:
+      - value: "[3, 12, 11, 'final', 0]"
+    multivalued: true
+    any_of:
+      - range: integer
+      - range: string
+  busco:
+    examples:
+      - value: 6.0.0
+  hmmsearch:
+    examples:
+      - value: "3.4"
+    range: float
+  bbtools:
+  miniprot_index:
+    examples:
+      - value: 0.17-r279
+  miniprot_align:
+    examples:
+      - value: 0.17-r279
+  one_line_summary:
+    examples:
+      - value: C:99.0%[S:96.6%,D:2.4%],F:0.1%,M:0.9%,n:5760,E:7.3%
+  Complete percentage:
+    examples:
+      - value: "99.0"
+    range: float
+  Complete BUSCOs:
+    examples:
+      - value: "5703"
+    range: integer
+  Single copy percentage:
+    examples:
+      - value: "96.6"
+    range: float
+  Single copy BUSCOs:
+    range: integer
+  Multi copy percentage:
+    examples:
+      - value: "2.4"
+    range: float
+  Multi copy BUSCOs:
+    examples:
+      - value: "139"
+    range: integer
+  Fragmented percentage:
+    examples:
+      - value: "0.1"
+    range: float
+  Fragmented BUSCOs:
+    examples:
+      - value: "5"
+    range: integer
+  Missing percentage:
+    examples:
+      - value: "0.9"
+    range: float
+  Missing BUSCOs:
+    examples:
+      - value: "52"
+    range: integer
+  n_markers:
+    examples:
+      - value: "5760"
+    range: integer
+  avg_identity:
+    examples:
+      - value: "0.81"
+    range: float
+  internal_stop_codon_count:
+    examples:
+      - value: "419"
+    range: integer
+  internal_stop_codon_percent:
+    examples:
+      - value: "7.3"
+    range: float
+  Number of scaffolds:
+    examples:
+      - value: "447"
+    range: integer
+  Number of contigs:
+    examples:
+      - value: "465"
+    range: integer
+  Total length:
+    examples:
+      - value: "531458053"
+    range: integer
+  Percent gaps:
+    examples:
+      - value: 0.000%
+  Scaffold N50:
+    examples:
+      - value: "17662296"
+    range: integer
+  Contigs N50:
+    examples:
+      - value: "14578451"
+    range: integer
+  parameters:
+  versions:
+  results:
+  metrics:

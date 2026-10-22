@@ -9,7 +9,6 @@ from black import FileMode, format_str
 from linkml.generators.pydanticgen import PydanticGenerator
 
 
-
 def parse_arguments() -> argparse.Namespace:
     my_files = files()
 
@@ -46,7 +45,17 @@ def main():
 
     args = parse_arguments()
 
-    models = PydanticGenerator(schema=args.schema, black=True, extra_fields="ignore")
+    # NOTE. The PydanticGenerator generates aliases for slots in the schema
+    # that contain special characters. e.g. the "GC(%)" slot from seqkit will
+    # be called `GC___` with `alias="GC(%)"`. However, this doesn't seem to
+    # handle whitespace, so "Complete BUSCOs" appears in the models as
+    # `Complete_BUSCOs` with no alias. Because the BUSCO JSON uses `Complete
+    # BUSCOs` as a key, we have to handle the whitespace when we load the data.
+    # See the read_busco_json function in
+    # src/atol_genome_note_lite/atol_genome_note_lite.py for an example.
+    models = PydanticGenerator(
+        schema=args.schema, black=True, use_aliases=True, extra_fields="ignore"
+    )
 
     formatted = format_str(models.serialize(), mode=FileMode())
 
