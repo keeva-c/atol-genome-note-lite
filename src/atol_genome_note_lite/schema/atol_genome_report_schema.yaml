@@ -52,6 +52,17 @@ classes:
         string_serialization: |-
           {sum_len} // 1000
 
+  MerquryStats:
+    description: A line of QV and Completeness stats from Merqury
+    slots:
+      - Region
+      - Found
+      - Total
+      - Covered
+      - No Support
+      - Error
+      - QV
+
   # Classes I haven't looked at yet
   PackageDataContainer:
     tree_root: true
@@ -275,6 +286,19 @@ slots:
   sum_n:
     range: integer
   type:
+  Region:
+  Found:
+    range: integer
+  Total:
+    range: integer
+  Covered:
+    range: float
+  No Support:
+    range: integer
+  Error:
+    range: integer
+  QV:
+    range: float
 
   # Existing slots
   project:

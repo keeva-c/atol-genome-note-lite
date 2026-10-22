@@ -783,6 +783,38 @@ class SeqStats(ConfiguredBaseModel):
     )
 
 
+class MerquryStats(ConfiguredBaseModel):
+    """
+    A line of QV and Completeness stats from Merqury
+    """
+
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
+
+    Region: Optional[str] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["MerquryStats"]}}
+    )
+    Found: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["MerquryStats"]}}
+    )
+    Total: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["MerquryStats"]}}
+    )
+    Covered: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["MerquryStats"]}}
+    )
+    No_Support: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["MerquryStats"]}}
+    )
+    Error: Optional[int] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["MerquryStats"]}}
+    )
+    QV: Optional[float] = Field(
+        default=None, json_schema_extra={"linkml_meta": {"domain_of": ["MerquryStats"]}}
+    )
+
+
 class PackageDataContainer(ConfiguredBaseModel):
     """
     Container class containing all metadata and metrics associated with one data package on the Bioplatforms data portal
@@ -1343,6 +1375,7 @@ BuscoResult.model_rebuild()
 BuscoMetric.model_rebuild()
 TaxonomyInfo.model_rebuild()
 SeqStats.model_rebuild()
+MerquryStats.model_rebuild()
 PackageDataContainer.model_rebuild()
 Project.model_rebuild()
 Organism.model_rebuild()

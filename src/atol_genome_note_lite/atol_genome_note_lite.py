@@ -10,7 +10,12 @@ import jinja2
 import pandas as pd
 
 from atol_genome_note_lite.common import _existing_file, logger
-from atol_genome_note_lite.models import BuscoStats, SeqStats, TaxonomyInfo
+from atol_genome_note_lite.models import (
+    BuscoStats,
+    SeqStats,
+    TaxonomyInfo,
+    MerquryStats,
+)
 from canopy_client import CanopySession
 from yaml_manifest import Manifest
 
@@ -63,6 +68,18 @@ def parse_arguments() -> argparse.Namespace:
         help="short_summary JSON file from BUSCO (hap2)",
     )
 
+    _ = parser.add_argument(
+        "--merqury_completeness",
+        type=_existing_file,
+        help="asm.ccs.completeness.stats file from Merqury.",
+    )
+
+    _ = parser.add_argument(
+        "--merqury_qv",
+        type=_existing_file,
+        help="asm.ccs.qv file from Merqury",
+    )
+
     # outputs
     _ = parser.add_argument(
         "--outdir", type=Path, help="Output directory.", required=True
@@ -84,21 +101,12 @@ def recursive_rekey(d, rename_func=convert_to_snake_case):
     }
 
 
-def render_template_string(template_string: str, **kwargs) -> str:
-
-    env = jinja2.Environment(undefined=IgnoreUndefined)
-    template = env.from_string(template_string)
-    context = {**kwargs}
-    return template.render(context)
-
-
-def render_template(template_path: Path, **kwargs) -> str:
-    loader_path = template_path.parent.as_posix()
-    env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(loader_path), undefined=IgnoreUndefined
-    )
-    template = env.get_template(template_path.name)
-    return template.render(kwargs)
+def read_merqury_stats(merqury_stats_file: Path) -> dict[str, MerquryStats]:
+    merqury_stats = pd.read_csv(merqury_stats_file, sep="\t", index_col="Assembly")
+    merqury_stats_dict = merqury_stats.to_dict(orient="index", index=True)
+    return {
+        k: MerquryStats(**recursive_rekey(v)) for k, v in merqury_stats_dict.items()
+    }
 
 
 def read_seq_stats(seq_stats_file: Path) -> dict[str, SeqStats]:
@@ -116,6 +124,23 @@ def read_busco_json(busco_json_file: Path) -> dict[str, BuscoStats]:
         busco_dict = json.load(f)
 
     return BuscoStats(**recursive_rekey(busco_dict))
+
+
+def render_template_string(template_string: str, **kwargs) -> str:
+
+    env = jinja2.Environment(undefined=IgnoreUndefined)
+    template = env.from_string(template_string)
+    context = {**kwargs}
+    return template.render(context)
+
+
+def render_template(template_path: Path, **kwargs) -> str:
+    loader_path = template_path.parent.as_posix()
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(loader_path), undefined=IgnoreUndefined
+    )
+    template = env.get_template(template_path.name)
+    return template.render(kwargs)
 
 
 def main():
@@ -136,12 +161,16 @@ def main():
     #     ...
     #     },
     # }
+
     assemblies = {
         "hap1": manifest.treeval_assembly.outputs_for("ascc")
         .get("PRIMARY", Path())
         .as_posix(),
         "hap2": manifest.treeval_assembly.outputs_for("ascc")
         .get("HAPLO", Path())
+        .as_posix(),
+        "combined": manifest.treeval_assembly.outputs_for("ascc")
+        .get("COMBINED", Path())
         .as_posix(),
     }
     assembly_context = {k: {} for k in assemblies.keys()}
@@ -164,8 +193,49 @@ def main():
     if args.busco_hap2:
         assembly_context["hap2"]["busco_stats"] = read_busco_json(args.busco_hap2)
 
-    # 3. Combine into a single  context
+    if args.merqury_completeness:
+        merqury_completeness = read_merqury_stats(args.merqury_completeness)
+        _hap1_key = [
+            key for key in merqury_completeness.keys() if "hap1" in key.lower()
+        ][0]
+        _hap2_key = [
+            key for key in merqury_completeness.keys() if "hap1" in key.lower()
+        ][0]
+        _combined_key = [
+            key
+            for key in merqury_completeness.keys()
+            if ("+" in key.lower() or "both" in key.lower())
+        ][0]
 
+        # jank TODO make this general
+        assembly_context["hap1"]["merqury_completeness"] = merqury_completeness[
+            _hap1_key
+        ]
+
+        assembly_context["hap2"]["merqury_completeness"] = merqury_completeness[
+            _hap2_key
+        ]
+
+        assembly_context["combined"]["merqury_completeness"] = merqury_completeness[
+            _combined_key
+        ]
+
+    if args.merqury_qv:
+        merqury_qv = read_merqury_stats(args.merqury_qv)
+        _hap1_key = [key for key in merqury_qv.keys() if "hap1" in key.lower()][0]
+        _hap2_key = [key for key in merqury_qv.keys() if "hap1" in key.lower()][0]
+        _combined_key = [
+            key
+            for key in merqury_qv.keys()
+            if ("+" in key.lower() or "both" in key.lower())
+        ][0]
+
+        # jank TODO make this general
+        assembly_context["hap1"]["merqury_qv"] = merqury_qv[_hap1_key]
+        assembly_context["hap2"]["merqury_qv"] = merqury_qv[_hap2_key]
+        assembly_context["combined"]["merqury_qv"] = merqury_qv[_combined_key]
+
+    # 3. Combine into a single  context
     context = {"taxonomy_info": taxonomy_info, "assembly": assembly_context}
     logger.info("Generated context:")
     logger.info(context)
