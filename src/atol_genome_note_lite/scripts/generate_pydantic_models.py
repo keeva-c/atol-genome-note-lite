@@ -54,7 +54,7 @@ def main():
     # See the read_busco_json function in
     # src/atol_genome_note_lite/atol_genome_note_lite.py for an example.
     models = PydanticGenerator(
-        schema=args.schema, black=True, use_aliases=True, extra_fields="ignore"
+        schema=args.schema, black=True, use_aliases=True, extra_fields="ignore", 
     )
 
     formatted = format_str(models.serialize(), mode=FileMode())

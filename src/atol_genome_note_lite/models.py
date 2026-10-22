@@ -772,6 +772,15 @@ class SeqStats(ConfiguredBaseModel):
     type: Optional[str] = Field(
         default=None, json_schema_extra={"linkml_meta": {"domain_of": ["SeqStats"]}}
     )
+    sum_len_print: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "linkml_meta": {
+                "domain_of": ["SeqStats"],
+                "string_serialization": "{sum_len} // 1000",
+            }
+        },
+    )
 
 
 class PackageDataContainer(ConfiguredBaseModel):

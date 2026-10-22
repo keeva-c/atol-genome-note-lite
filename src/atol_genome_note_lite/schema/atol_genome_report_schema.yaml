@@ -45,6 +45,12 @@ classes:
       - sum_len
       - sum_n
       - type
+    attributes:
+      # Can't work this out, see
+      # https://linkml.io/linkml/howtos/model-measurements.html
+      sum_len_print:
+        string_serialization: |-
+          {sum_len} // 1000
 
   # Classes I haven't looked at yet
   PackageDataContainer:
