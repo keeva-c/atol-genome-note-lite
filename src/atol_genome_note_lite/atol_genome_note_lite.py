@@ -106,14 +106,16 @@ def main():
     taxonomy_info = TaxonomyInfo(**canopy_taxonomy_info)
 
     # 2. Harvest info from results files
+    seq_stats = None
     if args.seq_stats:
         seq_stats = read_seq_stats(seq_stats_file=args.seq_stats)
 
     # 3. Combine into a single  context
-    context = {
-        "taxonomy_info": taxonomy_info.model_dump(),
-        "assembly": {k: seq_stats.get(v, None) for k, v in assemblies.items()},
-    }
+    assembly_context = {k: seq_stats.get(v, SeqStats()) for k, v in assemblies.items()}
+
+    context = {"taxonomy_info": taxonomy_info, "assembly": assembly_context}
+    logger.info("Generated context:")
+    logger.info(context)
 
     # 4. Use the context to render the templates
     outdir = Path(args.outdir)
