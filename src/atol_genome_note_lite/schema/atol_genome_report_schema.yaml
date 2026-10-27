@@ -1,0 +1,532 @@
+id: https://example.org/atol-report-schema
+name: atol-genome-report-schema
+description: this is a test of modelling the atol genome report schema with linkml
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+  - busco_json_schema
+default_range: string
+
+classes:
+  # Classes I've modified
+  TaxonomyInfo:
+    description: Containing information retrieved from Canopy's Taxonomy table
+    slots:
+      - busco_odb12_dataset_name
+      - ncbi_authority
+      - ncbi_common_name
+      - ncbi_family
+      - ncbi_full_lineage
+      - ncbi_order
+      - ncbi_scientific_name
+      - ncbi_taxon_id
+
+  SeqStats:
+    description: A line of results from seqkit stats
+    slots:
+      - avg_len
+      - AvgQual
+      - format
+      - GC(%)
+      - max_len
+      - min_len
+      - N50
+      - N50_num
+      - num_seqs
+      - num_seqs
+      - Q1
+      - Q2
+      - Q20(%)
+      - Q3
+      - Q30(%)
+      - sequencing_depth
+      - sum_gap
+      - sum_len
+      - sum_n
+      - type
+    attributes:
+      # Can't work this out, see
+      # https://linkml.io/linkml/howtos/model-measurements.html
+      sum_len_print:
+        string_serialization: |-
+          {sum_len} // 1000
+
+  MerquryStats:
+    description: A line of QV and Completeness stats from Merqury
+    slots:
+      - Region
+      - Found
+      - Total
+      - Covered
+      - No Support
+      - Error
+      - QV
+
+  # Classes I haven't looked at yet
+  PackageDataContainer:
+    tree_root: true
+    description: Container class containing all metadata and metrics associated with one data package on the Bioplatforms data portal
+    slots:
+      - project
+      - organism
+      - specimen
+      - sample
+      - experiment
+      - runs
+      - assembly
+      - annotation
+
+  Project:
+    description: Containing information related to the 'root' level bioproject
+    slots:
+      - project_accession
+
+  Organism:
+    description: Containing information related to the taxon
+    slots:
+      - taxonomy_info
+
+  Specimen:
+    description: Containing information related to the specimen-level sample
+    slots:
+      - biosample_accession
+
+  Sample:
+    description: Containing information related to the sample-level sample
+    slots:
+      - project_collaborators
+      - bpa_sample_id
+      - bioplatforms_project_id
+      - bpa_initiative
+      - biosample_accession
+      - specimen_id
+      - specimen_id_description
+      - sex
+      - lifestage
+      - collection_date
+      - region_and_locality
+      - state_or_region
+      - country_or_sea
+      - indigenous_location
+      - latitude
+      - longitude
+      - collected_by
+      - collection_method
+      - collection_permit
+      - identified_by
+      - preservation_method
+      - preservation_temperature
+      - organism_part
+
+  Experiment:
+    description: Containing information related to the experiment (ERX)
+    slots:
+      - data_owner
+      - bpa_library_id
+      - library_strategy
+      - extraction_method
+      - nucleic_acid_treatment
+      - nucleic_acid_conc
+      - library_construction_protocol
+      - library_selection
+      - insert_size
+      - platform
+      - instrument_model
+      - sequencing_kit
+      - gal
+      - library_layout
+      - flowcell_type
+      - base_caller_model
+      - bpa_package_id
+
+  Runs:
+    description: Containing information related to the qc reads (ERR)
+    slots:
+      - submission_records
+      - read_count
+      - base_count
+
+  Assembly:
+    description: Containing information related to the genome assembly
+    slots:
+      - assembly_level
+      - haplotypes
+      - rna_data_available
+      - tol_id
+      - version
+      - assembly_name
+      - hap_1_assembly_name
+      - hap_2_assembly_name
+      - assembly_accession
+      - hap_1_assembly_accession
+      - hap_2_assembly_accession
+      - contaminants_removed
+      - hap_1_contaminants_removed
+      - hap_2_contaminants_removed
+      - coverage
+      - scaffold_count
+      - contig_count
+      - genome_length
+      - scaffold_n50
+      - contig_n50
+      - gap_count
+      - longest_contig
+      - longest_scaffold
+      - busco_string
+      - busco_single
+      - busco_duplicated
+      - primary_qv
+      - alt_qv
+      - combined_qv
+      - primary_kmer
+      - alt_kmer
+      - combined_kmer
+      - mito_size
+      - plastid_size
+      - hap_1_scaffold_count
+      - hap_1_genome_length
+      - hap_1_scaffold_n50
+      - hap_1_contig_n50
+      - hap_1_busco_c
+      - hap_1_gap_count
+      - hap_1_contig_count
+      - hap_1_longest_contig
+      - hap_1_longest_scaffold
+      - hap_1_busco_string
+      - hap_1_busco_single
+      - hap_1_busco_duplicated
+      - hap_2_scaffold_count
+      - hap_2_genome_length
+      - hap_2_scaffold_n50
+      - hap_2_contig_n50
+      - hap_2_busco_c
+      - hap_2_gap_count
+      - hap_2_contig_count
+      - hap_2_longest_contig
+      - hap_2_longest_scaffold
+      - hap_2_busco_string
+      - hap_2_busco_single
+      - hap_2_busco_duplicated
+      - genomescope_image_path
+      - contact_map_image_path
+      - hap_1_contact_map_image_path
+      - hap_2_contact_map_image_path
+      - genomeassembly_pipeline_version
+      - ascc_pipeline_version
+      - treeval_pipeline_version
+
+  Annotation:
+    description: Containing information related to the genome Annotation
+    slots:
+      - annotation_pipeline
+      - annotation_pipeline_ver
+      - annotation_pipeline_link
+      - annot_qc_pipeline
+      - annot_qc_pipeline_ver
+      - annot_qc_pipeline_link
+      - annotation_name
+      - gene_count
+      - cds_count
+      - transcript_count
+      - mean_transcript_length
+      - mean_transcripts_per_gene
+      - mean_exons_per_transcript
+      - annot_busco_summary
+      - annot_busco_lineage
+      - omark_completeness_summary
+      - conserved_hogs
+      - omark_lineage
+      - omark_protein_count
+      - omark_percent_consistent
+      - omark_percent_inconsistent
+      - omark_percent_contaminant
+      - omark_percent_unknown
+
+  SubmissionRecords:
+    description: Containing information about the ERR submission record
+    slots:
+      - accession
+
+slots:
+  # New slots
+  avg_len:
+    range: float
+  AvgQual:
+    range: float
+  format:
+  GC(%):
+    range: float
+  max_len:
+    range: integer
+  min_len:
+    range: integer
+  N50:
+    range: integer
+  N50_num:
+    range: integer
+  num_seqs:
+    range: integer
+  Q1:
+    range: integer
+  Q2:
+    range: integer
+  Q20(%):
+    range: integer
+  Q3:
+    range: integer
+  Q30(%):
+    range: integer
+  sequencing_depth:
+    range: integer
+  sum_gap:
+    range: integer
+  sum_len:
+    range: integer
+  sum_n:
+    range: integer
+  type:
+  Region:
+  Found:
+    range: integer
+  Total:
+    range: integer
+  Covered:
+    range: float
+  No Support:
+    range: integer
+  Error:
+    range: integer
+  QV:
+    range: float
+
+  # Existing slots
+  project:
+    range: Project
+  organism:
+    range: Organism
+  specimen:
+    range: Specimen
+  sample:
+    range: Sample
+  experiment:
+    range: Experiment
+  runs:
+    range: Runs
+  assembly:
+    range: Assembly
+  annotation:
+    range: Annotation
+  project_accession:
+  taxonomy_info:
+    range: TaxonomyInfo
+  ncbi_common_name:
+  ncbi_scientific_name:
+  ncbi_authority:
+  ncbi_order:
+  ncbi_family:
+  ncbi_full_lineage:
+  ncbi_taxon_id:
+    range: integer
+  project_collaborators:
+  bioplatforms_project_id:
+    required: true
+  bpa_initiative:
+  biosample_accession:
+  specimen_id:
+  specimen_id_description:
+  sex:
+  lifestage:
+  collection_date:
+    range: date
+  region_and_locality:
+  state_or_region:
+  country_or_sea:
+  indigenous_location:
+  latitude:
+    range: float
+  longitude:
+    range: float
+  collected_by:
+  collection_method:
+  collection_permit:
+  identified_by:
+  preservation_method:
+  preservation_temperature:
+  organism_part:
+  data_owner:
+  bpa_sample_id:
+    required: true
+  bpa_library_id:
+    required: true
+  library_strategy:
+  extraction_method:
+  nucleic_acid_treatment:
+  nucleic_acid_conc:
+  library_construction_protocol:
+  library_selection:
+  insert_size:
+  platform:
+    required: true
+  instrument_model:
+  sequencing_kit:
+  gal:
+  library_layout:
+  flowcell_type:
+  base_caller_model:
+  bpa_package_id:
+    required: true
+  submission_records:
+    range: SubmissionRecords
+  accession:
+  read_count:
+    range: integer
+  base_count:
+    range: integer
+  assembly_level:
+  haplotypes:
+    range: integer
+  hap_1_scaffold_count:
+    range: integer
+  hap_1_genome_length:
+    range: integer
+  hap_1_scaffold_n50:
+    range: integer
+  hap_1_contig_n50:
+    range: integer
+  hap_1_busco_c:
+    range: float
+  hap_2_scaffold_count:
+    range: integer
+  hap_2_genome_length:
+    range: integer
+  hap_2_scaffold_n50:
+    range: integer
+  hap_2_contig_n50:
+    range: integer
+  hap_2_busco_c:
+    range: float
+  scaffold_count:
+    range: integer
+  contig_count:
+    range: integer
+  genome_length:
+    range: integer
+  scaffold_n50:
+    range: integer
+  contig_n50:
+    range: integer
+  rna_data_available:
+  genomescope_image_path:
+  tol_id:
+  version:
+    range: integer
+  genomeassembly_pipeline_version:
+  ascc_pipeline_version:
+  treeval_pipeline_version:
+  contaminants_removed:
+    range: integer
+  hap_1_contaminants_removed:
+    range: integer
+  hap_2_contaminants_removed:
+    range: integer
+  contact_map_image_path:
+  hap_1_contact_map_image_path:
+  hap_2_contact_map_image_path:
+  hap_1_assembly_name:
+  hap_1_assembly_accession:
+  hap_1_gap_count:
+    range: integer
+  coverage:
+    range: integer
+  hap_1_contig_count:
+    range: integer
+  hap_1_longest_contig:
+    range: integer
+  hap_1_longest_scaffold:
+    range: integer
+  hap_1_busco_string:
+  primary_qv:
+    range: float
+  combined_qv:
+    range: float
+  primary_kmer:
+    range: float
+  combined_kmer:
+    range: float
+  hap_1_busco_single:
+    range: float
+  hap_1_busco_duplicated:
+    range: float
+  hap_2_assembly_name:
+  hap_2_assembly_accession:
+  hap_2_gap_count:
+    range: integer
+  hap_2_contig_count:
+    range: integer
+  hap_2_longest_contig:
+    range: integer
+  hap_2_longest_scaffold:
+    range: integer
+  alt_qv:
+    range: float
+  alt_kmer:
+    range: float
+  hap_2_busco_string:
+  hap_2_busco_single:
+    range: float
+  hap_2_busco_duplicated:
+    range: float
+  mito_size:
+    range: integer
+  plastid_size:
+    range: integer
+  assembly_name:
+  assembly_accession:
+  gap_count:
+    range: integer
+  longest_contig:
+    range: integer
+  longest_scaffold:
+    range: integer
+  busco_string:
+  busco_single:
+    range: float
+  busco_duplicated:
+    range: float
+  annotation_pipeline:
+  annotation_pipeline_ver:
+  annotation_pipeline_link:
+  annot_qc_pipeline:
+  annot_qc_pipeline_ver:
+  annot_qc_pipeline_link:
+  annotation_name:
+  gene_count:
+    range: integer
+  cds_count:
+    range: integer
+  transcript_count:
+    range: integer
+  mean_transcript_length:
+    range: float
+  mean_transcripts_per_gene:
+    range: float
+  mean_exons_per_transcript:
+    range: float
+  annot_busco_summary:
+  annot_busco_lineage:
+  omark_completeness_summary:
+  conserved_hogs:
+    range: integer
+  omark_lineage:
+  omark_protein_count:
+    range: integer
+  omark_percent_consistent:
+    range: float
+  omark_percent_inconsistent:
+    range: float
+  omark_percent_contaminant:
+    range: float
+  omark_percent_unknown:
+    range: float
+  busco_odb12_dataset_name:

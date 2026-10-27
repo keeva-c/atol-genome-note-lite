@@ -1,0 +1,1 @@
+A genome assembly for {{ "the " ~ taxonomy_info.ncbi_common_name ~ ", " if taxonomy_info.ncbi_common_name else "" }}*{{ taxonomy_info.ncbi_scientific_name }}*{{ " " ~ taxonomy_info.ncbi_authority if taxonomy_info.ncbi_authority else "" }}
