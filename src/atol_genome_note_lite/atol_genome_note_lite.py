@@ -215,8 +215,36 @@ def main():
     # 1. Read the required information off Canopy
     canopy_session = CanopySession()
 
+    # 1.1. Read taxonomy info off Canopy
     canopy_taxonomy_info = canopy_session.get_taxonomy_info(taxon_id=taxon_id).json()
     taxonomy_info = TaxonomyInfo(**canopy_taxonomy_info)
+
+    # 1.2. Read samples info off Canopy
+        # For package in manifest, retrieve sample submission:
+            # Take biosample_accession
+            # Take sample ID
+        # For sample ID in list of sample IDs:
+            # Retrieve and store metadata in SampleMetadata class
+            # Store biosample_accession in SampleMetadata
+            # (not currently relevant) Take derived_from_sample_id values
+        # Not currently possible to retrieve the SAMEA accession for specimen-level samples
+
+    # 1.3. Read runs info off Canopy
+        # Use assembly ID to retrieve QC reads
+            # Store metadata in RunsMetadata class
+            # Take experiment IDs
+
+    # 1.4. Read experiment info off Canopy
+        # For experiment ID in list of experiment IDs:
+            # Retrieve and store metadata in ExperimentMetadata class
+
+    # 1.5. Read assembly info off Canopy
+        # Use assembly ID to retrieve assembly metadaata
+            # Store metadata in AssemblyMetadata class
+    
+    # 1.6. Read project info off Canopy
+        # Use manifest.taxon_id to retrieve root-level project metadata
+            # Store metadata in ProjectMetadata class
 
     # 2. Harvest info from results files
     if args.seq_stats:
@@ -294,7 +322,6 @@ def main():
         methods = {}
 
     # 3. Combine into a single  context
-
     context = {"taxonomy_info": taxonomy_info, "assembly": assembly_context, "methods": methods}
     logger.info("Generated context:")
     logger.info(context)
