@@ -67,7 +67,7 @@ linkml_meta = LinkMLMeta(
                 "prefix_reference": "https://w3id.org/linkml/",
             }
         },
-        "source_file": "/home/tharrop/Projects/atol-genome-note-lite/src/atol_genome_note_lite/schema/atol_genome_report_schema.yaml",
+        "source_file": "src/atol_genome_note_lite/schema/atol_genome_report_schema.yaml",
     }
 )
 
@@ -815,6 +815,32 @@ class MerquryStats(ConfiguredBaseModel):
     )
 
 
+class SoftwareVersions(ConfiguredBaseModel):
+    """
+    The versions of pipelines used in assembly generation
+    """
+
+    linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta(
+        {"from_schema": "https://example.org/atol-report-schema"}
+    )
+
+    sanger_tol_genomeassembly: Optional[str] = Field(
+        default=None,
+        alias="sanger_tol/genomeassembly",
+        json_schema_extra={"linkml_meta": {"domain_of": ["SoftwareVersions"]}},
+    )
+    sanger_tol_ascc: Optional[str] = Field(
+        default=None,
+        alias="sanger_tol/ascc",
+        json_schema_extra={"linkml_meta": {"domain_of": ["SoftwareVersions"]}},
+    )
+    sanger_tol_treeval: Optional[str] = Field(
+        default=None,
+        alias="sanger_tol/treeval",
+        json_schema_extra={"linkml_meta": {"domain_of": ["SoftwareVersions"]}},
+    )
+
+
 class PackageDataContainer(ConfiguredBaseModel):
     """
     Container class containing all metadata and metrics associated with one data package on the Bioplatforms data portal
@@ -1376,6 +1402,7 @@ BuscoMetric.model_rebuild()
 TaxonomyInfo.model_rebuild()
 SeqStats.model_rebuild()
 MerquryStats.model_rebuild()
+SoftwareVersions.model_rebuild()
 PackageDataContainer.model_rebuild()
 Project.model_rebuild()
 Organism.model_rebuild()
