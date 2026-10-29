@@ -63,6 +63,13 @@ classes:
       - Error
       - QV
 
+  SoftwareVersions:
+    description: The versions of pipelines used in assembly generation
+    slots:
+      - sanger-tol/genomeassembly
+      - sanger-tol/ascc
+      - sanger-tol/treeval
+
   # Classes I haven't looked at yet
   PackageDataContainer:
     tree_root: true
@@ -299,6 +306,12 @@ slots:
     range: integer
   QV:
     range: float
+  sanger-tol/genomeassembly:
+    range: string
+  sanger-tol/ascc:
+    range: string
+  sanger-tol/treeval:
+    range: string
 
   # Existing slots
   project:
