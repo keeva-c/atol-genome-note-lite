@@ -1,0 +1,23 @@
+| - | -- |
+| **Reads QC** | | {% if experiment.platform=='PacBio' %}
+| - Pipeline | amytims/atol-qc-raw-pacbio |
+| - Source | [https://github.com/amytims/atol-qc-raw-pacbio](https://github.com/amytims/atol-qc-raw-pacbio) | {% elif experiment.platform=='Oxford Nanopore' %}
+| - Pipeline | TomHarrop/atol-qc-raw-ont |
+| - Source | [https://github.com/TomHarrop/atol-qc-raw-ont](https://github.com/TomHarrop/atol-qc-raw-ont) | {% endif %}{% if assembly.assembly_level!='contig' %}
+| - Pipeline | TomHarrop/atol-qc-raw-shortread |
+| - Source | [https://github.com/TomHarrop/atol-qc-raw-shortread](https://github.com/TomHarrop/atol-qc-raw-shortread) | {% endif %}
+| **Genome assembly** | |
+| - Pipeline | sanger-tol/genomeassembly |
+| - Version | {{ methods.sanger_tol_genomeassembly }} |
+| - Reference | Downie *et al.*, 2025 |
+| - Source | [https://github.com/sanger-tol/genomeassembly](https://github.com/sanger-tol/genomeassembly) |
+| **Decontamination** | |
+| - Pipeline | sanger-tol/ascc |
+| - Version | {{ methods.sanger_tol_ascc }} |
+| - Reference | Pointon *et al.*, 2026 |
+| - Source | [https://github.com/sanger-tol/ascc](https://github.com/sanger-tol/ascc) | {% if assembly.assembly_level!='contig' %}
+| **Assembly visualisation** | |
+| - Pipeline | sanger-tol/treeval |
+| - Version | {{ methods.sanger_tol_treeval }} |
+| - Reference | Pointon *et al.*, 2026 |
+| - Source | [https://github.com/sanger-tol/treeval](https://github.com/sanger-tol/treeval) | {% endif %}
