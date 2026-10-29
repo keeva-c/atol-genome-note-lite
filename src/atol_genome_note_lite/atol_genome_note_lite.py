@@ -5,6 +5,7 @@ from importlib.resources import files
 import json
 from pathlib import Path
 from re import sub
+import yaml
 
 import jinja2
 import pandas as pd
@@ -15,6 +16,7 @@ from atol_genome_note_lite.models import (
     SeqStats,
     TaxonomyInfo,
     MerquryStats,
+    SoftwareVersions,
 )
 from canopy_client import CanopySession
 from yaml_manifest import Manifest
@@ -80,6 +82,24 @@ def parse_arguments() -> argparse.Namespace:
         help="asm.ccs.qv file from Merqury",
     )
 
+    _ = parser.add_argument(
+        "--ga_ver",
+        type=_existing_file,
+        help="genomeassembly software versions yaml file."
+    )
+
+    _ = parser.add_argument(
+        "--ascc_ver",
+        type=_existing_file,
+        help="ascc software versions yaml file."
+    )
+
+    _ = parser.add_argument(
+        "--treeval_ver",
+        type=_existing_file,
+        help="treeval software versions yaml file."
+    )
+
     # outputs
     _ = parser.add_argument(
         "--outdir", type=Path, help="Output directory.", required=True
@@ -124,6 +144,23 @@ def read_busco_json(busco_json_file: Path) -> dict[str, BuscoStats]:
         busco_dict = json.load(f)
 
     return BuscoStats(**recursive_rekey(busco_dict))
+
+
+def read_versions_yaml(software_summary: Path, rename_func=convert_to_snake_case) -> SoftwareVersions | None:
+    """Parse the software version yaml to extract the pipeline version in the shape of the SoftwareVersions model"""
+    with open(software_summary, "rt") as f:
+        software = yaml.load(f, Loader=yaml.SafeLoader)
+        workflows = software.get("Workflow", {})
+        normalised_workflows = {}
+        for workflow, version in workflows.items():
+            normalised_workflows[rename_func(workflow)] = version
+
+        for pydantic_slot in SoftwareVersions.model_fields:
+            if pydantic_slot in normalised_workflows:
+                return SoftwareVersions(**{pydantic_slot: normalised_workflows[pydantic_slot]})
+
+        logger.warning(f"Could not find a software version in {software_summary}")
+        return None
 
 
 def render_template_string(template_string: str, **kwargs) -> str:
@@ -235,8 +272,30 @@ def main():
         assembly_context["hap2"]["merqury_qv"] = merqury_qv[_hap2_key]
         assembly_context["combined"]["merqury_qv"] = merqury_qv[_combined_key]
 
+    # 2.5. Harvest info from software version files
+    method_versions = {}
+
+    if args.ga_ver:
+        ga_version = read_versions_yaml(args.ga_ver)
+        if ga_version is not None:
+            method_versions.update(ga_version.model_dump(exclude_unset=True, exclude_none=True))
+    if args.ascc_ver:
+        ascc_version = read_versions_yaml(args.ascc_ver)
+        if ascc_version is not None:
+            method_versions.update(ascc_version.model_dump(exclude_unset=True, exclude_none=True))
+    if args.treeval_ver:
+        treeval_version = read_versions_yaml(args.treeval_ver)
+        if treeval_version is not None:
+            method_versions.update(treeval_version.model_dump(exclude_unset=True, exclude_none=True))
+
+    if method_versions:
+        methods = SoftwareVersions(**method_versions)
+    else:
+        methods = {}
+
     # 3. Combine into a single  context
-    context = {"taxonomy_info": taxonomy_info, "assembly": assembly_context}
+
+    context = {"taxonomy_info": taxonomy_info, "assembly": assembly_context, "methods": methods}
     logger.info("Generated context:")
     logger.info(context)
 
